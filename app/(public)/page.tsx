@@ -165,7 +165,6 @@ export default function PublicStorefrontPage() {
               <div
                 key={prod.id}
                 onClick={() => setSelectedProduct(prod)}
-                className="glass-card rounded-2xl p-4 flex flex-col justify-between cursor-pointer group"
               >
                 <div>
                   <div className="relative w-full h-44 rounded-xl overflow-hidden bg-slate-900 mb-3 border border-slate-800">

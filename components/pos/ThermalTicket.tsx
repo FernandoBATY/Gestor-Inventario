@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Venta } from '@/lib/types';
 import { Printer, X } from 'lucide-react';
+import { DEFAULT_NEGOCIO_CONFIG } from '@/lib/negocioStore';
 
 interface ThermalTicketProps {
   venta: Venta | null;
@@ -10,6 +11,30 @@ interface ThermalTicketProps {
 }
 
 export default function ThermalTicket({ venta, onClose }: ThermalTicketProps) {
+  const [businessConfig, setBusinessConfig] = useState(DEFAULT_NEGOCIO_CONFIG);
+
+  useEffect(() => {
+    const fetchBusinessConfig = async () => {
+      try {
+        const res = await fetch('/api/negocio');
+        if (res.ok) {
+          const data = await res.json();
+          setBusinessConfig({
+            nombre_negocio: data?.nombre_negocio || DEFAULT_NEGOCIO_CONFIG.nombre_negocio,
+            rfc: data?.rfc || DEFAULT_NEGOCIO_CONFIG.rfc,
+            telefono: data?.telefono || DEFAULT_NEGOCIO_CONFIG.telefono,
+            direccion: data?.direccion || DEFAULT_NEGOCIO_CONFIG.direccion,
+            leyenda_ticket: data?.leyenda_ticket || DEFAULT_NEGOCIO_CONFIG.leyenda_ticket,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchBusinessConfig();
+  }, []);
+
   if (!venta) return null;
 
   const handlePrint = () => {
@@ -29,14 +54,13 @@ export default function ThermalTicket({ venta, onClose }: ThermalTicketProps) {
         <h3 className="font-bold text-lg text-slate-100 mb-1">Ticket de Venta</h3>
         <p className="text-xs text-slate-400 mb-4">Vista previa para impresora térmica de 80 mm</p>
 
-        {/* THERMAL PRINTABLE CONTAINER */}
-        <div 
-          id="thermal-ticket-container" 
+        <div
+          id="thermal-ticket-container"
           className="bg-white text-black p-4 rounded-lg shadow-inner text-xs font-mono border border-slate-200"
         >
-          <div className="text-center font-bold text-sm tracking-wide uppercase">PAPELERÍA EL CUADERNO DORADO</div>
-          <div className="text-center text-[10px] text-gray-600 mb-2">RFC: PAP980721-H89 | Tel: 555-0192-384</div>
-          <div className="text-center text-[10px] text-gray-500 mb-3">Av. Principal No. 402, Centro</div>
+          <div className="text-center font-bold text-sm tracking-wide uppercase">PAPELERÍA {businessConfig.nombre_negocio}</div>
+          <div className="text-center text-[10px] text-gray-600 mb-2">Tel: {businessConfig.telefono}</div>
+          <div className="text-center text-[10px] text-gray-500 mb-3">{businessConfig.direccion}</div>
 
           <div className="border-t border-b border-dashed border-gray-400 py-1.5 my-2">
             <div><span className="font-semibold">Folio:</span> {venta.folio}</div>
@@ -71,9 +95,8 @@ export default function ThermalTicket({ venta, onClose }: ThermalTicketProps) {
             </div>
           </div>
 
-          <div className="text-center text-[9px] text-gray-500 mt-4 leading-tight">
-            ¡GRACIAS POR SU COMPRA!<br />
-            Conserve este ticket para devoluciones o aclaraciones.
+          <div className="text-center text-[9px] text-gray-500 mt-4 leading-tight whitespace-pre-line">
+            {businessConfig.leyenda_ticket}
           </div>
         </div>
 

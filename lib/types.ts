@@ -14,6 +14,23 @@ export interface Producto {
   updated_at?: string;
 }
 
+export interface CategoriaProducto {
+  nombre: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface NegocioConfig {
+  id?: number;
+  nombre_negocio: string;
+  rfc: string;
+  telefono: string;
+  direccion: string;
+  leyenda_ticket: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface MovimientoStock {
   id: string;
   producto_id: string;
@@ -60,4 +77,9 @@ export interface DashboardStats {
   productosBajoStock: Producto[];
   productosMasVendidos: { nombre: string; cantidad: number; total: number }[];
   ventasUltimos7Dias: { fecha: string; total: number }[];
+  totalProductos?: number;
+  totalVentasCount?: number;
+  totalCategorias?: number;
+  ticketPromedio?: number;
+  ultimaVentaFecha?: string | null;
 }

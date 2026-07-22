@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { mockStore } from '@/lib/mockStore';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // GET /api/backup/descargar
 export async function GET() {
   try {
@@ -25,9 +28,9 @@ export async function GET() {
     } else {
       backupData = {
         timestamp: new Date().toISOString(),
-        productos: mockStore.getProducts(),
-        movimientos_stock: mockStore.getMovements(),
-        ventas: mockStore.getVentas(),
+        productos: mockStore.getProducts() as any[],
+        movimientos_stock: mockStore.getMovements() as any[],
+        ventas: mockStore.getVentas() as any[],
         detalle_ventas: [],
         historial_precios: [],
       };

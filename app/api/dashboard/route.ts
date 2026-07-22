@@ -9,6 +9,11 @@ export async function GET() {
     if (supabase) {
       const todayStr = new Date().toISOString().slice(0, 10);
       const startOfMonthStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`;
+      const last7Days = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (6 - index));
+        return date.toISOString().slice(0, 10);
+      });
 
       const { data: prods } = await supabase.from('productos').select('*');
       const { data: ventas } = await supabase.from('ventas').select('*, detalle_ventas(*)');
@@ -17,15 +22,43 @@ export async function GET() {
         let ventasDia = 0;
         let ventasMes = 0;
         let totalVendido = 0;
+        const ventasPorDia = new Map<string, number>(last7Days.map((date) => [date, 0]));
+        const productosMasVendidos = new Map<string, { nombre: string; cantidad: number; total: number }>();
+        let ultimaVentaFecha: string | null = null;
 
         ventas.forEach((v: any) => {
           const vTotal = Number(v.total) || 0;
           totalVendido += vTotal;
+          if (!ultimaVentaFecha || v.fecha > ultimaVentaFecha) ultimaVentaFecha = v.fecha;
           if (v.fecha.startsWith(todayStr)) ventasDia += vTotal;
           if (v.fecha >= startOfMonthStr) ventasMes += vTotal;
+
+          const saleDate = v.fecha.slice(0, 10);
+          if (ventasPorDia.has(saleDate)) {
+            ventasPorDia.set(saleDate, (ventasPorDia.get(saleDate) || 0) + vTotal);
+          }
+
+          v.detalle_ventas?.forEach((detalle: any) => {
+            const current = productosMasVendidos.get(detalle.nombre_producto) || {
+              nombre: detalle.nombre_producto,
+              cantidad: 0,
+              total: 0,
+            };
+
+            const cantidad = Number(detalle.cantidad) || 0;
+            const subtotal = Number(detalle.subtotal) || 0;
+            productosMasVendidos.set(detalle.nombre_producto, {
+              nombre: detalle.nombre_producto,
+              cantidad: current.cantidad + cantidad,
+              total: current.total + subtotal,
+            });
+          });
         });
 
         const productosBajoStock = prods.filter((p: any) => p.unidades <= p.stock_minimo);
+        const totalCategorias = Array.from(new Set(prods.map((p: any) => p.categoria).filter(Boolean))).length;
+        const totalVentasCount = ventas.length;
+        const ticketPromedio = totalVentasCount > 0 ? totalVendido / totalVentasCount : 0;
 
         return NextResponse.json({
           ventasDia,
@@ -34,14 +67,21 @@ export async function GET() {
           productosBajoStockCount: productosBajoStock.length,
           productosBajoStock,
           totalProductos: prods.length,
-          totalVentasCount: ventas.length
+          totalVentasCount,
+          totalCategorias,
+          ticketPromedio,
+          ultimaVentaFecha,
+          ventasUltimos7Dias: Array.from(ventasPorDia.entries()).map(([fecha, total]) => ({ fecha, total })),
+          productosMasVendidos: Array.from(productosMasVendidos.values())
+            .sort((a, b) => b.cantidad - a.cantidad)
+            .slice(0, 5),
         });
       }
     }
 
     // Mock calculations
-    const prods = mockStore.getProducts();
-    const ventas = mockStore.getVentas();
+    const prods = mockStore.getProducts() as any[];
+    const ventas = mockStore.getVentas() as any[];
     const todayStr = new Date().toISOString().slice(0, 10);
 
     let ventasDia = 0;
@@ -55,6 +95,9 @@ export async function GET() {
     });
 
     const productosBajoStock = prods.filter(p => p.unidades <= p.stock_minimo);
+    const totalCategorias = Array.from(new Set(prods.map(p => p.categoria).filter(Boolean))).length;
+    const totalVentasCount = ventas.length;
+    const ticketPromedio = totalVentasCount > 0 ? totalVendido / totalVentasCount : 0;
 
     return NextResponse.json({
       ventasDia,
@@ -63,7 +106,12 @@ export async function GET() {
       productosBajoStockCount: productosBajoStock.length,
       productosBajoStock,
       totalProductos: prods.length,
-      totalVentasCount: ventas.length
+      totalVentasCount,
+      totalCategorias,
+      ticketPromedio,
+      ultimaVentaFecha: ventas.at(-1)?.fecha || null,
+      ventasUltimos7Dias: [],
+      productosMasVendidos: []
     });
   } catch (error) {
     return NextResponse.json({ error: 'Error al consultar dashboard stats' }, { status: 500 });

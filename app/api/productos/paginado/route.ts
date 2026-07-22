@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     }
 
     // Mock fallback paginado
-    let products = mockStore.getProducts();
+    let products = mockStore.getProducts() as any[];
     if (search) {
       const q = search.toLowerCase();
       products = products.filter(

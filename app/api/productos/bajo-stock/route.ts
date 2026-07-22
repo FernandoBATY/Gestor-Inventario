@@ -19,7 +19,7 @@ export async function GET() {
       }
     }
 
-    const products = mockStore.getProducts();
+    const products = mockStore.getProducts() as any[];
     const lowStock = products.filter(p => p.unidades <= p.stock_minimo);
     return NextResponse.json(lowStock);
   } catch (error) {

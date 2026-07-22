@@ -17,7 +17,7 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json(mockStore.getVentas());
+    return NextResponse.json(mockStore.getVentas() as any[]);
   } catch (error) {
     return NextResponse.json({ error: 'Error al consultar historial de ventas' }, { status: 500 });
   }

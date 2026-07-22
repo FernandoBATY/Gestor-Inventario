@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { mockStore } from '@/lib/mockStore';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // DELETE /api/backup/limpiar-datos
 export async function DELETE() {
   try {

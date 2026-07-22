@@ -31,6 +31,23 @@ CREATE TABLE IF NOT EXISTS productos (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'chk_productos_precios_no_negativos'
+    ) THEN
+        ALTER TABLE productos
+            ADD CONSTRAINT chk_productos_precios_no_negativos CHECK (precio_compra >= 0 AND precio_venta >= 0);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'chk_productos_stock_no_negativo'
+    ) THEN
+        ALTER TABLE productos
+            ADD CONSTRAINT chk_productos_stock_no_negativo CHECK (unidades >= 0 AND stock_minimo >= 0);
+    END IF;
+END $$;
+
 -- Trigger updated_at para productos
 DROP TRIGGER IF EXISTS set_updated_at_productos ON productos;
 CREATE TRIGGER set_updated_at_productos
@@ -42,6 +59,24 @@ EXECUTE FUNCTION update_updated_at_column();
 CREATE INDEX IF NOT EXISTS idx_productos_categoria ON productos(categoria);
 CREATE INDEX IF NOT EXISTS idx_productos_sku ON productos(sku);
 CREATE INDEX IF NOT EXISTS idx_productos_stock ON productos(unidades, stock_minimo);
+
+-- 2b. TABLA CATEGORIAS
+CREATE TABLE IF NOT EXISTS categorias (
+    nombre VARCHAR(100) PRIMARY KEY,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+DROP TRIGGER IF EXISTS set_updated_at_categorias ON categorias;
+CREATE TRIGGER set_updated_at_categorias
+BEFORE UPDATE ON categorias
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+ALTER TABLE categorias ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Permitir todo a categorias" ON categorias;
+CREATE POLICY "Permitir todo a categorias" ON categorias FOR ALL USING (true);
 
 -- 3. TABLA HISTORIAL PRECIOS
 CREATE TABLE IF NOT EXISTS historial_precios (
@@ -55,6 +90,29 @@ CREATE TABLE IF NOT EXISTS historial_precios (
 );
 
 CREATE INDEX IF NOT EXISTS idx_historial_precios_producto ON historial_precios(producto_id);
+
+-- 3b. TABLA CONFIGURACION NEGOCIO
+CREATE TABLE IF NOT EXISTS negocio_config (
+    id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+    nombre_negocio VARCHAR(255) NOT NULL,
+    rfc VARCHAR(50),
+    telefono VARCHAR(50),
+    direccion TEXT,
+    leyenda_ticket TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+DROP TRIGGER IF EXISTS set_updated_at_negocio_config ON negocio_config;
+CREATE TRIGGER set_updated_at_negocio_config
+BEFORE UPDATE ON negocio_config
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+ALTER TABLE negocio_config ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Permitir todo a negocio_config" ON negocio_config;
+CREATE POLICY "Permitir todo a negocio_config" ON negocio_config FOR ALL USING (true);
 
 -- 4. TABLA MOVIMIENTOS STOCK
 CREATE TABLE IF NOT EXISTS movimientos_stock (

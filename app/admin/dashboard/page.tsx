@@ -15,6 +15,12 @@ import {
   ChevronRight
 } from 'lucide-react';
 
+const moneyFormatter = new Intl.NumberFormat('es-MX', {
+  style: 'currency',
+  currency: 'MXN',
+  minimumFractionDigits: 2,
+});
+
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -67,7 +73,7 @@ export default function DashboardPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
           {/* CARD 1: VENTAS DEL DIA */}
           <div className="glass-panel border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
@@ -77,7 +83,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-3xl font-black text-white">${Number(stats?.ventasDia || 0).toFixed(2)}</span>
+              <span className="text-3xl font-black text-white">{moneyFormatter.format(Number(stats?.ventasDia || 0))}</span>
             </div>
             <div className="mt-2 flex items-center gap-1 text-[11px] text-emerald-400">
               <TrendingUp className="w-3.5 h-3.5" />
@@ -94,7 +100,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-3xl font-black text-white">${Number(stats?.ventasMes || 0).toFixed(2)}</span>
+              <span className="text-3xl font-black text-white">{moneyFormatter.format(Number(stats?.ventasMes || 0))}</span>
             </div>
             <div className="mt-2 text-[11px] text-slate-500">
               Ingresos mensuales acumulados
@@ -110,14 +116,13 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-3xl font-black text-white">${Number(stats?.totalVendido || 0).toFixed(2)}</span>
+              <span className="text-3xl font-black text-white">{moneyFormatter.format(Number(stats?.totalVendido || 0))}</span>
             </div>
             <div className="mt-2 text-[11px] text-slate-500">
               Histórico general de transacciones
             </div>
           </div>
 
-          {/* CARD 4: PRODUCTOS BAJO STOCK */}
           <div className="glass-panel border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400">Productos Bajo Stock</span>
@@ -132,13 +137,41 @@ export default function DashboardPage() {
               Requieren reabastecimiento urgente
             </div>
           </div>
+
+          <div className="glass-panel border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400">Categorías activas</span>
+              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center border border-cyan-500/20">
+                <Layers className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-black text-white">{stats?.totalCategorias || 0}</span>
+            </div>
+            <div className="mt-2 text-[11px] text-slate-500">
+              Categorías guardadas en el sistema
+            </div>
+          </div>
+
+          <div className="glass-panel border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400">Ticket promedio</span>
+              <div className="w-9 h-9 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center border border-violet-500/20">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-black text-white">{moneyFormatter.format(Number(stats?.ticketPromedio || 0))}</span>
+            </div>
+            <div className="mt-2 text-[11px] text-slate-500">
+              Promedio por cada venta registrada
+            </div>
+          </div>
         </div>
       )}
 
-      {/* DASHBOARD DETAILS CONTENT GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT COLUMN: LOW STOCK ALERT FEED */}
-        <div className="lg:col-span-2 glass-panel border border-slate-800/80 rounded-3xl p-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="xl:col-span-2 glass-panel border border-slate-800/80 rounded-3xl p-6">
           <div className="flex items-center justify-between mb-5">
             <div>
               <h3 className="font-extrabold text-base text-white flex items-center gap-2">
@@ -189,7 +222,6 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* RIGHT COLUMN: SYSTEM QUICK STATS */}
         <div className="glass-panel border border-slate-800/80 rounded-3xl p-6 flex flex-col justify-between">
           <div>
             <h3 className="font-extrabold text-base text-white mb-4 flex items-center gap-2">
@@ -216,11 +248,77 @@ export default function DashboardPage() {
                   <ArrowUpRight className="w-5 h-5" />
                 </Link>
               </div>
+
+              <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <span className="text-xs text-slate-400 block">Última venta</span>
+                    <span className="text-sm font-semibold text-white">{stats?.ultimaVentaFecha ? new Date(stats.ultimaVentaFecha).toLocaleString('es-MX') : 'Sin movimientos recientes'}</span>
+                  </div>
+                </div>
+                <Link href="/admin/ventas" className="text-xs font-semibold text-sky-400 hover:text-sky-300 transition inline-flex items-center gap-1">
+                  Ir a Punto de Venta <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
           </div>
 
           <div className="mt-6 pt-4 border-t border-slate-800/80 text-center">
             <p className="text-[11px] text-slate-400">Servidor Node.js API & Base de datos Supabase activos</p>
+          </div>
+        </div>
+
+        <div className="glass-panel border border-slate-800/80 rounded-3xl p-6">
+          <h3 className="font-extrabold text-base text-white mb-4 flex items-center gap-2">
+            <ShoppingBag className="w-4 h-4 text-emerald-400" /> Productos más vendidos
+          </h3>
+
+          {stats?.productosMasVendidos?.length ? (
+            <div className="space-y-3">
+              {stats.productosMasVendidos.map((item: any, index: number) => (
+                <div key={`${item.nombre}-${index}`} className="p-3 rounded-2xl bg-slate-900/60 border border-slate-800">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-slate-100 text-sm">{item.nombre}</p>
+                      <p className="text-[11px] text-slate-500">{item.cantidad} unidades vendidas</p>
+                    </div>
+                    <span className="text-sm font-bold text-emerald-400">{moneyFormatter.format(Number(item.total || 0))}</span>
+                  </div>
+                  <div className="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-sky-500"
+                      style={{ width: `${Math.max(12, Math.min(100, (item.cantidad / Math.max(...stats.productosMasVendidos.map((p: any) => p.cantidad), 1)) * 100))}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-6 text-center rounded-2xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400">
+              Todavía no hay ventas suficientes para mostrar un ranking.
+            </div>
+          )}
+
+          <div className="mt-6 pt-4 border-t border-slate-800/80">
+            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Ventas últimos 7 días</h4>
+            {stats?.ventasUltimos7Dias?.length ? (
+              <div className="space-y-2">
+                {stats.ventasUltimos7Dias.map((item: any) => (
+                  <div key={item.fecha} className="flex items-center gap-3">
+                    <span className="w-24 text-[10px] text-slate-500 shrink-0">{new Date(item.fecha).toLocaleDateString('es-MX', { weekday: 'short', day: '2-digit' })}</span>
+                    <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-sky-500 to-indigo-500"
+                        style={{ width: `${Math.max(8, Math.min(100, (Number(item.total || 0) / Math.max(...stats.ventasUltimos7Dias.map((p: any) => Number(p.total || 0)), 1)) * 100))}%` }}
+                      />
+                    </div>
+                    <span className="w-24 text-right text-[11px] font-semibold text-slate-200 shrink-0">{moneyFormatter.format(Number(item.total || 0))}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-500">Sin datos para graficar.</p>
+            )}
           </div>
         </div>
       </div>
