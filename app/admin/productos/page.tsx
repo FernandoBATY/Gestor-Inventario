@@ -291,38 +291,38 @@ export default function ProductosPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-            <Package className="w-7 h-7 text-sky-400" /> Catálogo de Productos
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#201816] flex items-center gap-2">
+            <Package className="w-7 h-7 text-[#6f5249]" /> Catálogo de Productos
           </h1>
-          <p className="text-xs text-slate-400 mt-1">Alta, baja, actualización y gestión integral de productos.</p>
+          <p className="text-xs text-[#7c6b64] mt-1">Alta, baja, actualización y gestión integral de productos.</p>
         </div>
 
         <button
           onClick={() => handleOpenModal(null)}
-          className="bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-sky-600/25 flex items-center gap-2 transition"
+          className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] font-semibold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 flex items-center gap-2 transition"
         >
           <Plus className="w-4 h-4" /> Nuevo Producto
         </button>
       </div>
 
-      <div className="glass-panel rounded-2xl p-4 flex items-center gap-3">
-        <Search className="w-5 h-5 text-slate-400" />
+      <div className="glass-panel rounded-2xl p-4 flex items-center gap-3 border border-[#d7c7c0]">
+        <Search className="w-5 h-5 text-[#7c6b64]" />
         <input
           type="text"
           placeholder="Buscar por nombre, marca o SKU..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-transparent w-full text-sm text-slate-100 placeholder:text-slate-500 outline-none"
+          className="bg-transparent w-full text-sm text-[#201816] placeholder:text-[#9a8a83] outline-none"
         />
       </div>
 
       {loading ? (
-        <div className="glass-panel rounded-3xl p-8 text-center text-slate-400">Cargando inventario...</div>
+        <div className="glass-panel rounded-3xl p-8 text-center text-[#7c6b64] border border-[#d7c7c0]">Cargando inventario...</div>
       ) : (
-        <div className="glass-panel border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+        <div className="glass-panel border border-[#d7c7c0] rounded-3xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900/80 text-slate-400 font-semibold border-b border-slate-800">
+              <thead className="bg-[#f6efe8] text-[#7c6b64] font-semibold border-b border-[#d7c7c0]">
                 <tr>
                   <th className="p-4">Fotografía</th>
                   <th className="p-4">Producto</th>
@@ -334,56 +334,66 @@ export default function ProductosPage() {
                   <th className="p-4 text-center">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-200">
+              <tbody className="divide-y divide-[#e6d8d2] text-[#201816]">
                 {filtered.map((prod) => (
-                  <tr key={prod.id} className="hover:bg-slate-900/40 transition">
+                  <tr key={prod.id} className="hover:bg-[#f7f1ec] transition">
                     <td className="p-4">
-                      <img
-                        src={prod.fotografia || 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=500&q=80'}
-                        alt={prod.nombre}
-                        className="w-12 h-12 rounded-xl object-cover bg-slate-900 border border-slate-800"
-                      />
+                      {prod.fotografia ? (
+                        <img
+                          src={prod.fotografia}
+                          alt={prod.nombre}
+                          className="w-12 h-12 rounded-xl object-cover bg-slate-900 border border-slate-800"
+                          onError={(event) => {
+                            const target = event.currentTarget as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-xl bg-[#f2edeb] border border-[#d5c2bd] flex items-center justify-center text-[10px] font-semibold text-[#6f5249] text-center px-1">
+                          Sin foto
+                        </div>
+                      )}
                     </td>
                     <td className="p-4">
                       <div className="font-bold text-slate-100 text-sm">{prod.nombre}</div>
                       <div className="text-[11px] text-slate-400">{prod.marca} • {prod.presentacion}</div>
                     </td>
                     <td className="p-4">
-                      <span className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0]">
                         {prod.categoria}
                       </span>
                     </td>
-                    <td className="p-4 font-semibold text-slate-300">{moneyFormatter.format(Number(prod.precio_compra) || 0)}</td>
-                    <td className="p-4 font-bold text-emerald-400">{moneyFormatter.format(Number(prod.precio_venta) || 0)}</td>
+                    <td className="p-4 font-semibold text-[#5d4c46]">{moneyFormatter.format(Number(prod.precio_compra) || 0)}</td>
+                    <td className="p-4 font-bold text-[#2f5f4d]">{moneyFormatter.format(Number(prod.precio_venta) || 0)}</td>
                     <td className="p-4">
                       {prod.unidades <= prod.stock_minimo ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#6f5249] bg-[#efe3db] px-2 py-0.5 rounded border border-[#d7c7c0]">
                           <AlertTriangle className="w-3 h-3" /> {prod.unidades} (Bajo)
                         </span>
                       ) : (
-                        <span className="font-semibold text-slate-200">{prod.unidades} uds</span>
+                        <span className="font-semibold text-[#201816]">{prod.unidades} uds</span>
                       )}
                     </td>
-                    <td className="p-4 font-mono text-[11px] text-sky-300">{prod.sku}</td>
+                    <td className="p-4 font-mono text-[11px] text-[#6f5249]">{prod.sku}</td>
                     <td className="p-4 text-center space-x-2">
                       <button
                         onClick={() => handleOpenHistorial(prod.id)}
                         title="Ver historial de precios"
-                        className="p-1.5 text-slate-400 hover:text-sky-400 bg-slate-800 rounded-lg transition"
+                        className="p-1.5 text-[#7c6b64] hover:text-[#6f5249] bg-[#f6efe8] rounded-lg transition"
                       >
                         <History className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleOpenModal(prod)}
                         title="Editar producto"
-                        className="p-1.5 text-slate-400 hover:text-amber-400 bg-slate-800 rounded-lg transition"
+                        className="p-1.5 text-[#7c6b64] hover:text-[#8a6f5c] bg-[#f6efe8] rounded-lg transition"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(prod.id)}
                         title="Eliminar producto"
-                        className="p-1.5 text-slate-400 hover:text-rose-400 bg-slate-800 rounded-lg transition"
+                        className="p-1.5 text-[#7c6b64] hover:text-[#9f5d55] bg-[#f6efe8] rounded-lg transition"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -398,39 +408,39 @@ export default function ProductosPage() {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="glass-panel border border-slate-700 rounded-3xl max-w-3xl w-full p-6 relative shadow-2xl overflow-y-auto max-h-[90vh]">
+          <div className="glass-panel border border-[#d7c7c0] rounded-3xl max-w-3xl w-full p-6 relative shadow-2xl overflow-y-auto max-h-[90vh]">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-slate-800 rounded-full transition"
+              className="absolute top-4 right-4 p-2 text-[#7c6b64] hover:text-[#201816] bg-[#f6efe8] rounded-full transition"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <h3 className="text-xl font-bold text-white mb-4">
+            <h3 className="text-xl font-bold text-[#201816] mb-4">
               {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <label className="block text-slate-300 font-semibold mb-1">Nombre del Producto</label>
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Nombre del Producto</label>
                   <input
                     type="text"
                     required
                     value={formData.nombre}
                     onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-500"
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Marca</label>
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Marca</label>
                   <input
                     type="text"
                     required
                     value={formData.marca}
                     onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-500"
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f]"
                   />
                 </div>
 

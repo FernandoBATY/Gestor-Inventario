@@ -63,15 +63,15 @@ export default function ReportesPage() {
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-            <BarChart3 className="w-7 h-7 text-sky-400" /> Reportes del Sistema
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#201816] flex items-center gap-2">
+            <BarChart3 className="w-7 h-7 text-[#6f5249]" /> Reportes del Sistema
           </h1>
-          <p className="text-xs text-slate-400 mt-1">Generación y exportación de datos clave en formato ejecutable CSV / Excel.</p>
+          <p className="text-xs text-[#7c6b64] mt-1">Generación y exportación de datos clave en formato ejecutable CSV / Excel.</p>
         </div>
 
         <button
           onClick={exportCSV}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-600/25 flex items-center gap-2 transition"
+          className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] font-semibold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 flex items-center gap-2 transition"
         >
           <Download className="w-4 h-4" /> Exportar Reporte CSV
         </button>
@@ -91,8 +91,8 @@ export default function ReportesPage() {
               onClick={() => setReportType(tab.id as any)}
               className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition ${
                 reportType === tab.id
-                  ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/25'
-                  : 'bg-slate-900 text-slate-400 border border-slate-800 hover:text-slate-200'
+                  ? 'bg-[#2f1e18] text-[#fff8f4] shadow-lg shadow-[#2f1e18]/15'
+                  : 'bg-[#fffaf7] text-[#7c6b64] border border-[#d7c7c0] hover:bg-[#f6efe8]'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -103,24 +103,24 @@ export default function ReportesPage() {
       </div>
 
       {/* REPORT DATA TABLE */}
-      <div className="glass-panel border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+      <div className="glass-panel border border-[#d7c7c0] rounded-3xl overflow-hidden shadow-2xl">
         {loading ? (
-          <div className="p-12 text-center text-slate-400 text-xs">Generando informe...</div>
+          <div className="p-12 text-center text-[#7c6b64] text-xs">Generando informe...</div>
         ) : data.length === 0 ? (
-          <div className="p-12 text-center text-slate-500 text-xs">No hay datos disponibles para este reporte.</div>
+          <div className="p-12 text-center text-[#7c6b64] text-xs">No hay datos disponibles para este reporte.</div>
         ) : (
           <div className="overflow-x-auto max-h-[550px]">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900/80 text-slate-400 font-semibold border-b border-slate-800 sticky top-0">
+              <thead className="bg-[#f6efe8] text-[#7c6b64] font-semibold border-b border-[#d7c7c0] sticky top-0">
                 <tr>
                   {Object.keys(data[0]).map((key) => (
                     <th key={key} className="p-4 capitalize">{key.replace(/_/g, ' ')}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-300">
+              <tbody className="divide-y divide-[#e6d8d2] text-[#201816]">
                 {data.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-900/40 transition">
+                  <tr key={idx} className="hover:bg-[#f7f1ec] transition">
                     {Object.values(row).map((val: any, i) => (
                       <td key={i} className="p-4">
                         {typeof val === 'object' ? JSON.stringify(val) : String(val)}

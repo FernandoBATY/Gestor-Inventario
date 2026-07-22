@@ -82,8 +82,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-300 text-sm">
-        <div className="w-10 h-10 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mb-4" />
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-[#7c6b64] text-sm">
+        <div className="w-10 h-10 border-4 border-[#6f5249] border-t-transparent rounded-full animate-spin mb-4" />
         <p className="font-semibold">Verificando credenciales de Supabase Auth...</p>
       </div>
     );
@@ -99,37 +99,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <header className="sticky top-0 z-50 glass-panel border-b border-slate-800/80 backdrop-blur-xl">
-        <div className="px-4 lg:px-8 py-4 space-y-3">
+    <div className="min-h-screen bg-background text-[#201816] flex flex-col">
+      <header className="sticky top-0 z-50 glass-panel border-b border-[#d5c2bd] backdrop-blur-xl">
+        <div className="px-4 lg:px-8 py-4 space-y-3 max-w-[1200px] mx-auto w-full">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 via-sky-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-sky-500/20 shrink-0">
-                <BookOpen className="w-5 h-5 text-white" />
+              <div className="w-11 h-11 rounded-2xl bg-[#2f1e18] flex items-center justify-center shadow-lg shadow-[#2f1e18]/15 shrink-0">
+                <BookOpen className="w-5 h-5 text-[#fff8f4]" />
               </div>
               <div className="min-w-0">
-                <h2 className="font-extrabold text-base sm:text-lg tracking-tight text-white truncate">El Cuaderno Dorado</h2>
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-sky-400 font-semibold">
+                <h2 className="font-headline text-base sm:text-lg tracking-tight text-[#36160c] truncate">El Cuaderno Dorado</h2>
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#7c6b64] font-semibold">
                   <span>Panel Admin</span>
-                  {bajoStockCount > 0 && <span className="text-amber-400">Stock bajo: {bajoStockCount}</span>}
+                  {bajoStockCount > 0 && <span className="text-[#8a6f5c]">Stock bajo: {bajoStockCount}</span>}
                 </div>
               </div>
             </div>
 
             <div className="hidden sm:flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-slate-900/80 border border-slate-800">
-                <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-sky-400 shrink-0">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-[#f6efe8] border border-[#d7c7c0]">
+                <div className="w-8 h-8 rounded-full bg-[#efe3db] border border-[#d7c7c0] flex items-center justify-center font-bold text-xs text-[#6f5249] shrink-0">
                   <UserCheck className="w-4 h-4" />
                 </div>
                 <div className="max-w-44 overflow-hidden">
-                  <p className="text-[10px] font-bold text-slate-200 truncate">Usuario Activo</p>
-                  <p className="text-[10px] text-slate-400 truncate">{userEmail}</p>
+                  <p className="text-[10px] font-bold text-[#201816] truncate">Usuario Activo</p>
+                  <p className="text-[10px] text-[#7c6b64] truncate">{userEmail}</p>
                 </div>
               </div>
 
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center gap-2 py-2.5 px-4 rounded-2xl text-xs font-semibold text-slate-300 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-800 hover:border-rose-500/20 transition"
+                className="inline-flex items-center gap-2 py-2.5 px-4 rounded-2xl text-xs font-semibold text-[#7c6b64] hover:text-[#9f5d55] hover:bg-[#f8ecea] border border-[#d7c7c0] transition"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Cerrar Sesión</span>
@@ -147,8 +147,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   href={item.href}
                   className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl text-sm font-semibold transition whitespace-nowrap ${
                     isActive
-                      ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/25'
-                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/80 border border-transparent hover:border-slate-800'
+                      ? 'bg-[#2f1e18] text-[#fff8f4] shadow-lg shadow-[#2f1e18]/15'
+                      : 'text-[#7c6b64] hover:text-[#201816] hover:bg-[#f6efe8] border border-transparent hover:border-[#d7c7c0]'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -161,29 +161,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {bajoStockCount > 0 && (
             <Link
               href="/admin/productos"
-              className="flex items-center justify-between p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 transition group"
+              className="flex items-center justify-between p-3 rounded-2xl bg-[#f7efe5] border border-[#e1cfbd] text-[#8a6f5c] hover:bg-[#f3e4d9] transition group"
             >
               <div className="flex items-center gap-2 text-xs font-semibold">
-                <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse text-amber-400" />
+                <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse text-[#8a6f5c]" />
                 <span>Bajo stock en {bajoStockCount} producto(s)</span>
               </div>
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           )}
 
-          <div className="sm:hidden flex items-center justify-between gap-3 pt-1 border-t border-slate-800/70">
+          <div className="sm:hidden flex items-center justify-between gap-3 pt-1 border-t border-[#e6d8d2]/70">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-sky-400 shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#efe3db] border border-[#d7c7c0] flex items-center justify-center font-bold text-xs text-[#6f5249] shrink-0">
                 <UserCheck className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-bold text-slate-200 truncate">{userEmail}</p>
-                <p className="text-[10px] text-slate-500 truncate">Sesión activa</p>
+                <p className="text-[10px] font-bold text-[#201816] truncate">{userEmail}</p>
+                <p className="text-[10px] text-[#7c6b64] truncate">Sesión activa</p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold text-slate-300 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-800 transition"
+              className="inline-flex items-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold text-[#7c6b64] hover:text-[#9f5d55] hover:bg-[#f8ecea] border border-[#d7c7c0] transition"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Salir</span>
@@ -192,7 +192,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </header>
 
-      <main className="flex-1 min-w-0 p-4 lg:p-8 overflow-y-auto">
+      <main className="flex-1 min-w-0 p-4 lg:p-8 overflow-y-auto max-w-[1200px] w-full mx-auto">
         {children}
       </main>
     </div>

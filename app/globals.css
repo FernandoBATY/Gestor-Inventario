@@ -2,17 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500;600;700;800&family=Inter:wght@100..900&display=swap');
 
 :root {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --background: #fef8f6;
+  --foreground: #1d1b1a;
+  --font-heading: 'Source Serif 4', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+html {
+  background: radial-gradient(circle at top, #fff7f3 0%, #fef8f6 42%, #f2edeb 100%);
 }
 
 body {
   background-color: var(--background);
+  background-image: radial-gradient(circle at top left, rgba(242, 186, 168, 0.28), transparent 34%), radial-gradient(circle at top right, rgba(164, 207, 200, 0.22), transparent 28%);
   color: var(--foreground);
   font-family: var(--font-body);
   overflow-x: hidden;
@@ -24,25 +29,26 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Custom Glassmorphism */
 .glass-panel {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 248, 245, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(131, 116, 111, 0.16);
+  box-shadow: 0 18px 50px -30px rgba(49, 19, 8, 0.25);
 }
 
 .glass-card {
-  background: rgba(30, 41, 59, 0.5);
+  background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(213, 194, 189, 0.7);
   transition: all 0.25s ease-in-out;
 }
 
 .glass-card:hover {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: rgba(56, 189, 248, 0.3);
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(124, 165, 158, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.15);
+  box-shadow: 0 12px 30px -10px rgba(49, 19, 8, 0.12);
 }
 
 /* Custom Scrollbars */
@@ -51,14 +57,14 @@ h1, h2, h3, h4, h5, h6 {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #f2edeb;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #d5c2bd;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0284c7;
+  background: #83746f;
 }
 
 /* 80mm Thermal Print Styles */
