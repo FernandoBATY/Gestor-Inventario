@@ -7,14 +7,18 @@ import {
   Search, 
   LogIn, 
   BookOpen, 
-  Tag, 
-  Layers, 
-  CheckCircle2, 
-  AlertCircle,
   ShoppingBag,
   Sparkles,
-  Info
+  ShoppingCart,
+  Plus
 } from 'lucide-react';
+
+type CartItem = {
+  producto: Producto;
+  cantidad: number;
+};
+
+const CART_KEY = 'gestor-inventario-carrito';
 
 const NoPhoto = ({ text = 'Sin fotografía' }: { text?: string }) => (
   <div className="w-full h-full flex items-center justify-center bg-[#f2edeb] text-[#36160c] font-semibold text-sm text-center px-4">
@@ -29,11 +33,52 @@ export default function PublicStorefrontPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null);
+  const [priceLimit, setPriceLimit] = useState(500);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     fetchCatalog();
     fetchCategories();
+    updateCartCount();
+
+    const handleStorage = () => updateCartCount();
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
+
+  const updateCartCount = () => {
+    try {
+      const raw = window.localStorage.getItem(CART_KEY);
+      const cart = raw ? (JSON.parse(raw) as CartItem[]) : [];
+      setCartCount(cart.reduce((total, item) => total + item.cantidad, 0));
+    } catch {
+      setCartCount(0);
+    }
+  };
+
+  const addToTemporaryCart = (product: Producto) => {
+    const stock = Math.max(0, Number(product.unidades) || 0);
+    if (stock <= 0) return;
+
+    try {
+      const raw = window.localStorage.getItem(CART_KEY);
+      const cart = raw ? (JSON.parse(raw) as CartItem[]) : [];
+      const index = cart.findIndex((item) => item.producto.id === product.id);
+
+      if (index >= 0) {
+        if (cart[index].cantidad < stock) {
+          cart[index].cantidad += 1;
+        }
+      } else {
+        cart.push({ producto: product, cantidad: 1 });
+      }
+
+      window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      updateCartCount();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchCatalog = async () => {
     setLoading(true);
@@ -68,7 +113,8 @@ export default function PublicStorefrontPage() {
       p.marca.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.sku.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategoria === 'Todas' || p.categoria === selectedCategoria;
-    return matchesSearch && matchesCategory;
+    const price = Number(p.precio_venta) || 0;
+    return matchesSearch && matchesCategory && price >= 0 && price <= priceLimit;
   });
 
   return (
@@ -86,13 +132,26 @@ export default function PublicStorefrontPage() {
               </div>
             </div>
 
-            <Link
-              href="/admin/login"
-              className="inline-flex lg:hidden items-center gap-2 bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 transition-all"
-            >
-              <LogIn className="w-4 h-4" />
-              <span>Login</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/carrito"
+                className="relative inline-flex lg:hidden items-center gap-1.5 bg-[#fffaf7] hover:bg-[#f6efe8] text-[#201816] text-xs font-semibold px-3 py-2.5 rounded-xl shadow-lg border border-[#d7c7c0] transition-all"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#9f5d55] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/admin/login"
+                className="inline-flex items-center gap-2 bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 transition-all"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Iniciar sesión</span>
+              </Link>
+            </div>
           </div>
 
           <div className="flex-grow max-w-2xl lg:mx-lg hidden md:block">
@@ -119,18 +178,24 @@ export default function PublicStorefrontPage() {
             </div>
           </div>
 
-          <div className="hidden lg:flex items-center gap-6 text-sm font-semibold">
-            <a className="text-[#36160c]" href="#">Home</a>
-            <a className="text-[#7c6b64] hover:text-[#36160c] transition-colors" href="#">Brands</a>
-            <a className="text-[#7c6b64] hover:text-[#36160c] transition-colors" href="#">Orders</a>
-          </div>
-
           <div className="hidden lg:flex items-center gap-3">
+            <Link
+              href="/carrito"
+              className="relative inline-flex items-center gap-2 bg-[#fffaf7] hover:bg-[#f6efe8] text-[#201816] text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg border border-[#d7c7c0] transition-all"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span>Carrito</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#9f5d55] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
             <Link
               href="/admin/login"
               className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 transition-all"
             >
-              Login
+              Iniciar sesión
             </Link>
           </div>
         </div>
@@ -140,21 +205,22 @@ export default function PublicStorefrontPage() {
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-8 items-start">
           <aside className="glass-panel rounded-3xl p-6 border border-[#d7c7c0] sticky top-24">
             <div className="flex items-center justify-between border-b border-[#e6d8d2] pb-3">
-              <h2 className="font-headline text-2xl text-[#201816]">Filters</h2>
+              <h2 className="font-headline text-2xl text-[#201816]">Filtros</h2>
               <button
                 onClick={() => {
                   setSelectedCategoria('Todas');
                   setSearchQuery('');
+                  setPriceLimit(500);
                 }}
                 className="text-[#6f5249] text-xs font-semibold hover:underline"
               >
-                Clear All
+                Limpiar todo
               </button>
             </div>
 
             <div className="space-y-6 mt-5">
               <div className="space-y-2">
-                <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-[#83746f]">Category</h3>
+                <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-[#83746f]">Categoría</h3>
                 <div className="flex flex-wrap gap-2">
                   {categorias.map((cat) => (
                     <button
@@ -173,24 +239,29 @@ export default function PublicStorefrontPage() {
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-[#83746f]">Availability</h3>
+                <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-[#83746f]">Disponibilidad</h3>
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input className="rounded border-[#d7c7c0] text-[#2f1e18] focus:ring-[#f2baa8]/30 w-4 h-4" type="checkbox" />
-                  <span className="text-sm text-[#7c6b64]">Include Out of Stock</span>
+                  <span className="text-sm text-[#7c6b64]">Incluir agotados</span>
                 </label>
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-[#83746f]">Search</h3>
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 w-4 h-4 text-[#7c6b64]" />
+                <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-[#83746f]">Rango de Precios</h3>
+                <div className="flex items-center gap-3">
                   <input
-                    type="text"
-                    placeholder="Search premium tools..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl pl-10 pr-3 py-2.5 text-sm text-[#201816] placeholder:text-[#9a8a83] outline-none"
+                    type="range"
+                    min="0"
+                    max="500"
+                    value={priceLimit}
+                    onChange={(e) => setPriceLimit(Number(e.target.value))}
+                    className="w-full accent-[#2f1e18] h-2"
                   />
+                  <span className="text-sm font-semibold text-[#201816] min-w-[3rem] text-right">${priceLimit}</span>
+                </div>
+                <div className="flex justify-between text-xs text-[#7c6b64]">
+                  <span>$0</span>
+                  <span>$500</span>
                 </div>
               </div>
             </div>
@@ -200,18 +271,18 @@ export default function PublicStorefrontPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#d5c2bd] pb-4 mb-6">
               <div>
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0] mb-3">
-                  <Sparkles className="w-3.5 h-3.5" /> Premium Stationery Solutions
+                  <Sparkles className="w-3.5 h-3.5" /> Soluciones en Papelería
                 </span>
-                <h2 className="font-headline text-3xl sm:text-[36px] leading-tight text-[#201816]">Premium Catalog</h2>
-                <p className="text-sm text-[#7c6b64] mt-1">Showing {filteredProducts.length} of {productos.length} items</p>
+                <h2 className="font-headline text-3xl sm:text-[36px] leading-tight text-[#201816]">Catálogo Premium</h2>
+                <p className="text-sm text-[#7c6b64] mt-1">Mostrando {filteredProducts.length} de {productos.length} artículos</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-[#83746f]">Sort by:</span>
+                <span className="text-xs font-semibold text-[#83746f]">Ordenar por:</span>
                 <select className="bg-[#fffaf7] border border-[#d7c7c0] rounded-xl py-2 px-4 text-xs font-semibold text-[#7c6b64] outline-none">
-                  <option>Relevance</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
-                  <option>Newest Arrivals</option>
+                  <option>Relevancia</option>
+                  <option>Precio: Menor a Mayor</option>
+                  <option>Precio: Mayor a Menor</option>
+                  <option>Más recientes</option>
                 </select>
               </div>
             </div>
@@ -265,7 +336,7 @@ export default function PublicStorefrontPage() {
                     <div className="p-4 flex flex-col flex-grow">
                       <div className="flex justify-between items-start mb-2">
                         <span className="text-xs font-semibold uppercase tracking-wider text-[#83746f]">{prod.marca}</span>
-                        <span className="text-xs text-[#7f9b76] font-semibold">{prod.unidades > 0 ? 'IN STOCK' : 'AGOTADO'}</span>
+                        <span className="text-xs text-[#7f9b76] font-semibold">{prod.unidades > 0 ? 'DISPONIBLE' : 'AGOTADO'}</span>
                       </div>
                       <h4 className="font-headline text-2xl text-[#201816] mb-2 line-clamp-2 group-hover:text-[#6f5249] transition-colors">{prod.nombre}</h4>
                       <p className="text-sm text-[#7c6b64] mb-4 line-clamp-2">{prod.presentacion}</p>
@@ -274,12 +345,30 @@ export default function PublicStorefrontPage() {
                           <span className="font-headline text-2xl text-[#36160c]">${Number(prod.precio_venta).toFixed(2)}</span>
                           <span className={`text-[10px] font-bold flex items-center gap-1 ${prod.unidades > 0 ? 'text-[#7f9b76]' : 'text-[#8a6f5c]'}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${prod.unidades > 0 ? 'bg-[#7f9b76]' : 'bg-[#8a6f5c]'}`} />
-                            {prod.unidades > 0 ? 'IN STOCK' : 'LOW STOCK'}
+                            {prod.unidades > 0 ? 'DISPONIBLE' : 'STOCK BAJO'}
                           </span>
                         </div>
-                        <button className="w-full bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] py-2.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2">
-                          <ShoppingBag className="w-4 h-4" /> Ver detalle
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToTemporaryCart(prod);
+                            }}
+                            disabled={prod.unidades <= 0}
+                            className="flex-1 bg-[#2f1e18] hover:bg-[#412820] disabled:bg-[#c4b5ae] text-[#fff8f4] py-2.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2"
+                          >
+                            <Plus className="w-4 h-4" /> Agregar
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedProduct(prod);
+                            }}
+                            className="bg-[#fffaf7] hover:bg-[#f6efe8] text-[#201816] border border-[#d7c7c0] py-2.5 px-4 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2"
+                          >
+                            <ShoppingBag className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -288,7 +377,7 @@ export default function PublicStorefrontPage() {
             )}
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#d5c2bd] pt-5">
-              <p className="text-sm text-[#7c6b64]">Showing 1 to {Math.min(filteredProducts.length, 12)} of {filteredProducts.length} results</p>
+              <p className="text-sm text-[#7c6b64]">Mostrando 1 a {Math.min(filteredProducts.length, 12)} de {filteredProducts.length} resultados</p>
               <nav className="flex items-center gap-2">
                 <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all">‹</button>
                 <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#2f1e18] text-[#fff8f4] font-semibold">1</button>
@@ -366,35 +455,35 @@ export default function PublicStorefrontPage() {
               </div>
               <span className="font-headline text-xl">El Cuaderno Dorado</span>
             </div>
-            <p className="text-sm text-[#d9c8c0]">Sistema de catálogo y administración de papelería con enfoque premium y datos reales.</p>
+            <p className="text-sm text-[#d9c8c0]">Sistema de inventario.</p>
           </div>
           <div>
-            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Products</h5>
+            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Productos</h5>
             <ul className="space-y-2 text-sm text-[#d9c8c0]">
-              <li>Writing Instruments</li><li>Fine Paper</li><li>Desk Organization</li><li>Technical Tools</li>
+              <li>Instrumentos de Escritura</li><li>Papel Fino</li><li>Organización de Escritorio</li><li>Herramientas Técnicas</li>
             </ul>
           </div>
           <div>
-            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Company</h5>
+            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Empresa</h5>
             <ul className="space-y-2 text-sm text-[#d9c8c0]">
-              <li>About Us</li><li>Sustainability</li><li>Careers</li><li>Press</li>
+              <li>Sobre Nosotros</li><li>Sostenibilidad</li><li>Carreras</li><li>Prensa</li>
             </ul>
           </div>
           <div>
-            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Newsletter</h5>
-            <p className="text-sm text-[#d9c8c0] mb-3">Stay updated with our latest releases.</p>
+            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Boletín</h5>
+            <p className="text-sm text-[#d9c8c0] mb-3">Mantente al día con nuestros últimos lanzamientos.</p>
             <div className="flex">
-              <input className="bg-white/10 border border-white/15 rounded-l-lg px-4 py-2.5 w-full text-sm outline-none" placeholder="email@address.com" type="email" />
-              <button className="bg-[#f2baa8] text-[#2f1e18] px-4 py-2.5 rounded-r-lg font-semibold">Send</button>
+              <input className="bg-white/10 border border-white/15 rounded-l-lg px-4 py-2.5 w-full text-sm outline-none" placeholder="correo@ejemplo.com" type="email" />
+              <button className="bg-[#f2baa8] text-[#2f1e18] px-4 py-2.5 rounded-r-lg font-semibold">Enviar</button>
             </div>
           </div>
         </div>
         <div className="max-w-[1200px] mx-auto pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-[#d9c8c0]">
-          <p>© 2026 Papelería El Cuaderno Dorado. All rights reserved.</p>
+          <p>© 2026 Papelería El Cuaderno Dorado. Todos los derechos reservados.</p>
           <div className="flex gap-6">
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
-            <span>Accessibility</span>
+            <span>Aviso de Privacidad</span>
+            <span>Términos del Servicio</span>
+            <span>Accesibilidad</span>
           </div>
         </div>
       </footer>
