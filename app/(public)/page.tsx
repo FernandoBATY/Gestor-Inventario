@@ -368,15 +368,14 @@ export default function PublicStorefrontPage() {
                     <div className="p-4 flex flex-col flex-grow">
                       <div className="flex justify-between items-start mb-2">
                         <span className="text-xs font-semibold uppercase tracking-wider text-[#83746f]">{prod.marca}</span>
-                        <span className="text-xs text-[#7f9b76] font-semibold">{prod.unidades > 0 ? 'DISPONIBLE' : 'AGOTADO'}</span>
                       </div>
                       <h4 className="font-headline text-2xl text-[#201816] mb-2 line-clamp-2 group-hover:text-[#6f5249] transition-colors">{prod.nombre}</h4>
                       <p className="text-sm text-[#7c6b64] mb-4 line-clamp-2">{prod.presentacion}</p>
                       <div className="mt-auto space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="font-headline text-2xl text-[#36160c]">${Number(prod.precio_venta).toFixed(2)}</span>
-                          <span className={`text-[10px] font-bold flex items-center gap-1 ${prod.unidades > 0 ? 'text-[#7f9b76]' : 'text-[#8a6f5c]'}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${prod.unidades > 0 ? 'bg-[#7f9b76]' : 'bg-[#8a6f5c]'}`} />
+                          <span className={`text-[10px] font-bold flex items-center gap-1 ${prod.unidades > 0 ? 'text-[#16a34a]' : 'text-[#b91c1c]'}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${prod.unidades > 0 ? 'bg-[#16a34a]' : 'bg-[#b91c1c]'}`} />
                             {prod.unidades > 0 ? 'DISPONIBLE' : 'STOCK BAJO'}
                           </span>
                         </div>
@@ -466,7 +465,7 @@ export default function PublicStorefrontPage() {
             <div className="grid grid-cols-2 gap-2 my-3 bg-[#fffaf7] p-3 rounded-xl border border-[#d7c7c0] text-[11px]">
               <div><span className="text-[#7c6b64] block">Marca</span><span className="font-semibold text-[#201816]">{selectedProduct.marca}</span></div>
               <div><span className="text-[#7c6b64] block">Presentación</span><span className="font-semibold text-[#201816]">{selectedProduct.presentacion}</span></div>
-              <div className="col-span-2"><span className="text-[#7c6b64] block">Disponibilidad</span>{selectedProduct.unidades > 0 ? <span className="text-[#7f9b76] font-semibold">En existencia ({selectedProduct.unidades} uds)</span> : <span className="text-[#9f5d55] font-semibold">Sin existencias</span>}</div>
+              <div className="col-span-2"><span className="text-[#7c6b64] block">Disponibilidad</span>{selectedProduct.unidades > 0 ? <span className="text-[#16a34a] font-semibold">En existencia ({selectedProduct.unidades} uds)</span> : <span className="text-[#9f5d55] font-semibold">Sin existencias</span>}</div>
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-[#e6d8d2]">

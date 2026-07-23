@@ -132,6 +132,8 @@ CREATE TABLE IF NOT EXISTS ventas (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     folio VARCHAR(50) UNIQUE NOT NULL,
     total DECIMAL(10, 2) NOT NULL,
+    monto_recibido DECIMAL(10, 2) DEFAULT 0,
+    cambio DECIMAL(10, 2) DEFAULT 0,
     fecha TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -165,6 +167,32 @@ DROP POLICY IF EXISTS "Auth Manage Productos Storage" ON storage.objects;
 CREATE POLICY "Auth Manage Productos Storage" ON storage.objects 
 FOR ALL USING (bucket_id = 'productos');
 
+-- 7b. TABLA GASTOS
+CREATE TABLE IF NOT EXISTS gastos (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    descripcion VARCHAR(255) NOT NULL,
+    monto DECIMAL(10, 2) NOT NULL,
+    categoria VARCHAR(100) NOT NULL DEFAULT 'General',
+    fecha DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_gastos_fecha ON gastos(fecha);
+
+-- 7c. TABLA CORTES CAJA
+CREATE TABLE IF NOT EXISTS cortes_caja (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    fecha_apertura TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    fecha_cierre TIMESTAMP WITH TIME ZONE,
+    fondo_inicial DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    ingresos DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    egresos DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    total_esperado DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    total_real DECIMAL(10, 2),
+    diferencia DECIMAL(10, 2),
+    estado VARCHAR(20) NOT NULL DEFAULT 'Abierto' CHECK (estado IN ('Abierto', 'Cerrado'))
+);
+
 -- 8. ROW LEVEL SECURITY (RLS)
 ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE historial_precios ENABLE ROW LEVEL SECURITY;
@@ -190,3 +218,11 @@ CREATE POLICY "Permitir todo a ventas" ON ventas FOR ALL USING (true);
 
 DROP POLICY IF EXISTS "Permitir todo a detalle_ventas" ON detalle_ventas;
 CREATE POLICY "Permitir todo a detalle_ventas" ON detalle_ventas FOR ALL USING (true);
+
+ALTER TABLE gastos ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Permitir todo a gastos" ON gastos;
+CREATE POLICY "Permitir todo a gastos" ON gastos FOR ALL USING (true);
+
+ALTER TABLE cortes_caja ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Permitir todo a cortes_caja" ON cortes_caja;
+CREATE POLICY "Permitir todo a cortes_caja" ON cortes_caja FOR ALL USING (true);

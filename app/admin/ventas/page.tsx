@@ -29,6 +29,8 @@ export default function VentasPOSPage() {
   const [completedVenta, setCompletedVenta] = useState<Venta | null>(null);
   const [loading, setLoading] = useState(false);
   const [showHistorialModal, setShowHistorialModal] = useState(false);
+  const [montoRecibido, setMontoRecibido] = useState('');
+  const [refundingId, setRefundingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProductos();
@@ -104,6 +106,7 @@ export default function VentasPOSPage() {
           producto_id: item.producto.id,
           cantidad: item.cantidad,
         })),
+        monto_recibido: Number(montoRecibido) || 0,
       };
 
       const res = await fetch('/api/ventas', {
@@ -116,6 +119,7 @@ export default function VentasPOSPage() {
         const venta = await res.json();
         setCompletedVenta(venta);
         setCart([]);
+        setMontoRecibido('');
         fetchProductos();
         fetchVentasHistorial();
       }
@@ -132,6 +136,28 @@ export default function VentasPOSPage() {
       p.sku.toLowerCase().includes(search.toLowerCase()) ||
       p.marca.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleRefund = async (ventaId: string) => {
+    if (!confirm('¿Revertir esta venta? El stock será restaurado y la venta se eliminará.')) return;
+    setRefundingId(ventaId);
+    try {
+      const res = await fetch('/api/devoluciones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ venta_id: ventaId }),
+      });
+      if (res.ok) {
+        fetchVentasHistorial();
+        fetchProductos();
+      } else {
+        alert('Error al procesar devolución');
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefundingId(null);
+    }
+  };
 
   const NoPhoto = () => (
     <div className="w-full h-24 rounded-lg bg-[#f2edeb] border border-[#d7c7c0] mb-2 flex items-center justify-center text-xs text-[#6f5249] font-semibold">
@@ -272,6 +298,35 @@ export default function VentasPOSPage() {
               <span className="text-2xl sm:text-3xl font-black text-[#2f5f4d] break-all">${totalCart.toFixed(2)} MXN</span>
             </div>
 
+            <div className="mb-3">
+              <label className="block text-xs font-semibold text-[#7c6b64] mb-1">Efectivo recibido</label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-[#7c6b64]">$</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={montoRecibido}
+                  onChange={(e) => setMontoRecibido(e.target.value)}
+                  placeholder="0.00"
+                  className="flex-1 bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-sm text-[#201816] outline-none focus:border-[#9d7b6f]"
+                />
+              </div>
+            </div>
+
+            {Number(montoRecibido) > 0 && totalCart > 0 && Number(montoRecibido) < totalCart && (
+              <div className="flex justify-between items-center mb-4 p-3 rounded-xl bg-[#f8ecea] border border-[#e2c8c4]">
+                <span className="text-xs font-semibold text-[#b91c1c]">FALTAN</span>
+                <span className="text-xl font-black text-[#b91c1c]">${(totalCart - Number(montoRecibido)).toFixed(2)} MXN</span>
+              </div>
+            )}
+            {Number(montoRecibido) >= totalCart && totalCart > 0 && (
+              <div className="flex justify-between items-center mb-4 p-3 rounded-xl bg-[#edf6f1] border border-[#cfe0d8]">
+                <span className="text-xs font-semibold text-[#2f5f4d]">CAMBIO</span>
+                <span className="text-xl font-black text-[#2f5f4d]">${(Number(montoRecibido) - totalCart).toFixed(2)} MXN</span>
+              </div>
+            )}
+
             <button
               onClick={handleCheckout}
               disabled={cart.length === 0 || loading}
@@ -324,7 +379,14 @@ export default function VentasPOSPage() {
                       }}
                       className="p-1.5 bg-[#f6efe8] hover:bg-[#efe3db] text-[#6f5249] rounded-lg flex items-center gap-1 transition font-semibold"
                     >
-                      <Printer className="w-3.5 h-3.5" /> Reimprimir
+                      <Printer className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleRefund(v.id)}
+                      disabled={refundingId === v.id}
+                      className="p-1.5 bg-[#f8ecea] hover:bg-[#f3d6d1] text-[#b91c1c] rounded-lg flex items-center gap-1 transition font-semibold disabled:opacity-50"
+                    >
+                      <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>

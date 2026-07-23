@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { mockStore } from '@/lib/mockStore';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const fechaInicio = searchParams.get('fechaInicio') || '';
+    const fechaFin = searchParams.get('fechaFin') || '';
+
     const supabase = getSupabaseServerClient();
     if (supabase) {
       const todayStr = new Date().toISOString().slice(0, 10);
@@ -20,14 +24,22 @@ export async function GET() {
         .from('productos')
         .select('id, nombre, marca, categoria, precio_compra, precio_venta, unidades, sku, stock_minimo, fotografia');
 
-      const { data: ventasLight } = await supabase
-        .from('ventas')
-        .select('fecha, total');
+      let ventasQuery = supabase.from('ventas').select('fecha, total');
+      if (fechaInicio) ventasQuery = ventasQuery.gte('fecha', fechaInicio);
+      if (fechaFin) ventasQuery = ventasQuery.lte('fecha', `${fechaFin}T23:59:59`);
+      const { data: ventasLight } = await ventasQuery;
 
-      const { data: ventasDetalles } = await supabase
-        .from('ventas')
-        .select('fecha, total, detalle_ventas(nombre_producto, cantidad, subtotal)')
-        .gte('fecha', last90Days.toISOString().slice(0, 10));
+      let detQuery = supabase.from('ventas').select('fecha, total, detalle_ventas(nombre_producto, cantidad, subtotal)');
+      if (fechaInicio) detQuery = detQuery.gte('fecha', fechaInicio);
+      if (fechaFin) detQuery = detQuery.lte('fecha', `${fechaFin}T23:59:59`);
+      if (!fechaInicio && !fechaFin) detQuery = detQuery.gte('fecha', last90Days.toISOString().slice(0, 10));
+      const { data: ventasDetalles } = await detQuery;
+
+      let gastosQuery = supabase.from('gastos').select('monto');
+      if (fechaInicio) gastosQuery = gastosQuery.gte('fecha', fechaInicio);
+      if (fechaFin) gastosQuery = gastosQuery.lte('fecha', `${fechaFin}T23:59:59`);
+      const { data: gastosData } = await gastosQuery;
+      const totalGastos = (gastosData || []).reduce((s: number, g: any) => s + Number(g.monto), 0);
 
       if (prods && ventasLight) {
         let ventasDia = 0;
@@ -72,10 +84,14 @@ export async function GET() {
         const precioVentaTotal = prods.reduce((sum, p) => sum + (Number(p.precio_venta) || 0) * (Number(p.unidades) || 0), 0);
         const gananciaPotencial = precioVentaTotal - costoTotalInventario;
 
+        const gananciaReal = totalVendido - totalGastos;
+
         return NextResponse.json({
           ventasDia,
           ventasMes,
           totalVendido,
+          totalGastos,
+          gananciaReal,
           productosBajoStockCount: productosBajoStock.length,
           productosBajoStock,
           totalProductos: prods.length,
@@ -120,7 +136,7 @@ export async function GET() {
     const gananciaPotencial = precioVentaTotal - costoTotalInventario;
 
     return NextResponse.json({
-      ventasDia, ventasMes, totalVendido,
+      ventasDia, ventasMes, totalVendido, totalGastos: 0, gananciaReal: totalVendido,
       productosBajoStockCount: productosBajoStock.length,
       productosBajoStock, totalProductos: prods.length,
       totalVentasCount, totalCategorias, ticketPromedio,

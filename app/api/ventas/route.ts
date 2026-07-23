@@ -27,7 +27,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { detalles } = body; // Array of { producto_id, cantidad }
+    const { detalles, monto_recibido } = body; // Array of { producto_id, cantidad }
 
     if (!detalles || !Array.isArray(detalles) || detalles.length === 0) {
       return NextResponse.json({ error: 'Debe incluir al menos un producto en la venta' }, { status: 400 });
@@ -74,10 +74,12 @@ export async function POST(request: Request) {
       }
 
       const folio = `VEN-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const recibido = Math.max(0, Number(monto_recibido) || 0);
+      const cambio = recibido > 0 ? Math.max(0, recibido - totalVenta) : 0;
 
       const { data: ventaCreated, error: ventaErr } = await supabase
         .from('ventas')
-        .insert([{ folio, total: totalVenta }])
+        .insert([{ folio, total: totalVenta, monto_recibido: recibido, cambio }])
         .select()
         .single();
 

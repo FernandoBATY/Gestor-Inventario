@@ -15,7 +15,6 @@ import {
   ChevronRight,
   Ticket,
   Package,
-  Target
 } from 'lucide-react';
 import ChartsWrapper from '@/components/dashboard/ChartsWrapper';
 
@@ -28,14 +27,21 @@ const moneyFormatter = new Intl.NumberFormat('es-MX', {
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
 
   useEffect(() => {
     fetchDashboard();
   }, []);
 
-  const fetchDashboard = async () => {
+  const fetchDashboard = async (inicio?: string, fin?: string) => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/dashboard');
+      const params = new URLSearchParams();
+      if (inicio) params.set('fechaInicio', inicio);
+      if (fin) params.set('fechaFin', fin);
+      const qs = params.toString();
+      const res = await fetch(`/api/dashboard${qs ? `?${qs}` : ''}`);
       if (res.ok) {
         const data = await res.json();
         setStats(data);
@@ -45,6 +51,16 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFilterDates = () => {
+    fetchDashboard(fechaInicio, fechaFin);
+  };
+
+  const handleClearDates = () => {
+    setFechaInicio('');
+    setFechaFin('');
+    fetchDashboard();
   };
 
   const barChartData = stats?.ventasUltimos7Dias?.map((item: any) => ({
@@ -77,6 +93,18 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3">
+        <Calendar className="w-4 h-4 text-[#6f5249] shrink-0" />
+        <span className="text-xs font-semibold text-[#7c6b64] shrink-0">Filtrar por fecha:</span>
+        <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} className="w-full sm:w-auto bg-[#fffaf7] border border-[#d7c7c0] rounded-xl px-3 py-2 text-xs text-[#201816] outline-none focus:border-[#9d7b6f]" />
+        <span className="text-xs text-[#7c6b64]">a</span>
+        <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} className="w-full sm:w-auto bg-[#fffaf7] border border-[#d7c7c0] rounded-xl px-3 py-2 text-xs text-[#201816] outline-none focus:border-[#9d7b6f]" />
+        <button onClick={handleFilterDates} className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-4 py-2 rounded-xl transition">Aplicar</button>
+        {(fechaInicio || fechaFin) && (
+          <button onClick={handleClearDates} className="text-xs font-semibold text-[#7c6b64] hover:text-[#201816] transition">Limpiar</button>
+        )}
+      </div>
+
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
           {[...Array(6)].map((_, i) => (
@@ -95,7 +123,7 @@ export default function DashboardPage() {
             <div className="mt-3">
               <span className="text-3xl font-black text-[#201816]">{moneyFormatter.format(Number(stats?.ventasDia || 0))}</span>
             </div>
-            <div className="mt-2 flex items-center gap-1 text-[11px] text-[#7f9b76]">
+            <div className="mt-2 flex items-center gap-1 text-[11px] text-[#16a34a]">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>Actualizado hace unos momentos</span>
             </div>
@@ -141,7 +169,7 @@ export default function DashboardPage() {
             <div className="mt-3">
               <span className="text-3xl font-black text-[#6f5249]">{stats?.productosBajoStockCount || 0}</span>
             </div>
-            <div className="mt-2 text-[11px] text-[#8a6f5c]">
+            <div className="mt-2 text-[11px] text-[#b91c1c] font-semibold">
               Requieren reabastecimiento urgente
             </div>
           </div>
@@ -199,53 +227,31 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-3xl font-black text-[#7f9b76]">{moneyFormatter.format(Number(stats?.gananciaPotencial || 0))}</span>
+              <span className="text-3xl font-black text-[#16a34a]">{moneyFormatter.format(Number(stats?.gananciaPotencial || 0))}</span>
             </div>
             <div className="mt-2 text-[11px] text-[#7c6b64]">
               Utilidad estimada si se vende todo el inventario
             </div>
           </div>
-        </div>
-      )}
 
-      {stats && (
-        <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-6">
-          <h3 className="font-extrabold text-base text-[#201816] mb-1 flex items-center gap-2">
-            <Target className="w-4 h-4 text-[#6f5249]" /> Meta vs Realidad
-          </h3>
-          <p className="text-xs text-[#7c6b64] mb-4">Comparativa del total vendido contra la ganancia potencial del inventario actual</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[#f6efe8] rounded-2xl p-5 border border-[#dbc9c2]">
-              <span className="text-xs font-semibold text-[#7c6b64] block">Total Vendido (Real)</span>
-              <span className="text-3xl font-black text-[#201816]">{moneyFormatter.format(Number(stats?.totalVendido || 0))}</span>
-              <div className="mt-2 h-3 rounded-full bg-[#e6d8d2] overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-[#2f1e18] transition-all"
-                  style={{ width: `${Math.min(100, (Number(stats?.totalVendido || 0) / Math.max(1, Number(stats?.gananciaPotencial || 1))) * 100)}%` }}
-                />
+          <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#7c6b64]">Ganancia Real</span>
+              <div className="w-9 h-9 rounded-xl bg-[#edf6f1] text-[#2f5f4d] flex items-center justify-center border border-[#cfe0d8]">
+                <DollarSign className="w-5 h-5" />
               </div>
-              <p className="text-[11px] text-[#7c6b64] mt-1">
-                {stats?.gananciaPotencial > 0
-                  ? `${((Number(stats?.totalVendido || 0) / Number(stats?.gananciaPotencial || 1)) * 100).toFixed(1)}% de la meta potencial`
-                  : 'Sin datos de meta'}
-              </p>
             </div>
-            <div className="bg-[#f6efe8] rounded-2xl p-5 border border-[#dbc9c2]">
-              <span className="text-xs font-semibold text-[#7c6b64] block">Ganancia Potencial (Meta)</span>
-              <span className="text-3xl font-black text-[#7f9b76]">{moneyFormatter.format(Number(stats?.gananciaPotencial || 0))}</span>
-              <div className="mt-2 h-3 rounded-full bg-[#e6d8d2] overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-[#7f9b76] transition-all"
-                  style={{ width: `${Math.min(100, (Number(stats?.gananciaPotencial || 0) / Math.max(1, Number(stats?.precioVentaTotal || 1))) * 100)}%` }}
-                />
-              </div>
-              <p className="text-[11px] text-[#7c6b64] mt-1">
-                {((Number(stats?.gananciaPotencial || 0) / Math.max(1, Number(stats?.precioVentaTotal || 1))) * 100).toFixed(1)}% de margen sobre precio de venta
-              </p>
+            <div className="mt-3">
+              <span className="text-3xl font-black text-[#2f5f4d]">{moneyFormatter.format(Number(stats?.gananciaReal || 0))}</span>
+            </div>
+            <div className="mt-2 text-[11px] text-[#7c6b64]">
+              Ventas ({moneyFormatter.format(Number(stats?.totalVendido || 0))}) - Gastos ({moneyFormatter.format(Number(stats?.totalGastos || 0))})
             </div>
           </div>
         </div>
       )}
+
+
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 glass-panel border border-[#d7c7c0] rounded-3xl p-6">
@@ -267,7 +273,7 @@ export default function DashboardPage() {
 
           {stats?.productosBajoStock?.length === 0 ? (
             <div className="p-8 text-center bg-[#f6efe8] rounded-2xl border border-[#dbc9c2]">
-              <PackageCheck className="w-10 h-10 text-[#7f9b76] mx-auto mb-2" />
+              <PackageCheck className="w-10 h-10 text-[#16a34a] mx-auto mb-2" />
               <p className="font-semibold text-sm text-[#201816]">¡Inventario en excelente estado!</p>
               <p className="text-xs text-[#7c6b64]">Todos los productos superan su nivel de stock mínimo.</p>
             </div>

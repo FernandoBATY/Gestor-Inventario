@@ -7,7 +7,8 @@ import {
   AlertTriangle,
   Package,
   ShoppingBag,
-  FileSpreadsheet
+  FileSpreadsheet,
+  FileText
 } from 'lucide-react';
 
 type ReportType = 'inventario' | 'bajoStock' | 'ventas';
@@ -127,6 +128,59 @@ export default function ReportesPage() {
     }
   }, []);
 
+  const exportPDF = useCallback(async (type: ReportType) => {
+    setExporting(type);
+    try {
+      let exportData: any[];
+      if (type === 'inventario') {
+        const res = await fetch('/api/productos');
+        exportData = res.ok ? await res.json() : [];
+      } else if (type === 'bajoStock') {
+        const res = await fetch('/api/productos/bajo-stock');
+        exportData = res.ok ? await res.json() : [];
+      } else {
+        const res = await fetch('/api/ventas');
+        exportData = res.ok ? await res.json() : [];
+      }
+
+      if (!exportData.length) return;
+
+      const cfg = REPORT_CONFIG[type];
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) return;
+      printWindow.document.write(`
+        <html><head><title>${cfg.label}</title>
+        <style>
+          @page { size: letter; margin: 15mm; }
+          body { font-family: Arial, sans-serif; font-size: 11px; color: #000; padding: 20px; }
+          h1 { font-size: 16px; margin-bottom: 5px; }
+          p { font-size: 10px; color: #555; margin-bottom: 15px; }
+          table { width: 100%; border-collapse: collapse; font-size: 10px; }
+          th { background: #f0ebe7; padding: 6px 4px; text-align: left; border: 1px solid #ccc; }
+          td { padding: 4px; border: 1px solid #ddd; }
+          .footer { margin-top: 20px; font-size: 9px; color: #999; text-align: center; }
+        </style></head><body>
+        <h1>${cfg.label}</h1>
+        <p>Generado el ${new Date().toLocaleString('es-MX')}</p>
+        <table><thead><tr>${cfg.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${exportData.map(row => `<tr>${cfg.fields.map(f => {
+          let val = row[f];
+          if ((f.includes('precio') || f === 'total') && typeof val === 'number') val = `$${val.toFixed(2)}`;
+          if (f === 'fecha' && val) val = new Date(val).toLocaleString('es-MX');
+          return `<td>${val ?? ''}</td>`;
+        }).join('')}</tr>`).join('')}</tbody></table>
+        <div class="footer">Papelería - Sistema de Inventario</div>
+        <script>window.onload=function(){window.print();window.close()};</script>
+        </body></html>
+      `);
+      printWindow.document.close();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setExporting(null);
+    }
+  }, []);
+
   const config = REPORT_CONFIG[reportType];
 
   return (
@@ -181,14 +235,24 @@ export default function ReportesPage() {
                   </span>
                 ))}
               </div>
-              <button
-                onClick={() => exportCSV(id)}
-                disabled={exporting !== null}
-                className="w-full bg-[#2f1e18] hover:bg-[#412820] disabled:bg-[#c4b5ae] text-[#fff8f4] font-semibold text-xs py-2.5 rounded-xl flex items-center justify-center gap-2 transition"
-              >
-                <Download className="w-4 h-4" />
-                {exporting === id ? 'Exportando...' : 'Descargar CSV'}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => exportCSV(id)}
+                  disabled={exporting !== null}
+                  className="flex-1 bg-[#2f1e18] hover:bg-[#412820] disabled:bg-[#c4b5ae] text-[#fff8f4] font-semibold text-xs py-2.5 rounded-xl flex items-center justify-center gap-2 transition"
+                >
+                  <FileSpreadsheet className="w-4 h-4" />
+                  {exporting === id ? 'Exportando...' : 'CSV'}
+                </button>
+                <button
+                  onClick={() => exportPDF(id)}
+                  disabled={exporting !== null}
+                  className="flex-1 bg-[#6f5249] hover:bg-[#5a4139] disabled:bg-[#c4b5ae] text-[#fff8f4] font-semibold text-xs py-2.5 rounded-xl flex items-center justify-center gap-2 transition"
+                >
+                  <FileText className="w-4 h-4" />
+                  {exporting === id ? 'Exportando...' : 'PDF'}
+                </button>
+              </div>
             </div>
           );
         })}

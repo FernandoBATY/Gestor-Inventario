@@ -45,8 +45,32 @@ export interface Venta {
   id: string;
   folio: string;
   total: number;
+  monto_recibido?: number;
+  cambio?: number;
   fecha: string;
   detalles?: DetalleVenta[];
+}
+
+export interface Gasto {
+  id?: string;
+  descripcion: string;
+  monto: number;
+  categoria: string;
+  fecha: string;
+  created_at?: string;
+}
+
+export interface CorteCaja {
+  id?: string;
+  fecha_apertura: string;
+  fecha_cierre?: string;
+  fondo_inicial: number;
+  ingresos: number;
+  egresos: number;
+  total_esperado: number;
+  total_real?: number;
+  diferencia?: number;
+  estado: 'Abierto' | 'Cerrado';
 }
 
 export interface DetalleVenta {

@@ -73,7 +73,6 @@ export default function CarritoPage() {
 
   const total = cart.reduce((sum, item) => sum + Number(item.producto.precio_venta || 0) * item.cantidad, 0);
   const itemsCount = cart.reduce((sum, item) => sum + item.cantidad, 0);
-  const availableEstimate = cart.reduce((sum, item) => sum + Math.min(item.cantidad, Number(item.producto.unidades) || 0), 0);
 
   return (
     <div className="min-h-screen bg-background text-[#201816]">
@@ -211,10 +210,7 @@ export default function CarritoPage() {
                 <span className="text-[#7c6b64]">Artículos en carrito</span>
                 <span className="font-semibold text-[#201816]">{itemsCount}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[#7c6b64]">Unidades estimadas</span>
-                <span className="font-semibold text-[#201816]">{availableEstimate}</span>
-              </div>
+
               <div className="flex items-center justify-between pt-3 border-t border-[#e6d8d2]">
                 <span className="text-[#7c6b64]">Total aproximado</span>
                 <span className="font-headline text-3xl text-[#36160c]">{moneyFormatter.format(total)}</span>

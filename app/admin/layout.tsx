@@ -3,18 +3,20 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Package, 
-  Boxes, 
-  ShoppingCart, 
-  BarChart3, 
-  Database, 
+import {
+  LayoutDashboard,
+  Package,
+  Boxes,
+  ShoppingCart,
+  BarChart3,
+  Database,
   LogOut,
   AlertTriangle,
   BookOpen,
   ChevronRight,
-  UserCheck
+  UserCheck,
+  Receipt,
+  Wallet,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -94,6 +96,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Productos', href: '/admin/productos', icon: Package },
     { name: 'Inventario', href: '/admin/inventario', icon: Boxes },
     { name: 'Punto de Venta', href: '/admin/ventas', icon: ShoppingCart },
+    { name: 'Egresos', href: '/admin/egresos', icon: Receipt },
+    { name: 'Cortes', href: '/admin/cortes', icon: Wallet },
     { name: 'Reportes', href: '/admin/reportes', icon: BarChart3 },
     { name: 'Backup y Datos', href: '/admin/configuracion', icon: Database },
   ];
@@ -109,10 +113,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
               <div className="min-w-0">
                 <h2 className="font-headline text-base sm:text-lg tracking-tight text-[#36160c] truncate">Papelería</h2>
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#7c6b64] font-semibold">
-                  <span>Panel Admin</span>
-                  {bajoStockCount > 0 && <span className="text-[#8a6f5c]">Stock bajo: {bajoStockCount}</span>}
-                </div>
+                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#7c6b64] font-semibold">
+                    <span>Panel Admin</span>
+                  </div>
               </div>
             </div>
 
@@ -165,10 +168,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {bajoStockCount > 0 && (
             <Link
               href="/admin/productos"
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#f7efe5] border border-[#e1cfbd] text-[#8a6f5c] hover:bg-[#f3e4d9] transition group"
+              className="flex items-center justify-between p-3 rounded-2xl bg-[#fee2e2] border border-[#fecaca] text-[#b91c1c] hover:bg-[#fecaca] transition group"
             >
               <div className="flex items-center gap-2 text-xs font-semibold">
-                <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse text-[#8a6f5c]" />
+                <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse text-[#b91c1c]" />
                 <span>Bajo stock en {bajoStockCount} producto(s)</span>
               </div>
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

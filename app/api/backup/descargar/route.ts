@@ -16,6 +16,9 @@ export async function GET() {
       const { data: ventas } = await supabase.from('ventas').select('*');
       const { data: detalles } = await supabase.from('detalle_ventas').select('*');
       const { data: historial } = await supabase.from('historial_precios').select('*');
+      const { data: gastos } = await supabase.from('gastos').select('*');
+      const { data: cortes } = await supabase.from('cortes_caja').select('*');
+      const { data: negocio } = await supabase.from('negocio_config').select('*');
 
       backupData = {
         timestamp: new Date().toISOString(),
@@ -24,6 +27,9 @@ export async function GET() {
         ventas: ventas || [],
         detalle_ventas: detalles || [],
         historial_precios: historial || [],
+        gastos: gastos || [],
+        cortes_caja: cortes || [],
+        negocio_config: negocio || [],
       };
     } else {
       backupData = {
