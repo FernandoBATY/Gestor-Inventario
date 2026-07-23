@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  DollarSign, 
-  TrendingUp, 
-  ShoppingBag, 
-  AlertTriangle, 
+import {
+  DollarSign,
+  TrendingUp,
+  ShoppingBag,
+  AlertTriangle,
   PackageCheck,
   ArrowUpRight,
   Sparkles,
@@ -14,12 +14,32 @@ import {
   Layers,
   ChevronRight
 } from 'lucide-react';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+  LineChart, Line
+} from 'recharts';
 
 const moneyFormatter = new Intl.NumberFormat('es-MX', {
   style: 'currency',
   currency: 'MXN',
   minimumFractionDigits: 2,
 });
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="glass-panel border border-[#d7c7c0] rounded-xl px-4 py-3 text-xs shadow-xl">
+        <p className="font-semibold text-[#201816] mb-1">{label}</p>
+        {payload.map((entry: any, idx: number) => (
+          <p key={idx} style={{ color: entry.color }} className="font-medium">
+            {entry.name}: {entry.name === 'Ventas' ? moneyFormatter.format(entry.value) : entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
@@ -43,9 +63,19 @@ export default function DashboardPage() {
     }
   };
 
+  const barChartData = stats?.ventasUltimos7Dias?.map((item: any) => ({
+    fecha: new Date(item.fecha).toLocaleDateString('es-MX', { weekday: 'short', day: '2-digit' }),
+    Ventas: Number(item.total) || 0,
+  })) || [];
+
+  const topProductsData = stats?.productosMasVendidos?.map((item: any) => ({
+    nombre: item.nombre.length > 18 ? item.nombre.substring(0, 18) + '...' : item.nombre,
+    Unidades: item.cantidad,
+    Total: Number(item.total) || 0,
+  })) || [];
+
   return (
     <div className="space-y-8">
-      {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#e8ddd7] text-[#6f5249] border border-[#d3c1b8] mb-2">
@@ -54,7 +84,6 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-extrabold tracking-tight text-[#201816]">Dashboard Principal</h1>
           <p className="text-xs text-[#7c6b64] mt-1">Estadísticas clave, ingresos y control de inventario en tiempo real.</p>
         </div>
-
         <div className="flex items-center gap-3">
           <Link
             href="/admin/ventas"
@@ -65,7 +94,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* KPI STAT CARDS */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[...Array(4)].map((_, i) => (
@@ -74,7 +102,6 @@ export default function DashboardPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-          {/* CARD 1: VENTAS DEL DIA */}
           <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-[#7c6b64]">Ventas del Día</span>
@@ -91,7 +118,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* CARD 2: VENTAS DEL MES */}
           <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-[#7c6b64]">Ventas del Mes</span>
@@ -107,7 +133,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* CARD 3: TOTAL VENDIDO */}
           <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-[#7c6b64]">Total Vendido</span>
@@ -202,7 +227,7 @@ export default function DashboardPage() {
                     <img
                       src={prod.fotografia}
                       alt={prod.nombre}
-                      className="w-10 h-10 rounded-lg object-cover bg-slate-900 border border-slate-800"
+                      className="w-10 h-10 rounded-lg object-cover bg-[#f2edeb] border border-[#d7c7c0]"
                       onError={(event) => {
                         const target = event.currentTarget as HTMLImageElement;
                         target.style.display = 'none';
@@ -213,7 +238,6 @@ export default function DashboardPage() {
                       <span className="text-[11px] text-[#7c6b64]">{prod.marca} • SKU: {prod.sku}</span>
                     </div>
                   </div>
-
                   <div className="text-right">
                     <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0]">
                       {prod.unidades} uds disponibles
@@ -231,7 +255,6 @@ export default function DashboardPage() {
             <h3 className="font-extrabold text-base text-[#201816] mb-4 flex items-center gap-2">
               <Layers className="w-4 h-4 text-[#6f5249]" /> Resumen del Sistema
             </h3>
-
             <div className="space-y-4">
               <div className="p-4 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] flex items-center justify-between">
                 <div>
@@ -242,7 +265,6 @@ export default function DashboardPage() {
                   <ArrowUpRight className="w-5 h-5" />
                 </Link>
               </div>
-
               <div className="p-4 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] flex items-center justify-between">
                 <div>
                   <span className="text-xs text-[#7c6b64] block">Ventas Registradas</span>
@@ -252,7 +274,6 @@ export default function DashboardPage() {
                   <ArrowUpRight className="w-5 h-5" />
                 </Link>
               </div>
-
               <div className="p-4 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2]">
                 <div className="flex items-center justify-between mb-3">
                   <div>
@@ -266,62 +287,50 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-
-          <div className="mt-6 pt-4 border-t border-slate-800/80 text-center">
-            <p className="text-[11px] text-slate-400">Servidor Node.js API & Base de datos Supabase activos</p>
+          <div className="mt-6 pt-4 border-t border-[#e6d8d2] text-center">
+            <p className="text-[11px] text-[#7c6b64]">Servidor Node.js API & Base de datos Supabase activos</p>
           </div>
         </div>
 
-        <div className="glass-panel border border-slate-800/80 rounded-3xl p-6">
-          <h3 className="font-extrabold text-base text-white mb-4 flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-emerald-400" /> Productos más vendidos
+        <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-6">
+          <h3 className="font-extrabold text-base text-[#201816] mb-4 flex items-center gap-2">
+            <ShoppingBag className="w-4 h-4 text-[#6f5249]" /> Productos más vendidos
           </h3>
 
-          {stats?.productosMasVendidos?.length ? (
-            <div className="space-y-3">
-              {stats.productosMasVendidos.map((item: any, index: number) => (
-                <div key={`${item.nombre}-${index}`} className="p-3 rounded-2xl bg-slate-900/60 border border-slate-800">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="font-semibold text-slate-100 text-sm">{item.nombre}</p>
-                      <p className="text-[11px] text-slate-500">{item.cantidad} unidades vendidas</p>
-                    </div>
-                    <span className="text-sm font-bold text-emerald-400">{moneyFormatter.format(Number(item.total || 0))}</span>
-                  </div>
-                  <div className="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-sky-500"
-                      style={{ width: `${Math.max(12, Math.min(100, (item.cantidad / Math.max(...stats.productosMasVendidos.map((p: any) => p.cantidad), 1)) * 100))}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+          {topProductsData.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topProductsData} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                  <CartesianGrid stroke="#e6d8d2" strokeDasharray="3 3" />
+                  <XAxis type="number" tick={{ fontSize: 11, fill: '#7c6b64' }} />
+                  <YAxis type="category" dataKey="nombre" tick={{ fontSize: 10, fill: '#7c6b64' }} width={100} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="Unidades" fill="#6f5249" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           ) : (
-            <div className="p-6 text-center rounded-2xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400">
+            <div className="p-6 text-center rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] text-xs text-[#7c6b64]">
               Todavía no hay ventas suficientes para mostrar un ranking.
             </div>
           )}
 
-          <div className="mt-6 pt-4 border-t border-slate-800/80">
-            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Ventas últimos 7 días</h4>
-            {stats?.ventasUltimos7Dias?.length ? (
-              <div className="space-y-2">
-                {stats.ventasUltimos7Dias.map((item: any) => (
-                  <div key={item.fecha} className="flex items-center gap-3">
-                    <span className="w-24 text-[10px] text-slate-500 shrink-0">{new Date(item.fecha).toLocaleDateString('es-MX', { weekday: 'short', day: '2-digit' })}</span>
-                    <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-sky-500 to-indigo-500"
-                        style={{ width: `${Math.max(8, Math.min(100, (Number(item.total || 0) / Math.max(...stats.ventasUltimos7Dias.map((p: any) => Number(p.total || 0)), 1)) * 100))}%` }}
-                      />
-                    </div>
-                    <span className="w-24 text-right text-[11px] font-semibold text-slate-200 shrink-0">{moneyFormatter.format(Number(item.total || 0))}</span>
-                  </div>
-                ))}
+          <div className="mt-6 pt-4 border-t border-[#e6d8d2]">
+            <h4 className="text-xs font-bold text-[#201816] uppercase tracking-wider mb-3">Ventas últimos 7 días</h4>
+            {barChartData.length > 0 ? (
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={barChartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                    <CartesianGrid stroke="#e6d8d2" strokeDasharray="3 3" />
+                    <XAxis dataKey="fecha" tick={{ fontSize: 10, fill: '#7c6b64' }} />
+                    <YAxis tick={{ fontSize: 10, fill: '#7c6b64' }} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Line type="monotone" dataKey="Ventas" stroke="#6f5249" strokeWidth={2} dot={{ fill: '#6f5249', r: 4 }} activeDot={{ r: 6 }} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             ) : (
-              <p className="text-xs text-slate-500">Sin datos para graficar.</p>
+              <p className="text-xs text-[#7c6b64]">Sin datos para graficar.</p>
             )}
           </div>
         </div>

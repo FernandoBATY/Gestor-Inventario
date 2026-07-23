@@ -144,13 +144,6 @@ export default function PublicStorefrontPage() {
                   </span>
                 )}
               </Link>
-              <Link
-                href="/admin/login"
-                className="inline-flex items-center gap-2 bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 transition-all"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Iniciar sesión</span>
-              </Link>
             </div>
           </div>
 
@@ -402,12 +395,12 @@ export default function PublicStorefrontPage() {
               ✕
             </button>
 
-            <div className="w-full h-56 rounded-2xl overflow-hidden bg-[#f2edeb] mb-4 border border-[#d7c7c0]">
+            <div className="w-full rounded-2xl overflow-hidden bg-[#f2edeb] mb-4 border border-[#d7c7c0] flex items-center justify-center" style={{ minHeight: '200px', maxHeight: '400px' }}>
               {selectedProduct.fotografia ? (
                 <img
                   src={selectedProduct.fotografia}
                   alt={selectedProduct.nombre}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain max-h-[400px]"
                   onError={(event) => {
                     const target = event.currentTarget as HTMLImageElement;
                     target.style.display = 'none';
@@ -426,7 +419,6 @@ export default function PublicStorefrontPage() {
             <div className="grid grid-cols-2 gap-3 my-4 bg-[#fffaf7] p-3.5 rounded-2xl border border-[#d7c7c0] text-xs">
               <div><span className="text-[#7c6b64] block">Marca</span><span className="font-semibold text-[#201816]">{selectedProduct.marca}</span></div>
               <div><span className="text-[#7c6b64] block">Presentación</span><span className="font-semibold text-[#201816]">{selectedProduct.presentacion}</span></div>
-              <div><span className="text-[#7c6b64] block">Código SKU</span><span className="font-mono text-[#6f5249] font-semibold">{selectedProduct.sku}</span></div>
               <div><span className="text-[#7c6b64] block">Disponibilidad</span>{selectedProduct.unidades > 0 ? <span className="text-[#7f9b76] font-semibold">En existencia ({selectedProduct.unidades} uds)</span> : <span className="text-[#9f5d55] font-semibold">Sin existencias</span>}</div>
             </div>
 
@@ -458,32 +450,32 @@ export default function PublicStorefrontPage() {
             <p className="text-sm text-[#d9c8c0]">Sistema de inventario.</p>
           </div>
           <div>
-            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Productos</h5>
+            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Enlaces</h5>
             <ul className="space-y-2 text-sm text-[#d9c8c0]">
-              <li>Instrumentos de Escritura</li><li>Papel Fino</li><li>Organización de Escritorio</li><li>Herramientas Técnicas</li>
+              <li><Link href="/aviso-de-privacidad" className="hover:text-[#f2baa8] transition-colors">Aviso de Privacidad</Link></li>
+              <li><Link href="/terminos-del-servicio" className="hover:text-[#f2baa8] transition-colors">Términos del Servicio</Link></li>
             </ul>
           </div>
           <div>
-            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Empresa</h5>
+            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Contacto</h5>
             <ul className="space-y-2 text-sm text-[#d9c8c0]">
-              <li>Sobre Nosotros</li><li>Sostenibilidad</li><li>Carreras</li><li>Prensa</li>
+              <li>contacto@cuadernodorado.mx</li>
+              <li>+52 (555) 123-4567</li>
             </ul>
           </div>
           <div>
-            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Boletín</h5>
-            <p className="text-sm text-[#d9c8c0] mb-3">Mantente al día con nuestros últimos lanzamientos.</p>
-            <div className="flex">
-              <input className="bg-white/10 border border-white/15 rounded-l-lg px-4 py-2.5 w-full text-sm outline-none" placeholder="correo@ejemplo.com" type="email" />
-              <button className="bg-[#f2baa8] text-[#2f1e18] px-4 py-2.5 rounded-r-lg font-semibold">Enviar</button>
-            </div>
+            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Horario</h5>
+            <ul className="space-y-2 text-sm text-[#d9c8c0]">
+              <li>Lun - Vie: 9:00 - 18:00</li>
+              <li>Sáb: 9:00 - 14:00</li>
+            </ul>
           </div>
         </div>
         <div className="max-w-[1200px] mx-auto pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-[#d9c8c0]">
           <p>© 2026 Papelería El Cuaderno Dorado. Todos los derechos reservados.</p>
           <div className="flex gap-6">
-            <span>Aviso de Privacidad</span>
-            <span>Términos del Servicio</span>
-            <span>Accesibilidad</span>
+            <Link href="/aviso-de-privacidad" className="hover:text-[#f2baa8] transition-colors">Aviso de Privacidad</Link>
+            <Link href="/terminos-del-servicio" className="hover:text-[#f2baa8] transition-colors">Términos del Servicio</Link>
           </div>
         </div>
       </footer>

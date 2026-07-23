@@ -215,13 +215,8 @@ export default function CarritoPage() {
               </div>
             </div>
 
-            <button className="w-full bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] font-semibold py-3 rounded-xl transition-all inline-flex items-center justify-center gap-2">
-              <CheckCircle2 className="w-4 h-4" />
-              Finalizar selección
-            </button>
-
-            <p className="text-xs text-[#7c6b64]">
-              Esta vista solo guarda una selección temporal. Si quieres cerrar la venta, continúa desde el punto de venta.
+            <p className="text-xs text-[#7c6b64] italic">
+              * Esta vista solo guarda una selección temporal. Los precios y disponibilidad están sujetos a cambio.
             </p>
           </aside>
         </div>
