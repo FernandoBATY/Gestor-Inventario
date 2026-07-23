@@ -10,7 +10,9 @@ import {
   PlusCircle, 
   History, 
   Search,
-  Filter
+  Filter,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 export default function InventarioPage() {
@@ -19,6 +21,8 @@ export default function InventarioPage() {
   const [loading, setLoading] = useState(true);
   const [searchMov, setSearchMov] = useState('');
   const [filterTipo, setFilterTipo] = useState<string>('Todos');
+  const [pageMov, setPageMov] = useState(0);
+  const ITEMS_PER_PAGE = 10;
 
   // New Movement Form State
   const [selectedProdId, setSelectedProdId] = useState('');
@@ -79,6 +83,9 @@ export default function InventarioPage() {
     const matchesTipo = filterTipo === 'Todos' || m.tipo === filterTipo;
     return matchesSearch && matchesTipo;
   });
+
+  const totalMovPages = Math.ceil(filteredMovimientos.length / ITEMS_PER_PAGE);
+  const paginatedMovimientos = filteredMovimientos.slice(pageMov * ITEMS_PER_PAGE, (pageMov + 1) * ITEMS_PER_PAGE);
 
   return (
     <div className="space-y-8">
@@ -177,7 +184,7 @@ export default function InventarioPage() {
                 type="text"
                 placeholder="Buscar en historial..."
                 value={searchMov}
-                onChange={(e) => setSearchMov(e.target.value)}
+                onChange={(e) => { setSearchMov(e.target.value); setPageMov(0); }}
                 className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl pl-9 pr-3 py-2 text-xs text-[#201816] placeholder:text-[#9a8a83] outline-none"
               />
             </div>
@@ -187,7 +194,7 @@ export default function InventarioPage() {
               {['Todos', 'Entrada', 'Salida', 'Ajuste'].map((t) => (
                 <button
                   key={t}
-                  onClick={() => setFilterTipo(t)}
+                  onClick={() => { setFilterTipo(t); setPageMov(0); }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                     filterTipo === t
                       ? 'bg-[#2f1e18] text-[#fff8f4]'
@@ -207,39 +214,50 @@ export default function InventarioPage() {
 
             {loading ? (
               <div className="p-8 text-center text-[#7c6b64] text-xs">Cargando movimientos...</div>
+            ) : paginatedMovimientos.length === 0 ? (
+              <div className="p-8 text-center text-[#7c6b64] text-xs">No se encontraron movimientos.</div>
             ) : (
-              <div className="divide-y divide-[#e6d8d2] max-h-[500px] overflow-y-auto">
-                {filteredMovimientos.map((m) => (
-                  <div key={m.id} className="p-4 flex items-center justify-between gap-4 hover:bg-[#f7f1ec] transition">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
-                        m.tipo === 'Entrada'
-                          ? 'bg-[#edf6f1] text-[#2f5f4d] border border-[#cfe0d8]'
-                          : m.tipo === 'Salida'
-                          ? 'bg-[#f8ecea] text-[#9f5d55] border border-[#e2c8c4]'
-                          : 'bg-[#f7efe5] text-[#8a6f5c] border border-[#e1cfbd]'
-                      }`}>
-                        {m.tipo === 'Entrada' ? <ArrowUpRight className="w-5 h-5" /> : m.tipo === 'Salida' ? <ArrowDownRight className="w-5 h-5" /> : <RefreshCw className="w-4 h-4" />}
+              <>
+                <div className="divide-y divide-[#e6d8d2]">
+                  {paginatedMovimientos.map((m) => (
+                    <div key={m.id} className="p-4 flex items-center justify-between gap-4 hover:bg-[#f7f1ec] transition">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
+                          m.tipo === 'Entrada'
+                            ? 'bg-[#edf6f1] text-[#2f5f4d] border border-[#cfe0d8]'
+                            : m.tipo === 'Salida'
+                            ? 'bg-[#f8ecea] text-[#9f5d55] border border-[#e2c8c4]'
+                            : 'bg-[#f7efe5] text-[#8a6f5c] border border-[#e1cfbd]'
+                        }`}>
+                          {m.tipo === 'Entrada' ? <ArrowUpRight className="w-5 h-5" /> : m.tipo === 'Salida' ? <ArrowDownRight className="w-5 h-5" /> : <RefreshCw className="w-4 h-4" />}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-xs text-[#201816] truncate max-w-[160px] sm:max-w-[300px]">{m.producto?.nombre || 'Producto'}</h4>
+                          <p className="text-[11px] text-[#7c6b64]">{m.motivo}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-bold text-xs text-[#201816] truncate max-w-[160px] sm:max-w-[300px]">{m.producto?.nombre || 'Producto'}</h4>
-                        <p className="text-[11px] text-[#7c6b64]">{m.motivo}</p>
-                      </div>
-                    </div>
 
-                    <div className="text-right">
-                      <span className={`font-black text-sm block ${
-                        m.tipo === 'Entrada' ? 'text-[#2f5f4d]' : m.tipo === 'Salida' ? 'text-[#9f5d55]' : 'text-[#8a6f5c]'
-                      }`}>
-                        {m.tipo === 'Entrada' ? '+' : m.tipo === 'Salida' ? '-' : ''}{m.cantidad} uds
-                      </span>
-                      <span className="text-[10px] text-[#7c6b64]">
-                        {new Date(m.fecha).toLocaleString('es-MX')}
-                      </span>
+                      <div className="text-right">
+                        <span className={`font-black text-sm block ${
+                          m.tipo === 'Entrada' ? 'text-[#2f5f4d]' : m.tipo === 'Salida' ? 'text-[#9f5d55]' : 'text-[#8a6f5c]'
+                        }`}>
+                          {m.tipo === 'Entrada' ? '+' : m.tipo === 'Salida' ? '-' : ''}{m.cantidad} uds
+                        </span>
+                        <span className="text-[10px] text-[#7c6b64]">
+                          {new Date(m.fecha).toLocaleString('es-MX')}
+                        </span>
+                      </div>
                     </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between p-3 border-t border-[#e6d8d2]">
+                  <p className="text-[11px] text-[#7c6b64]">Página {pageMov + 1} de {totalMovPages}</p>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setPageMov(p => Math.max(0, p - 1))} disabled={pageMov === 0} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all disabled:opacity-30 disabled:cursor-not-allowed"><ChevronLeft className="w-3.5 h-3.5 text-[#7c6b64]" /></button>
+                    <button onClick={() => setPageMov(p => Math.min(totalMovPages - 1, p + 1))} disabled={pageMov >= totalMovPages - 1} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all disabled:opacity-30 disabled:cursor-not-allowed"><ChevronRight className="w-3.5 h-3.5 text-[#7c6b64]" /></button>
                   </div>
-                ))}
-              </div>
+                </div>
+              </>
             )}
           </div>
         </div>

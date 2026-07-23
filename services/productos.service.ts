@@ -187,13 +187,37 @@ export class ProductosService {
         await this.syncCategory(normalized.categoria);
       }
 
+      const { data: oldProduct } = await supabase
+        .from('productos')
+        .select('precio_compra, precio_venta')
+        .eq('id', id)
+        .single();
+
       const { data, error } = await supabase
         .from('productos')
         .update(normalized)
         .eq('id', id)
         .select()
         .single();
-      if (!error && data) return data;
+
+      if (!error && data) {
+        const oldCompra = Number(oldProduct?.precio_compra) || 0;
+        const newCompra = Number(data.precio_compra) || 0;
+        const oldVenta = Number(oldProduct?.precio_venta) || 0;
+        const newVenta = Number(data.precio_venta) || 0;
+
+        if (oldCompra !== newCompra || oldVenta !== newVenta) {
+          await supabase.from('historial_precios').insert([{
+            producto_id: id,
+            precio_compra_anterior: oldCompra,
+            precio_compra_nuevo: newCompra,
+            precio_venta_anterior: oldVenta,
+            precio_venta_nuevo: newVenta,
+          }]);
+        }
+
+        return data;
+      }
     }
     return mockStore.updateProduct(id, this.normalizeProductPayload(updateFields));
   }

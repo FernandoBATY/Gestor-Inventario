@@ -445,7 +445,7 @@ export default function ProductosPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Categoría</label>
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Categoría</label>
                   <input
                     list="categorias-list"
                     type="text"
@@ -453,7 +453,7 @@ export default function ProductosPage() {
                     placeholder="Escribe o selecciona una categoría"
                     value={formData.categoria}
                     onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-500"
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f]"
                   />
                   <datalist id="categorias-list">
                     {categorias.map((categoria) => (
@@ -471,8 +471,8 @@ export default function ProductosPage() {
                         }}
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition ${
                           formData.categoria === categoria
-                            ? 'bg-sky-500/15 text-sky-300 border-sky-500/30'
-                            : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
+                            ? 'bg-[#efe3db] text-[#6f5249] border-[#d7c7c0]'
+                            : 'bg-[#fffaf7] text-[#7c6b64] border-[#d7c7c0] hover:text-[#201816]'
                         }`}
                       >
                         <Tag className="w-3 h-3" />
@@ -480,14 +480,14 @@ export default function ProductosPage() {
                       </button>
                     ))}
                   </div>
-                  <p className="mt-2 text-[10px] text-slate-500">
+                  <p className="mt-2 text-[10px] text-[#9a8a83]">
                     Puedes escribir una nueva categoría o cargar una ya existente para editarla y guardarla.
                   </p>
                   <button
                     type="button"
                     onClick={handleSaveCategory}
                     disabled={categorySaving}
-                    className="mt-3 inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 rounded-xl transition disabled:opacity-50"
+                    className="mt-3 inline-flex items-center gap-2 bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] font-semibold px-3 py-2 rounded-xl transition disabled:opacity-50"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>{categorySaving ? 'Guardando...' : categoriaOriginal && categoriaOriginal !== formData.categoria ? 'Renombrar Categoría' : 'Guardar Categoría'}</span>
@@ -495,7 +495,7 @@ export default function ProductosPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Precio de Compra</label>
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Precio de Compra</label>
                   <input
                     type="number"
                     min="0"
@@ -503,12 +503,12 @@ export default function ProductosPage() {
                     required
                     value={formData.precio_compra}
                     onChange={(e) => setFormData({ ...formData, precio_compra: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-500"
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Precio de Venta</label>
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Precio de Venta</label>
                   <input
                     type="number"
                     min="0"
@@ -516,12 +516,12 @@ export default function ProductosPage() {
                     required
                     value={formData.precio_venta}
                     onChange={(e) => setFormData({ ...formData, precio_venta: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-500"
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Unidades en Stock</label>
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Unidades en Stock</label>
                   <input
                     type="number"
                     min="0"
@@ -529,12 +529,12 @@ export default function ProductosPage() {
                     required
                     value={formData.unidades}
                     onChange={(e) => setFormData({ ...formData, unidades: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-500"
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Stock Mínimo</label>
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Stock Mínimo</label>
                   <input
                     type="number"
                     min="0"
@@ -542,38 +542,38 @@ export default function ProductosPage() {
                     required
                     value={formData.stock_minimo}
                     onChange={(e) => setFormData({ ...formData, stock_minimo: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-500"
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Código SKU</label>
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Código SKU</label>
                   <input
                     type="text"
                     required
                     value={formData.sku}
                     onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-500 font-mono"
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f] font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Presentación</label>
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Presentación</label>
                   <input
                     type="text"
                     required
                     placeholder="Ej. Pieza, Caja c/12"
                     value={formData.presentacion}
                     onChange={(e) => setFormData({ ...formData, presentacion: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-500"
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f]"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-slate-300 font-semibold mb-1">Imagen del Producto</label>
-                  <label className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-700 bg-slate-900/70 px-4 py-4 cursor-pointer hover:border-sky-500/60 hover:bg-slate-900 transition">
-                    <ImageIcon className="w-4 h-4 text-sky-400" />
-                    <span className="text-slate-300 font-semibold">
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Imagen del Producto</label>
+                  <label className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-[#d7c7c0] bg-[#fffaf7]/70 px-4 py-4 cursor-pointer hover:border-[#9d7b6f]/60 hover:bg-[#fffaf7] transition">
+                    <ImageIcon className="w-4 h-4 text-[#6f5249]" />
+                    <span className="text-[#7c6b64] font-semibold">
                       {imageFile ? 'Cambiar imagen seleccionada' : 'Sube una imagen desde tu dispositivo'}
                     </span>
                     <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
@@ -584,30 +584,30 @@ export default function ProductosPage() {
                       <img
                         src={imagePreview}
                         alt="Vista previa"
-                        className="w-20 h-20 rounded-2xl object-cover border border-slate-700 bg-slate-900"
+                        className="w-20 h-20 rounded-2xl object-cover border border-[#d7c7c0] bg-[#f2edeb]"
                       />
-                      <div className="text-[11px] text-slate-400">
-                        <p className="font-semibold text-slate-200">Imagen comprimida lista para Supabase Storage</p>
+                      <div className="text-[11px] text-[#9a8a83]">
+                        <p className="font-semibold text-[#201816]">Imagen comprimida lista para Supabase Storage</p>
                         <p>Se guarda optimizada en WebP para consumir menos espacio y ancho de banda.</p>
                       </div>
                     </div>
                   ) : (
-                    <p className="mt-2 text-[10px] text-slate-500">Si no subes una imagen, el producto se guardará sin fotografía.</p>
+                    <p className="mt-2 text-[10px] text-[#9a8a83]">Si no subes una imagen, el producto se guardará sin fotografía.</p>
                   )}
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="mt-6 flex justify-end gap-3 pt-3 border-t border-[#d7c7c0]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-xl transition"
+                  className="bg-[#fffaf7] hover:bg-[#f6efe8] text-[#7c6b64] font-semibold px-4 py-2 rounded-xl border border-[#d7c7c0] transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-2 rounded-xl transition shadow-lg shadow-sky-600/30"
+                  className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] font-semibold px-5 py-2 rounded-xl transition shadow-lg shadow-[#2f1e18]/15"
                 >
                   Guardar Producto
                 </button>
@@ -619,28 +619,28 @@ export default function ProductosPage() {
 
       {historialModalProdId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="glass-panel border border-slate-700 rounded-3xl max-w-lg w-full p-6 relative shadow-2xl">
+          <div className="glass-panel border border-[#d7c7c0] rounded-3xl max-w-lg w-full p-6 relative shadow-2xl">
             <button
               onClick={() => setHistorialModalProdId(null)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-slate-800 rounded-full transition"
+              className="absolute top-4 right-4 p-2 text-[#7c6b64] hover:text-[#201816] bg-[#f6efe8] rounded-full transition"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-              <History className="w-5 h-5 text-sky-400" /> Historial de Cambios de Precio
+            <h3 className="text-lg font-bold text-[#201816] mb-2 flex items-center gap-2">
+              <History className="w-5 h-5 text-[#6f5249]" /> Historial de Cambios de Precio
             </h3>
 
             {historialPrecios.length === 0 ? (
-              <p className="text-xs text-slate-400 py-6 text-center">No hay registros de actualización de precios para este producto.</p>
+              <p className="text-xs text-[#7c6b64] py-6 text-center">No hay registros de actualización de precios para este producto.</p>
             ) : (
               <div className="space-y-3 mt-4 max-h-60 overflow-y-auto">
                 {historialPrecios.map((h, i) => (
-                  <div key={i} className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs">
-                    <div className="text-[10px] text-slate-500 mb-1">{new Date(h.fecha).toLocaleString('es-MX')}</div>
+                  <div key={i} className="p-3 bg-[#f6efe8] rounded-xl border border-[#d7c7c0] text-xs">
+                    <div className="text-[10px] text-[#7c6b64] mb-1">{new Date(h.fecha).toLocaleString('es-MX')}</div>
                     <div className="flex justify-between gap-3">
-                      <span>P. Compra: {moneyFormatter.format(h.precio_compra_anterior)} → <b className="text-slate-200">{moneyFormatter.format(h.precio_compra_nuevo)}</b></span>
-                      <span>P. Venta: {moneyFormatter.format(h.precio_venta_anterior)} → <b className="text-emerald-400">{moneyFormatter.format(h.precio_venta_nuevo)}</b></span>
+                      <span className="text-[#7c6b64]">P. Compra: {moneyFormatter.format(h.precio_compra_anterior)} → <b className="text-[#201816]">{moneyFormatter.format(h.precio_compra_nuevo)}</b></span>
+                      <span className="text-[#7c6b64]">P. Venta: {moneyFormatter.format(h.precio_venta_anterior)} → <b className="text-[#2f5f4d]">{moneyFormatter.format(h.precio_venta_nuevo)}</b></span>
                     </div>
                   </div>
                 ))}
