@@ -60,6 +60,10 @@ export async function GET() {
         const totalVentasCount = ventas.length;
         const ticketPromedio = totalVentasCount > 0 ? totalVendido / totalVentasCount : 0;
 
+        const costoTotalInventario = prods.reduce((sum, p) => sum + (Number(p.precio_compra) || 0) * (Number(p.unidades) || 0), 0);
+        const precioVentaTotal = prods.reduce((sum, p) => sum + (Number(p.precio_venta) || 0) * (Number(p.unidades) || 0), 0);
+        const gananciaPotencial = precioVentaTotal - costoTotalInventario;
+
         return NextResponse.json({
           ventasDia,
           ventasMes,
@@ -75,6 +79,9 @@ export async function GET() {
           productosMasVendidos: Array.from(productosMasVendidos.values())
             .sort((a, b) => b.cantidad - a.cantidad)
             .slice(0, 5),
+          costoTotalInventario,
+          precioVentaTotal,
+          gananciaPotencial,
         });
       }
     }
@@ -99,6 +106,10 @@ export async function GET() {
     const totalVentasCount = ventas.length;
     const ticketPromedio = totalVentasCount > 0 ? totalVendido / totalVentasCount : 0;
 
+    const costoTotalInventario = prods.reduce((sum, p) => sum + (Number(p.precio_compra) || 0) * (Number(p.unidades) || 0), 0);
+    const precioVentaTotal = prods.reduce((sum, p) => sum + (Number(p.precio_venta) || 0) * (Number(p.unidades) || 0), 0);
+    const gananciaPotencial = precioVentaTotal - costoTotalInventario;
+
     return NextResponse.json({
       ventasDia,
       ventasMes,
@@ -111,7 +122,10 @@ export async function GET() {
       ticketPromedio,
       ultimaVentaFecha: ventas.at(-1)?.fecha || null,
       ventasUltimos7Dias: [],
-      productosMasVendidos: []
+      productosMasVendidos: [],
+      costoTotalInventario,
+      precioVentaTotal,
+      gananciaPotencial,
     });
   } catch (error) {
     return NextResponse.json({ error: 'Error al consultar dashboard stats' }, { status: 500 });

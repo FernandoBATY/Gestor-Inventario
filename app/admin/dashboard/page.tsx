@@ -12,34 +12,18 @@ import {
   Sparkles,
   Calendar,
   Layers,
-  ChevronRight
+  ChevronRight,
+  Ticket,
+  Package,
+  Target
 } from 'lucide-react';
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  LineChart, Line
-} from 'recharts';
+import ChartsWrapper from '@/components/dashboard/ChartsWrapper';
 
 const moneyFormatter = new Intl.NumberFormat('es-MX', {
   style: 'currency',
   currency: 'MXN',
   minimumFractionDigits: 2,
 });
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="glass-panel border border-[#d7c7c0] rounded-xl px-4 py-3 text-xs shadow-xl">
-        <p className="font-semibold text-[#201816] mb-1">{label}</p>
-        {payload.map((entry: any, idx: number) => (
-          <p key={idx} style={{ color: entry.color }} className="font-medium">
-            {entry.name}: {entry.name === 'Ventas' ? moneyFormatter.format(entry.value) : entry.value}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
@@ -69,13 +53,12 @@ export default function DashboardPage() {
   })) || [];
 
   const topProductsData = stats?.productosMasVendidos?.map((item: any) => ({
-    nombre: item.nombre.length > 18 ? item.nombre.substring(0, 18) + '...' : item.nombre,
+    nombre: item.nombre.length > 16 ? item.nombre.substring(0, 16) + '...' : item.nombre,
     Unidades: item.cantidad,
-    Total: Number(item.total) || 0,
   })) || [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#e8ddd7] text-[#6f5249] border border-[#d3c1b8] mb-2">
@@ -95,9 +78,9 @@ export default function DashboardPage() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="glass-panel rounded-2xl p-5 animate-pulse h-32" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="glass-panel rounded-2xl p-5 animate-pulse h-28" />
           ))}
         </div>
       ) : (
@@ -182,7 +165,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-[#7c6b64]">Ticket promedio</span>
               <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
-                <ShoppingBag className="w-5 h-5" />
+                <Ticket className="w-5 h-5" />
               </div>
             </div>
             <div className="mt-3">
@@ -190,6 +173,75 @@ export default function DashboardPage() {
             </div>
             <div className="mt-2 text-[11px] text-[#7c6b64]">
               Promedio por cada venta registrada
+            </div>
+          </div>
+
+          <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#7c6b64]">Costo Total Inventario</span>
+              <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
+                <Package className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-black text-[#201816]">{moneyFormatter.format(Number(stats?.costoTotalInventario || 0))}</span>
+            </div>
+            <div className="mt-2 text-[11px] text-[#7c6b64]">
+              Inversión total en productos en existencia
+            </div>
+          </div>
+
+          <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#7c6b64]">Ganancia Potencial</span>
+              <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
+                <TrendingUp className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-black text-[#7f9b76]">{moneyFormatter.format(Number(stats?.gananciaPotencial || 0))}</span>
+            </div>
+            <div className="mt-2 text-[11px] text-[#7c6b64]">
+              Utilidad estimada si se vende todo el inventario
+            </div>
+          </div>
+        </div>
+      )}
+
+      {stats && (
+        <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-6">
+          <h3 className="font-extrabold text-base text-[#201816] mb-1 flex items-center gap-2">
+            <Target className="w-4 h-4 text-[#6f5249]" /> Meta vs Realidad
+          </h3>
+          <p className="text-xs text-[#7c6b64] mb-4">Comparativa del total vendido contra la ganancia potencial del inventario actual</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-[#f6efe8] rounded-2xl p-5 border border-[#dbc9c2]">
+              <span className="text-xs font-semibold text-[#7c6b64] block">Total Vendido (Real)</span>
+              <span className="text-3xl font-black text-[#201816]">{moneyFormatter.format(Number(stats?.totalVendido || 0))}</span>
+              <div className="mt-2 h-3 rounded-full bg-[#e6d8d2] overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-[#2f1e18] transition-all"
+                  style={{ width: `${Math.min(100, (Number(stats?.totalVendido || 0) / Math.max(1, Number(stats?.gananciaPotencial || 1))) * 100)}%` }}
+                />
+              </div>
+              <p className="text-[11px] text-[#7c6b64] mt-1">
+                {stats?.gananciaPotencial > 0
+                  ? `${((Number(stats?.totalVendido || 0) / Number(stats?.gananciaPotencial || 1)) * 100).toFixed(1)}% de la meta potencial`
+                  : 'Sin datos de meta'}
+              </p>
+            </div>
+            <div className="bg-[#f6efe8] rounded-2xl p-5 border border-[#dbc9c2]">
+              <span className="text-xs font-semibold text-[#7c6b64] block">Ganancia Potencial (Meta)</span>
+              <span className="text-3xl font-black text-[#7f9b76]">{moneyFormatter.format(Number(stats?.gananciaPotencial || 0))}</span>
+              <div className="mt-2 h-3 rounded-full bg-[#e6d8d2] overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-[#7f9b76] transition-all"
+                  style={{ width: `${Math.min(100, (Number(stats?.gananciaPotencial || 0) / Math.max(1, Number(stats?.precioVentaTotal || 1))) * 100)}%` }}
+                />
+              </div>
+              <p className="text-[11px] text-[#7c6b64] mt-1">
+                {((Number(stats?.gananciaPotencial || 0) / Math.max(1, Number(stats?.precioVentaTotal || 1))) * 100).toFixed(1)}% de margen sobre precio de venta
+              </p>
             </div>
           </div>
         </div>
@@ -222,27 +274,28 @@ export default function DashboardPage() {
           ) : (
             <div className="divide-y divide-[#e6d8d2]">
               {stats?.productosBajoStock?.map((prod: any) => (
-                <div key={prod.id} className="py-3.5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
+                <div key={prod.id} className="py-3 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
                     <img
                       src={prod.fotografia}
                       alt={prod.nombre}
-                      className="w-10 h-10 rounded-lg object-cover bg-[#f2edeb] border border-[#d7c7c0]"
+                      className="w-10 h-10 rounded-lg object-cover bg-[#f2edeb] border border-[#d7c7c0] shrink-0"
+                      loading="lazy"
                       onError={(event) => {
                         const target = event.currentTarget as HTMLImageElement;
                         target.style.display = 'none';
                       }}
                     />
-                    <div>
-                      <h4 className="font-bold text-sm text-[#201816]">{prod.nombre}</h4>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-sm text-[#201816] truncate">{prod.nombre}</h4>
                       <span className="text-[11px] text-[#7c6b64]">{prod.marca} • SKU: {prod.sku}</span>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0]">
-                      {prod.unidades} uds disponibles
+                      {prod.unidades} uds
                     </span>
-                    <span className="text-[10px] text-[#7c6b64] block mt-0.5">Mín: {prod.stock_minimo} uds</span>
+                    <span className="text-[10px] text-[#7c6b64] block mt-0.5">Mín: {prod.stock_minimo}</span>
                   </div>
                 </div>
               ))}
@@ -255,86 +308,58 @@ export default function DashboardPage() {
             <h3 className="font-extrabold text-base text-[#201816] mb-4 flex items-center gap-2">
               <Layers className="w-4 h-4 text-[#6f5249]" /> Resumen del Sistema
             </h3>
-            <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] flex items-center justify-between">
+            <div className="space-y-3">
+              <div className="p-3.5 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] flex items-center justify-between">
                 <div>
                   <span className="text-xs text-[#7c6b64] block">Total de Productos</span>
-                  <span className="text-xl font-bold text-[#201816]">{stats?.totalProductos || 0} catálogo</span>
+                  <span className="text-lg font-bold text-[#201816]">{stats?.totalProductos || 0}</span>
                 </div>
                 <Link href="/admin/productos" className="p-2 text-[#6f5249] hover:bg-[#efe3db] rounded-lg transition">
                   <ArrowUpRight className="w-5 h-5" />
                 </Link>
               </div>
-              <div className="p-4 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] flex items-center justify-between">
+              <div className="p-3.5 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] flex items-center justify-between">
                 <div>
                   <span className="text-xs text-[#7c6b64] block">Ventas Registradas</span>
-                  <span className="text-xl font-bold text-[#201816]">{stats?.totalVentasCount || 0} folios</span>
+                  <span className="text-lg font-bold text-[#201816]">{stats?.totalVentasCount || 0}</span>
                 </div>
                 <Link href="/admin/ventas" className="p-2 text-[#6f5249] hover:bg-[#efe3db] rounded-lg transition">
                   <ArrowUpRight className="w-5 h-5" />
                 </Link>
               </div>
-              <div className="p-4 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2]">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <span className="text-xs text-[#7c6b64] block">Última venta</span>
-                    <span className="text-sm font-semibold text-[#201816]">{stats?.ultimaVentaFecha ? new Date(stats.ultimaVentaFecha).toLocaleString('es-MX') : 'Sin movimientos recientes'}</span>
-                  </div>
-                </div>
-                <Link href="/admin/ventas" className="text-xs font-semibold text-[#6f5249] hover:text-[#2f1e18] transition inline-flex items-center gap-1">
+              <div className="p-3.5 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2]">
+                <span className="text-xs text-[#7c6b64] block">Última venta</span>
+                <span className="text-sm font-semibold text-[#201816]">
+                  {stats?.ultimaVentaFecha ? new Date(stats.ultimaVentaFecha).toLocaleString('es-MX') : 'Sin movimientos recientes'}
+                </span>
+                <Link href="/admin/ventas" className="text-xs font-semibold text-[#6f5249] hover:text-[#2f1e18] transition inline-flex items-center gap-1 mt-2">
                   Ir a Punto de Venta <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
           </div>
-          <div className="mt-6 pt-4 border-t border-[#e6d8d2] text-center">
-            <p className="text-[11px] text-[#7c6b64]">Servidor Node.js API & Base de datos Supabase activos</p>
-          </div>
-        </div>
-
-        <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-6">
-          <h3 className="font-extrabold text-base text-[#201816] mb-4 flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-[#6f5249]" /> Productos más vendidos
-          </h3>
-
-          {topProductsData.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={topProductsData} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                  <CartesianGrid stroke="#e6d8d2" strokeDasharray="3 3" />
-                  <XAxis type="number" tick={{ fontSize: 11, fill: '#7c6b64' }} />
-                  <YAxis type="category" dataKey="nombre" tick={{ fontSize: 10, fill: '#7c6b64' }} width={100} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="Unidades" fill="#6f5249" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="p-6 text-center rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] text-xs text-[#7c6b64]">
-              Todavía no hay ventas suficientes para mostrar un ranking.
-            </div>
-          )}
-
-          <div className="mt-6 pt-4 border-t border-[#e6d8d2]">
-            <h4 className="text-xs font-bold text-[#201816] uppercase tracking-wider mb-3">Ventas últimos 7 días</h4>
-            {barChartData.length > 0 ? (
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={barChartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                    <CartesianGrid stroke="#e6d8d2" strokeDasharray="3 3" />
-                    <XAxis dataKey="fecha" tick={{ fontSize: 10, fill: '#7c6b64' }} />
-                    <YAxis tick={{ fontSize: 10, fill: '#7c6b64' }} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Line type="monotone" dataKey="Ventas" stroke="#6f5249" strokeWidth={2} dot={{ fill: '#6f5249', r: 4 }} activeDot={{ r: 6 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <p className="text-xs text-[#7c6b64]">Sin datos para graficar.</p>
-            )}
+          <div className="mt-4 pt-3 border-t border-[#e6d8d2] text-center">
+            <p className="text-[10px] text-[#7c6b64]">Servidor Node.js API & Base de datos Supabase activos</p>
           </div>
         </div>
       </div>
+
+      <ChartsWrapper
+        barChartData={barChartData}
+        topProductsData={topProductsData}
+        stats={stats ? {
+          ventasDia: stats.ventasDia,
+          ventasMes: stats.ventasMes,
+          totalVendido: stats.totalVendido,
+          totalProductos: stats.totalProductos,
+          productosBajoStockCount: stats.productosBajoStockCount,
+          ticketPromedio: stats.ticketPromedio,
+          totalVentasCount: stats.totalVentasCount,
+          costoTotalInventario: stats.costoTotalInventario,
+          precioVentaTotal: stats.precioVentaTotal,
+          gananciaPotencial: stats.gananciaPotencial,
+        } : null}
+      />
     </div>
   );
 }

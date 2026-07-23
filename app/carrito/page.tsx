@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Minus, Plus, ShoppingBag, Trash2, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Minus, Plus, ShoppingBag, Trash2, ArrowLeft } from 'lucide-react';
 import { Producto } from '@/lib/types';
 
 type CartItem = {
@@ -37,12 +37,17 @@ const readCart = (): CartItem[] => {
 
 export default function CarritoPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const initialLoad = useRef(true);
 
   useEffect(() => {
     setCart(readCart());
   }, []);
 
   useEffect(() => {
+    if (initialLoad.current) {
+      initialLoad.current = false;
+      return;
+    }
     window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }, [cart]);
 
@@ -132,6 +137,7 @@ export default function CarritoPage() {
                               src={item.producto.fotografia}
                               alt={item.producto.nombre}
                               className="w-full h-full object-cover"
+                              loading="lazy"
                               onError={(event) => {
                                 const target = event.currentTarget as HTMLImageElement;
                                 target.style.display = 'none';

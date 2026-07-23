@@ -10,7 +10,9 @@ import {
   ShoppingBag,
   Sparkles,
   ShoppingCart,
-  Plus
+  Plus,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 type CartItem = {
@@ -311,6 +313,7 @@ export default function PublicStorefrontPage() {
                           src={prod.fotografia}
                           alt={prod.nombre}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
                           onError={(event) => {
                             const target = event.currentTarget as HTMLImageElement;
                             target.style.display = 'none';
@@ -372,13 +375,13 @@ export default function PublicStorefrontPage() {
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#d5c2bd] pt-5">
               <p className="text-sm text-[#7c6b64]">Mostrando 1 a {Math.min(filteredProducts.length, 12)} de {filteredProducts.length} resultados</p>
               <nav className="flex items-center gap-2">
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all">‹</button>
+                <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all"><ChevronLeft className="w-4 h-4 text-[#7c6b64]" /></button>
                 <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#2f1e18] text-[#fff8f4] font-semibold">1</button>
                 <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all">2</button>
                 <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all">3</button>
                 <span className="text-[#83746f]">...</span>
                 <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all">13</button>
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all">›</button>
+                <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all"><ChevronRight className="w-4 h-4 text-[#7c6b64]" /></button>
               </nav>
             </div>
           </div>
@@ -386,21 +389,21 @@ export default function PublicStorefrontPage() {
       </section>
 
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="glass-panel border border-[#d7c7c0] rounded-3xl max-w-lg w-full p-6 relative overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setSelectedProduct(null)}
-              className="absolute top-4 right-4 p-2 text-[#7c6b64] hover:text-[#201816] bg-[#f6efe8] rounded-full transition"
-            >
-              ✕
-            </button>
-
-            <div className="w-full rounded-2xl overflow-hidden bg-[#f2edeb] mb-4 border border-[#d7c7c0] flex items-center justify-center" style={{ minHeight: '200px', maxHeight: '400px' }}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+          onClick={() => setSelectedProduct(null)}
+        >
+          <div
+            className="glass-panel border border-[#d7c7c0] rounded-2xl max-w-sm w-full p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200 overflow-y-auto max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-full rounded-xl overflow-hidden bg-[#f2edeb] mb-3 border border-[#d7c7c0] flex items-center justify-center" style={{ minHeight: '180px', maxHeight: '300px' }}>
               {selectedProduct.fotografia ? (
                 <img
                   src={selectedProduct.fotografia}
                   alt={selectedProduct.nombre}
-                  className="w-full h-full object-contain max-h-[400px]"
+                  className="w-full h-full object-contain max-h-[300px]"
+                  loading="lazy"
                   onError={(event) => {
                     const target = event.currentTarget as HTMLImageElement;
                     target.style.display = 'none';
@@ -411,25 +414,25 @@ export default function PublicStorefrontPage() {
               )}
             </div>
 
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0] mb-2 inline-block">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0] inline-block mb-1">
               {selectedProduct.categoria}
             </span>
-            <h3 className="text-2xl font-headline text-[#201816]">{selectedProduct.nombre}</h3>
+            <h3 className="text-xl font-headline text-[#201816]">{selectedProduct.nombre}</h3>
 
-            <div className="grid grid-cols-2 gap-3 my-4 bg-[#fffaf7] p-3.5 rounded-2xl border border-[#d7c7c0] text-xs">
+            <div className="grid grid-cols-2 gap-2 my-3 bg-[#fffaf7] p-3 rounded-xl border border-[#d7c7c0] text-[11px]">
               <div><span className="text-[#7c6b64] block">Marca</span><span className="font-semibold text-[#201816]">{selectedProduct.marca}</span></div>
               <div><span className="text-[#7c6b64] block">Presentación</span><span className="font-semibold text-[#201816]">{selectedProduct.presentacion}</span></div>
-              <div><span className="text-[#7c6b64] block">Disponibilidad</span>{selectedProduct.unidades > 0 ? <span className="text-[#7f9b76] font-semibold">En existencia ({selectedProduct.unidades} uds)</span> : <span className="text-[#9f5d55] font-semibold">Sin existencias</span>}</div>
+              <div className="col-span-2"><span className="text-[#7c6b64] block">Disponibilidad</span>{selectedProduct.unidades > 0 ? <span className="text-[#7f9b76] font-semibold">En existencia ({selectedProduct.unidades} uds)</span> : <span className="text-[#9f5d55] font-semibold">Sin existencias</span>}</div>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-[#e6d8d2]">
+            <div className="flex items-center justify-between pt-3 border-t border-[#e6d8d2]">
               <div>
-                <span className="text-xs text-[#7c6b64] block">Precio de Venta</span>
-                <span className="text-2xl font-headline text-[#36160c]">${Number(selectedProduct.precio_venta).toFixed(2)} MXN</span>
+                <span className="text-[10px] text-[#7c6b64] block">Precio de Venta</span>
+                <span className="text-xl font-headline text-[#36160c]">${Number(selectedProduct.precio_venta).toFixed(2)} MXN</span>
               </div>
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-5 py-2.5 rounded-xl transition"
+                className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-4 py-2 rounded-xl transition"
               >
                 Cerrar
               </button>

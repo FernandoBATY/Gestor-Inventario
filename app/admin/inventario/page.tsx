@@ -125,12 +125,8 @@ export default function InventarioPage() {
                     onClick={() => setTipo(t)}
                     className={`py-2 rounded-xl font-bold transition ${
                       tipo === t
-                        ? t === 'Entrada'
-                          ? 'bg-[#2f5f4d] text-[#fff8f4] shadow-lg shadow-[#2f5f4d]/20'
-                          : t === 'Salida'
-                            ? 'bg-[#9f5d55] text-[#fff8f4] shadow-lg shadow-[#9f5d55]/20'
-                            : 'bg-[#c58d5d] text-[#fff8f4] shadow-lg shadow-[#c58d5d]/20'
-                          : 'bg-[#fffaf7] text-[#7c6b64] border border-[#d7c7c0]'
+                        ? 'bg-[#2f1e18] text-[#fff8f4] shadow-lg shadow-[#2f1e18]/15'
+                        : 'bg-[#fffaf7] text-[#7c6b64] border border-[#d7c7c0]'
                     }`}
                   >
                     {t}
@@ -194,7 +190,7 @@ export default function InventarioPage() {
                   onClick={() => setFilterTipo(t)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                     filterTipo === t
-                      ? 'bg-[#2f5f4d] text-[#fff8f4]'
+                      ? 'bg-[#2f1e18] text-[#fff8f4]'
                       : 'bg-[#fffaf7] text-[#7c6b64] border border-[#d7c7c0]'
                   }`}
                 >
