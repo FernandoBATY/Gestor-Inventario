@@ -95,19 +95,18 @@ export default function ThermalTicket({ venta, onClose }: ThermalTicketProps) {
             <tr class="total-row">
               <td></td>
               <td><strong>TOTAL:</strong></td>
-              <td class="right" colspan="2"><strong>$${Number(venta.total).toFixed(2)} MXN</strong></td>
+              <td class="right" colspan="2"><strong>${Number(venta.total).toFixed(2)} MXN</strong></td>
             </tr>
-            ${Number(venta.monto_recibido) > 0 ? `
             <tr>
               <td></td>
               <td>Efectivo recibido:</td>
-              <td class="right" colspan="2">$${Number(venta.monto_recibido).toFixed(2)}</td>
+              <td class="right" colspan="2">${Number(venta.monto_recibido || 0).toFixed(2)}</td>
             </tr>
             <tr>
               <td></td>
               <td><strong>CAMBIO:</strong></td>
-              <td class="right" colspan="2"><strong>$${Number(venta.cambio).toFixed(2)}</strong></td>
-            </tr>` : ''}
+              <td class="right" colspan="2"><strong>${Number(venta.cambio || 0).toFixed(2)}</strong></td>
+            </tr>
           </table>
           <div class="divider"></div>
           <div class="footer">
@@ -180,19 +179,18 @@ export default function ThermalTicket({ venta, onClose }: ThermalTicketProps) {
             <tr class="total-row">
               <td></td>
               <td><strong>TOTAL:</strong></td>
-              <td class="right" colspan="2"><strong>$${Number(venta.total).toFixed(2)} MXN</strong></td>
+              <td class="right" colspan="2"><strong>${Number(venta.total).toFixed(2)} MXN</strong></td>
             </tr>
-            ${Number(venta.monto_recibido) > 0 ? `
             <tr>
               <td></td>
               <td>Efectivo recibido:</td>
-              <td class="right" colspan="2">$${Number(venta.monto_recibido).toFixed(2)}</td>
+              <td class="right" colspan="2">${Number(venta.monto_recibido || 0).toFixed(2)}</td>
             </tr>
             <tr>
               <td></td>
               <td><strong>CAMBIO:</strong></td>
-              <td class="right" colspan="2"><strong>$${Number(venta.cambio).toFixed(2)}</strong></td>
-            </tr>` : ''}
+              <td class="right" colspan="2"><strong>${Number(venta.cambio || 0).toFixed(2)}</strong></td>
+            </tr>
           </table>
           <div class="divider"></div>
           <div class="footer">
@@ -265,18 +263,14 @@ export default function ThermalTicket({ venta, onClose }: ThermalTicketProps) {
               <span>TOTAL:</span>
               <span>${Number(venta.total).toFixed(2)} MXN</span>
             </div>
-            {Number(venta.monto_recibido) > 0 && (
-              <>
-                <div className="flex justify-between text-xs text-[#7c6b64]">
-                  <span>Efectivo recibido:</span>
-                  <span>${Number(venta.monto_recibido).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-xs font-bold text-[#2f5f4d]">
-                  <span>CAMBIO:</span>
-                  <span>${Number(venta.cambio).toFixed(2)}</span>
-                </div>
-              </>
-            )}
+            <div className="flex justify-between text-xs text-[#7c6b64]">
+              <span>Efectivo recibido:</span>
+              <span>${Number(venta.monto_recibido || 0).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-xs font-bold text-[#2f5f4d]">
+              <span>CAMBIO:</span>
+              <span>${Number(venta.cambio || 0).toFixed(2)}</span>
+            </div>
           </div>
 
           <div className="text-center text-[9px] text-[#7c6b64] mt-4 leading-tight whitespace-pre-line">

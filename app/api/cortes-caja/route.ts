@@ -8,17 +8,40 @@ export async function GET() {
       return NextResponse.json({ abierto: false });
     }
 
-    const { data: corteAbierto } = await supabase
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Look for an open corte
+    let { data: corte } = await supabase
       .from('cortes_caja')
       .select('*')
       .eq('estado', 'Abierto')
       .maybeSingle();
 
-    if (!corteAbierto) {
-      return NextResponse.json({ abierto: false });
+    // If no open corte, check if there's one already created today
+    if (!corte) {
+      const { data: corteHoy } = await supabase
+        .from('cortes_caja')
+        .select('*')
+        .gte('fecha_apertura', today)
+        .lte('fecha_apertura', `${today}T23:59:59`)
+        .maybeSingle();
+
+      if (corteHoy) {
+        corte = corteHoy;
+      } else {
+        // Auto-create a corte for today
+        const { data: nuevo } = await supabase
+          .from('cortes_caja')
+          .insert([{ fondo_inicial: 0, fecha_apertura: new Date().toISOString() }])
+          .select()
+          .single();
+        if (nuevo) corte = nuevo;
+      }
     }
 
-    const today = new Date().toISOString().slice(0, 10);
+    if (!corte) {
+      return NextResponse.json({ abierto: false });
+    }
 
     const { data: ventasHoy } = await supabase
       .from('ventas')
@@ -35,12 +58,12 @@ export async function GET() {
       .lte('fecha', `${today}T23:59:59`);
 
     const totalGastos = (gastosHoy || []).reduce((s, g) => s + Number(g.monto), 0);
-    const saldoEsperado = Number(corteAbierto.fondo_inicial) + totalVentas - totalGastos;
+    const saldoEsperado = Number(corte.fondo_inicial) + totalVentas - totalGastos;
 
     return NextResponse.json({
       abierto: true,
-      corte_actual_id: corteAbierto.id,
-      fecha_apertura: corteAbierto.fecha_apertura,
+      corte_actual_id: corte.id,
+      fecha_apertura: corte.fecha_apertura,
       total_ventas: totalVentas,
       total_gastos: totalGastos,
       saldo_esperado: saldoEsperado,
@@ -58,25 +81,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No disponible' }, { status: 500 });
     }
 
-    if (body.accion === 'abrir') {
-      const { data: abiertoExistente } = await supabase
-        .from('cortes_caja')
-        .select('id')
-        .eq('estado', 'Abierto')
-        .maybeSingle();
-
-      if (abiertoExistente) {
-        return NextResponse.json({ error: 'Ya hay un corte de caja abierto. Ciérralo antes de abrir otro.' }, { status: 400 });
-      }
-
-      const { data, error } = await supabase
-        .from('cortes_caja')
-        .insert([{ fondo_inicial: Number(body.fondo_inicial) || 0 }])
-        .select()
-        .single();
-
-      if (!error && data) return NextResponse.json(data, { status: 201 });
-    }
+    const today = new Date().toISOString().slice(0, 10);
 
     if (body.accion === 'cerrar') {
       const corteId = body.corte_id;
@@ -95,8 +100,6 @@ export async function POST(request: Request) {
       if (!corte) {
         return NextResponse.json({ error: 'No hay corte de caja abierto' }, { status: 400 });
       }
-
-      const today = new Date().toISOString().slice(0, 10);
 
       const { data: ventasHoy } = await supabase
         .from('ventas')
@@ -133,6 +136,8 @@ export async function POST(request: Request) {
         .single();
 
       if (!error && data) return NextResponse.json(data);
+
+      return NextResponse.json({ error: 'Error al cerrar corte' }, { status: 500 });
     }
 
     return NextResponse.json({ error: 'Acción inválida' }, { status: 400 });

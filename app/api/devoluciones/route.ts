@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { requireAuth } from '@/lib/auth';
 
 // POST /api/devoluciones - Revertir una venta
 export async function POST(request: Request) {
+  const authErr = await requireAuth();
+  if (authErr) return authErr;
+
   try {
     const { venta_id } = await request.json();
     if (!venta_id) {
@@ -24,11 +28,16 @@ export async function POST(request: Request) {
     }
 
     for (const det of detalles) {
-      const { data: prod } = await supabase
+      const { data: prod, error: prodErr } = await supabase
         .from('productos')
         .select('*')
         .eq('id', det.producto_id)
-        .single();
+        .maybeSingle();
+
+      if (prodErr) {
+        console.error('Error al buscar producto:', prodErr);
+        continue;
+      }
 
       if (prod) {
         const nuevosStock = (Number(prod.unidades) || 0) + det.cantidad;
@@ -38,11 +47,12 @@ export async function POST(request: Request) {
           producto_id: prod.id,
           tipo: 'Entrada',
           cantidad: det.cantidad,
-          motivo: `Devolución de venta ${venta_id}`,
+          motivo: `Devolución de venta ${venta_id.slice(0, 8)}`,
         }]);
       }
     }
 
+    await supabase.from('detalle_ventas').delete().eq('venta_id', venta_id);
     await supabase.from('ventas').delete().eq('id', venta_id);
 
     return NextResponse.json({ success: true, message: 'Venta revertida exitosamente' });

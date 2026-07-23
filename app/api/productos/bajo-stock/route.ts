@@ -8,7 +8,7 @@ export async function GET() {
     if (supabase) {
       const { data, error } = await supabase
         .from('productos')
-        .select('id, nombre, marca, categoria, precio_compra, precio_venta, unidades, sku, stock_minimo, fotografia')
+        .select('id, nombre, marca, categoria, precio_compra, precio_venta, unidades, sku, stock_minimo, fotografia, presentacion')
         .order('unidades', { ascending: true });
 
       if (!error && data) {

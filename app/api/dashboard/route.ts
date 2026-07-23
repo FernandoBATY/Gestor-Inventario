@@ -83,6 +83,13 @@ export async function GET(request: Request) {
         const costoTotalInventario = prods.reduce((sum, p) => sum + (Number(p.precio_compra) || 0) * (Number(p.unidades) || 0), 0);
         const precioVentaTotal = prods.reduce((sum, p) => sum + (Number(p.precio_venta) || 0) * (Number(p.unidades) || 0), 0);
         const gananciaPotencial = precioVentaTotal - costoTotalInventario;
+        const margenPromedio = prods.length > 0
+          ? prods.reduce((sum, p) => {
+              const costo = Number(p.precio_compra) || 0;
+              const venta = Number(p.precio_venta) || 0;
+              return sum + (costo > 0 ? ((venta - costo) / costo) * 100 : 0);
+            }, 0) / prods.length
+          : 0;
 
         const gananciaReal = totalVendido - totalGastos;
 
@@ -92,11 +99,11 @@ export async function GET(request: Request) {
           totalVendido,
           totalGastos,
           gananciaReal,
+          margenPromedio,
           productosBajoStockCount: productosBajoStock.length,
           productosBajoStock,
           totalProductos: prods.length,
           totalVentasCount,
-          totalCategorias,
           ticketPromedio,
           ultimaVentaFecha,
           ventasUltimos7Dias: Array.from(ventasPorDia.entries()).map(([fecha, total]) => ({ fecha, total })),
@@ -105,7 +112,6 @@ export async function GET(request: Request) {
             .slice(0, 5),
           costoTotalInventario,
           precioVentaTotal,
-          gananciaPotencial,
         }, {
           headers: { 'Cache-Control': 'public, max-age=30, s-maxage=60' },
         });
@@ -136,13 +142,13 @@ export async function GET(request: Request) {
     const gananciaPotencial = precioVentaTotal - costoTotalInventario;
 
     return NextResponse.json({
-      ventasDia, ventasMes, totalVendido, totalGastos: 0, gananciaReal: totalVendido,
+      ventasDia, ventasMes, totalVendido, totalGastos: 0, gananciaReal: totalVendido, margenPromedio: 0,
       productosBajoStockCount: productosBajoStock.length,
       productosBajoStock, totalProductos: prods.length,
-      totalVentasCount, totalCategorias, ticketPromedio,
+      totalVentasCount, ticketPromedio,
       ultimaVentaFecha: ventas.at(-1)?.fecha || null,
       ventasUltimos7Dias: [], productosMasVendidos: [],
-      costoTotalInventario, precioVentaTotal, gananciaPotencial,
+      costoTotalInventario, precioVentaTotal,
     });
   } catch (error) {
     return NextResponse.json({ error: 'Error al consultar dashboard stats' }, { status: 500 });

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ProductosService } from '@/services/productos.service';
+import { requireAuth } from '@/lib/auth';
 
 // GET /api/productos -> Service Delegation
 export async function GET() {
@@ -15,6 +16,9 @@ export async function GET() {
 
 // POST /api/productos -> Service Delegation
 export async function POST(request: Request) {
+  const authErr = await requireAuth();
+  if (authErr) return authErr;
+
   try {
     const contentType = request.headers.get('content-type') || '';
     let bodyData: any = {};
@@ -51,6 +55,9 @@ export async function POST(request: Request) {
 
 // PUT /api/productos -> Service Delegation
 export async function PUT(request: Request) {
+  const authErr = await requireAuth();
+  if (authErr) return authErr;
+
   try {
     const contentType = request.headers.get('content-type') || '';
     let bodyData: any = {};
@@ -87,6 +94,9 @@ export async function PUT(request: Request) {
 
 // DELETE /api/productos -> Service Delegation
 export async function DELETE(request: Request) {
+  const authErr = await requireAuth();
+  if (authErr) return authErr;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

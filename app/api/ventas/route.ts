@@ -7,14 +7,26 @@ export async function GET() {
   try {
     const supabase = getSupabaseServerClient();
     if (supabase) {
-      const { data, error } = await supabase
+      let data: any[] | null = null;
+
+      // Try with detalles relation
+      const { data: d1, error: e1 } = await supabase
         .from('ventas')
         .select('*, detalles:detalle_ventas(*)')
         .order('fecha', { ascending: false });
 
-      if (!error && data) {
-        return NextResponse.json(data);
+      if (!e1 && d1) {
+        data = d1;
+      } else {
+        // Fallback: select without relation
+        const { data: d2, error: e2 } = await supabase
+          .from('ventas')
+          .select('*')
+          .order('fecha', { ascending: false });
+        if (!e2 && d2) data = d2;
       }
+
+      if (data) return NextResponse.json(data);
     }
 
     return NextResponse.json(mockStore.getVentas() as any[]);
@@ -77,13 +89,28 @@ export async function POST(request: Request) {
       const recibido = Math.max(0, Number(monto_recibido) || 0);
       const cambio = recibido > 0 ? Math.max(0, recibido - totalVenta) : 0;
 
-      const { data: ventaCreated, error: ventaErr } = await supabase
+      let ventaCreated: any = null;
+
+      // Try with monto_recibido/cambio first (new schema)
+      const { data: v1, error: e1 } = await supabase
         .from('ventas')
         .insert([{ folio, total: totalVenta, monto_recibido: recibido, cambio }])
         .select()
         .single();
 
-      if (!ventaErr && ventaCreated) {
+      if (!e1 && v1) {
+        ventaCreated = v1;
+      } else {
+        // Fallback: insert without new columns (old schema)
+        const { data: v2, error: e2 } = await supabase
+          .from('ventas')
+          .insert([{ folio, total: totalVenta }])
+          .select()
+          .single();
+        if (!e2 && v2) ventaCreated = v2;
+      }
+
+      if (ventaCreated) {
         const detallesConVentaId = detallesParaInsertar.map(d => ({
           ...d,
           venta_id: ventaCreated.id
@@ -94,16 +121,16 @@ export async function POST(request: Request) {
           .insert(detallesConVentaId)
           .select();
 
-        return NextResponse.json({
-          ...ventaCreated,
-          detalles: detallesCreated || detallesConVentaId
-        }, { status: 201 });
+        const resp = { ...ventaCreated, detalles: detallesCreated || detallesConVentaId };
+        // Ensure monto_recibido/cambio exist in response
+        if (resp.monto_recibido === undefined) resp.monto_recibido = recibido;
+        if (resp.cambio === undefined) resp.cambio = cambio;
+
+        return NextResponse.json(resp, { status: 201 });
       }
     }
 
-    // Fallback Mock Store
-    const venta = mockStore.createVenta(detalles);
-    return NextResponse.json(venta, { status: 201 });
+    return NextResponse.json({ error: 'Error al registrar venta' }, { status: 500 });
   } catch (error) {
     return NextResponse.json({ error: 'Error al registrar venta' }, { status: 500 });
   }

@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { mockStore } from '@/lib/mockStore';
+import { requireAuth } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 // DELETE /api/backup/limpiar-datos
 export async function DELETE() {
+  const authErr = await requireAuth();
+  if (authErr) return authErr;
+
   try {
     const supabase = getSupabaseServerClient();
     if (supabase) {

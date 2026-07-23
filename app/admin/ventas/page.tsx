@@ -99,6 +99,11 @@ export default function VentasPOSPage() {
 
   const handleCheckout = async () => {
     if (cart.length === 0) return;
+    if (Number(montoRecibido) < totalCart) {
+      alert(`El efectivo recibido ($${Number(montoRecibido).toFixed(2)}) es menor al total ($${totalCart.toFixed(2)}).`);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const payload = {

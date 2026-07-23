@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { mockStore } from '@/lib/mockStore';
+import { requireAuth } from '@/lib/auth';
 
 export async function POST(request: Request) {
+  const authErr = await requireAuth();
+  if (authErr) return authErr;
+
   try {
     const backupJson = await request.json();
 

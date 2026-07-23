@@ -8,13 +8,13 @@ import {
   ShoppingBag,
   AlertTriangle,
   PackageCheck,
-  ArrowUpRight,
   Sparkles,
   Calendar,
-  Layers,
   ChevronRight,
   Ticket,
   Package,
+  TrendingDown,
+  Percent,
 } from 'lucide-react';
 import ChartsWrapper from '@/components/dashboard/ChartsWrapper';
 
@@ -176,22 +176,7 @@ export default function DashboardPage() {
 
           <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#7c6b64]">Categorías activas</span>
-              <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
-                <Layers className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="mt-3">
-              <span className="text-3xl font-black text-[#201816]">{stats?.totalCategorias || 0}</span>
-            </div>
-            <div className="mt-2 text-[11px] text-[#7c6b64]">
-              Categorías guardadas en el sistema
-            </div>
-          </div>
-
-          <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#7c6b64]">Ticket promedio</span>
+              <span className="text-xs font-semibold text-[#7c6b64]">Ticket Promedio</span>
               <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
                 <Ticket className="w-5 h-5" />
               </div>
@@ -221,16 +206,16 @@ export default function DashboardPage() {
 
           <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#7c6b64]">Ganancia Potencial</span>
-              <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
-                <TrendingUp className="w-5 h-5" />
+              <span className="text-xs font-semibold text-[#7c6b64]">Gastos del Período</span>
+              <div className="w-9 h-9 rounded-xl bg-[#f8ecea] text-[#9f5d55] flex items-center justify-center border border-[#e2c8c4]">
+                <TrendingDown className="w-5 h-5" />
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-3xl font-black text-[#16a34a]">{moneyFormatter.format(Number(stats?.gananciaPotencial || 0))}</span>
+              <span className="text-3xl font-black text-[#9f5d55]">{moneyFormatter.format(Number(stats?.totalGastos || 0))}</span>
             </div>
             <div className="mt-2 text-[11px] text-[#7c6b64]">
-              Utilidad estimada si se vende todo el inventario
+              Egresos en el rango de fechas seleccionado
             </div>
           </div>
 
@@ -238,116 +223,87 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-[#7c6b64]">Ganancia Real</span>
               <div className="w-9 h-9 rounded-xl bg-[#edf6f1] text-[#2f5f4d] flex items-center justify-center border border-[#cfe0d8]">
-                <DollarSign className="w-5 h-5" />
+                <TrendingUp className="w-5 h-5" />
               </div>
             </div>
             <div className="mt-3">
               <span className="text-3xl font-black text-[#2f5f4d]">{moneyFormatter.format(Number(stats?.gananciaReal || 0))}</span>
             </div>
             <div className="mt-2 text-[11px] text-[#7c6b64]">
-              Ventas ({moneyFormatter.format(Number(stats?.totalVendido || 0))}) - Gastos ({moneyFormatter.format(Number(stats?.totalGastos || 0))})
+              Ventas - Gastos del período
+            </div>
+          </div>
+
+          <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#7c6b64]">Margen Promedio</span>
+              <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
+                <Percent className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-black text-[#201816]">{Number(stats?.margenPromedio || 0).toFixed(1)}%</span>
+            </div>
+            <div className="mt-2 text-[11px] text-[#7c6b64]">
+              Ganancia promedio sobre precio de compra
             </div>
           </div>
         </div>
       )}
 
-
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 glass-panel border border-[#d7c7c0] rounded-3xl p-6">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h3 className="font-extrabold text-base text-[#201816] flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-[#6f5249]" /> Alertas de Inventario Bajo
-              </h3>
-              <p className="text-xs text-[#7c6b64] mt-0.5">Productos con cantidad actual menor o igual al stock mínimo configurado.</p>
-            </div>
-            <Link
-              href="/admin/inventario"
-              className="text-xs font-semibold text-[#6f5249] hover:text-[#2f1e18] flex items-center gap-1 transition"
-            >
-              <span>Gestionar Stock</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {stats?.productosBajoStock?.length === 0 ? (
-            <div className="p-8 text-center bg-[#f6efe8] rounded-2xl border border-[#dbc9c2]">
-              <PackageCheck className="w-10 h-10 text-[#16a34a] mx-auto mb-2" />
-              <p className="font-semibold text-sm text-[#201816]">¡Inventario en excelente estado!</p>
-              <p className="text-xs text-[#7c6b64]">Todos los productos superan su nivel de stock mínimo.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-[#e6d8d2]">
-              {stats?.productosBajoStock?.map((prod: any) => (
-                <div key={prod.id} className="py-3 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <img
-                      src={prod.fotografia}
-                      alt={prod.nombre}
-                      className="w-10 h-10 rounded-lg object-cover bg-[#f2edeb] border border-[#d7c7c0] shrink-0"
-                      loading="lazy"
-                      onError={(event) => {
-                        const target = event.currentTarget as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
-                    />
-                    <div className="min-w-0">
-                      <h4 className="font-bold text-sm text-[#201816] truncate">{prod.nombre}</h4>
-                      <span className="text-[11px] text-[#7c6b64]">{prod.marca} • SKU: {prod.sku}</span>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0]">
-                      {prod.unidades} uds
-                    </span>
-                    <span className="text-[10px] text-[#7c6b64] block mt-0.5">Mín: {prod.stock_minimo}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-6 flex flex-col justify-between">
+      <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-6">
+        <div className="flex items-center justify-between mb-5">
           <div>
-            <h3 className="font-extrabold text-base text-[#201816] mb-4 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-[#6f5249]" /> Resumen del Sistema
+            <h3 className="font-extrabold text-base text-[#201816] flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-[#6f5249]" /> Alertas de Inventario Bajo
             </h3>
-            <div className="space-y-3">
-              <div className="p-3.5 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] flex items-center justify-between">
-                <div>
-                  <span className="text-xs text-[#7c6b64] block">Total de Productos</span>
-                  <span className="text-lg font-bold text-[#201816]">{stats?.totalProductos || 0}</span>
-                </div>
-                <Link href="/admin/productos" className="p-2 text-[#6f5249] hover:bg-[#efe3db] rounded-lg transition">
-                  <ArrowUpRight className="w-5 h-5" />
-                </Link>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2] flex items-center justify-between">
-                <div>
-                  <span className="text-xs text-[#7c6b64] block">Ventas Registradas</span>
-                  <span className="text-lg font-bold text-[#201816]">{stats?.totalVentasCount || 0}</span>
-                </div>
-                <Link href="/admin/ventas" className="p-2 text-[#6f5249] hover:bg-[#efe3db] rounded-lg transition">
-                  <ArrowUpRight className="w-5 h-5" />
-                </Link>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#f6efe8] border border-[#dbc9c2]">
-                <span className="text-xs text-[#7c6b64] block">Última venta</span>
-                <span className="text-sm font-semibold text-[#201816]">
-                  {stats?.ultimaVentaFecha ? new Date(stats.ultimaVentaFecha).toLocaleString('es-MX') : 'Sin movimientos recientes'}
-                </span>
-                <Link href="/admin/ventas" className="text-xs font-semibold text-[#6f5249] hover:text-[#2f1e18] transition inline-flex items-center gap-1 mt-2">
-                  Ir a Punto de Venta <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
+            <p className="text-xs text-[#7c6b64] mt-0.5">Productos con cantidad actual menor o igual al stock mínimo configurado.</p>
           </div>
-          <div className="mt-4 pt-3 border-t border-[#e6d8d2] text-center">
-            <p className="text-[10px] text-[#7c6b64]">Servidor Node.js API & Base de datos Supabase activos</p>
-          </div>
+          <Link
+            href="/admin/inventario"
+            className="text-xs font-semibold text-[#6f5249] hover:text-[#2f1e18] flex items-center gap-1 transition"
+          >
+            <span>Gestionar Stock</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
+
+        {stats?.productosBajoStock?.length === 0 ? (
+          <div className="p-8 text-center bg-[#f6efe8] rounded-2xl border border-[#dbc9c2]">
+            <PackageCheck className="w-10 h-10 text-[#16a34a] mx-auto mb-2" />
+            <p className="font-semibold text-sm text-[#201816]">¡Inventario en excelente estado!</p>
+            <p className="text-xs text-[#7c6b64]">Todos los productos superan su nivel de stock mínimo.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-[#e6d8d2]">
+            {stats?.productosBajoStock?.map((prod: any) => (
+              <div key={prod.id} className="py-3 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <img
+                    src={prod.fotografia}
+                    alt={prod.nombre}
+                    className="w-10 h-10 rounded-lg object-cover bg-[#f2edeb] border border-[#d7c7c0] shrink-0"
+                    loading="lazy"
+                    onError={(event) => {
+                      const target = event.currentTarget as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                  <div className="min-w-0">
+                    <h4 className="font-bold text-sm text-[#201816] truncate">{prod.nombre}</h4>
+                    <span className="text-[11px] text-[#7c6b64]">{prod.marca} • SKU: {prod.sku}</span>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0]">
+                    {prod.unidades} uds
+                  </span>
+                  <span className="text-[10px] text-[#7c6b64] block mt-0.5">Mín: {prod.stock_minimo}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <ChartsWrapper
@@ -363,7 +319,6 @@ export default function DashboardPage() {
           totalVentasCount: stats.totalVentasCount,
           costoTotalInventario: stats.costoTotalInventario,
           precioVentaTotal: stats.precioVentaTotal,
-          gananciaPotencial: stats.gananciaPotencial,
         } : null}
       />
     </div>
