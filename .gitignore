@@ -2,6 +2,7 @@
 /node_modules
 /.pnpm
 /.yarn
+/.pnp.*
 
 # Next.js build outputs
 /.next/
@@ -14,6 +15,9 @@
 # Environment variables
 .env
 .env*.local
+.env.development
+.env.production
+.env.test
 !.env.example
 
 # Debug & logs
@@ -23,11 +27,30 @@ yarn-error.log*
 .pnpm-debug.log*
 *.log
 
+# TypeScript
+*.tsbuildinfo
+
+# Coverage (tests)
+/coverage
+
+# Turbo (monorepo)
+/.turbo
+
+# SWC (Next.js compiler cache)
+/.swc
+
 # IDE & OS files
 .DS_Store
 *.pem
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # Vercel
 .vercel
+
+# Uploads / temp
+/public/uploads/*
+!public/uploads/.gitkeep
