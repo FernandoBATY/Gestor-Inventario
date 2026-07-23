@@ -173,7 +173,7 @@ export default function VentasPOSPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[600px] overflow-y-auto pr-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[50vh] overflow-y-auto pr-1">
             {filteredProducts.map((prod) => (
               <div
                 key={prod.id}
@@ -210,7 +210,7 @@ export default function VentasPOSPage() {
         </div>
 
         {/* RIGHT COLUMN: SHOPPING CART & CHECKOUT */}
-        <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-6 flex flex-col justify-between h-[650px] shadow-2xl">
+        <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-6 flex flex-col shadow-2xl">
           <div>
             <h3 className="font-extrabold text-base text-[#201816] pb-3 border-b border-[#e6d8d2] flex items-center justify-between">
               <span>Carrito de Venta</span>
@@ -225,7 +225,7 @@ export default function VentasPOSPage() {
                 <p>Haz clic en los productos para agregarlos a la venta</p>
               </div>
             ) : (
-              <div className="divide-y divide-[#e6d8d2] max-h-[380px] overflow-y-auto my-3 pr-1 space-y-2">
+              <div className="divide-y divide-[#e6d8d2] max-h-[50vh] overflow-y-auto my-3 pr-1 space-y-2">
                 {cart.map((item) => (
                   <div key={item.producto.id} className="pt-2 flex items-center justify-between gap-3 text-xs">
                     <div className="overflow-hidden">
@@ -269,7 +269,7 @@ export default function VentasPOSPage() {
           <div className="pt-4 border-t border-[#e6d8d2]">
             <div className="flex justify-between items-center mb-4">
               <span className="text-xs font-semibold text-[#7c6b64]">TOTAL A COBRAR</span>
-              <span className="text-3xl font-black text-[#2f5f4d]">${totalCart.toFixed(2)} MXN</span>
+              <span className="text-2xl sm:text-3xl font-black text-[#2f5f4d] break-all">${totalCart.toFixed(2)} MXN</span>
             </div>
 
             <button

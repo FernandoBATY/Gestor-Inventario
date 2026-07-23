@@ -53,7 +53,7 @@ export default function DashboardPage() {
   })) || [];
 
   const topProductsData = stats?.productosMasVendidos?.map((item: any) => ({
-    nombre: item.nombre.length > 16 ? item.nombre.substring(0, 16) + '...' : item.nombre,
+    nombre: item.nombre.length > 22 ? item.nombre.substring(0, 22) + '...' : item.nombre,
     Unidades: item.cantidad,
   })) || [];
 

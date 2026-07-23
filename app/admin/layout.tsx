@@ -116,8 +116,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
             </div>
 
-            <div className="hidden sm:flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-[#f6efe8] border border-[#d7c7c0]">
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-2xl bg-[#f6efe8] border border-[#d7c7c0]">
                 <div className="w-8 h-8 rounded-full bg-[#efe3db] border border-[#d7c7c0] flex items-center justify-center font-bold text-xs text-[#6f5249] shrink-0">
                   <UserCheck className="w-4 h-4" />
                 </div>
@@ -126,13 +126,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <p className="text-[10px] text-[#7c6b64] truncate">{userEmail}</p>
                 </div>
               </div>
-
+              <div className="sm:hidden flex items-center gap-1">
+                <div className="w-8 h-8 rounded-full bg-[#efe3db] border border-[#d7c7c0] flex items-center justify-center font-bold text-xs text-[#6f5249] shrink-0">
+                  <UserCheck className="w-4 h-4" />
+                </div>
+              </div>
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center gap-2 py-2.5 px-4 rounded-2xl text-xs font-semibold text-[#7c6b64] hover:text-[#9f5d55] hover:bg-[#f8ecea] border border-[#d7c7c0] transition"
+                className="inline-flex items-center gap-1 py-2 px-2.5 sm:px-4 rounded-2xl text-xs font-semibold text-[#7c6b64] hover:text-[#9f5d55] hover:bg-[#f8ecea] border border-[#d7c7c0] transition"
               >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Cerrar Sesión</span>
+                <LogOut className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Cerrar Sesión</span>
               </button>
             </div>
           </div>
@@ -152,7 +156,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  <span>{item.name}</span>
+                  <span className="hidden sm:inline">{item.name}</span>
                 </Link>
               );
             })}
@@ -171,24 +175,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           )}
 
-          <div className="sm:hidden flex items-center justify-between gap-3 pt-1 border-t border-[#e6d8d2]/70">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-[#efe3db] border border-[#d7c7c0] flex items-center justify-center font-bold text-xs text-[#6f5249] shrink-0">
-                <UserCheck className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold text-[#201816] truncate">{userEmail}</p>
-                <p className="text-[10px] text-[#7c6b64] truncate">Sesión activa</p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold text-[#7c6b64] hover:text-[#9f5d55] hover:bg-[#f8ecea] border border-[#d7c7c0] transition"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Salir</span>
-            </button>
-          </div>
         </div>
       </header>
 

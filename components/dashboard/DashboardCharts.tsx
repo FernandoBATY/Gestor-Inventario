@@ -64,7 +64,7 @@ export default function DashboardCharts({ barChartData, topProductsData, stats }
           ) : (
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={comparisonData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <BarChart data={comparisonData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
                   <CartesianGrid stroke="#e6d8d2" strokeDasharray="3 3" />
                   <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#7c6b64' }} />
                   <YAxis tick={{ fontSize: 10, fill: '#7c6b64' }} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v} />
@@ -90,8 +90,8 @@ export default function DashboardCharts({ barChartData, topProductsData, stats }
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topProductsData} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <CartesianGrid stroke="#e6d8d2" strokeDasharray="3 3" />
-                  <XAxis type="number" tick={{ fontSize: 10, fill: '#7c6b64' }} />
-                  <YAxis type="category" dataKey="nombre" tick={{ fontSize: 10, fill: '#7c6b64' }} width={90} />
+                  <XAxis type="number" tick={{ fontSize: 9, fill: '#7c6b64' }} />
+                  <YAxis type="category" dataKey="nombre" tick={{ fontSize: 9, fill: '#7c6b64' }} width={80} />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar dataKey="Unidades" fill="#6f5249" radius={[0, 4, 4, 0]} />
                 </BarChart>
@@ -112,7 +112,7 @@ export default function DashboardCharts({ barChartData, topProductsData, stats }
           ) : (
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={barChartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <LineChart data={barChartData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
                   <CartesianGrid stroke="#e6d8d2" strokeDasharray="3 3" />
                   <XAxis dataKey="fecha" tick={{ fontSize: 10, fill: '#7c6b64' }} />
                   <YAxis tick={{ fontSize: 10, fill: '#7c6b64' }} />

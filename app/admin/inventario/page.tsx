@@ -182,8 +182,8 @@ export default function InventarioPage() {
               />
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Filter className="w-4 h-4 text-[#7c6b64]" />
+            <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+              <Filter className="w-4 h-4 text-[#7c6b64] shrink-0" />
               {['Todos', 'Entrada', 'Salida', 'Ajuste'].map((t) => (
                 <button
                   key={t}
@@ -222,7 +222,7 @@ export default function InventarioPage() {
                         {m.tipo === 'Entrada' ? <ArrowUpRight className="w-5 h-5" /> : m.tipo === 'Salida' ? <ArrowDownRight className="w-5 h-5" /> : <RefreshCw className="w-4 h-4" />}
                       </div>
                       <div>
-                        <h4 className="font-bold text-xs text-[#201816]">{m.producto?.nombre || 'Producto'}</h4>
+                        <h4 className="font-bold text-xs text-[#201816] truncate max-w-[160px] sm:max-w-[300px]">{m.producto?.nombre || 'Producto'}</h4>
                         <p className="text-[11px] text-[#7c6b64]">{m.motivo}</p>
                       </div>
                     </div>

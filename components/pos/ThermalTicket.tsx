@@ -230,7 +230,7 @@ export default function ThermalTicket({ venta, onClose }: ThermalTicketProps) {
               {venta.detalles?.map((det, idx) => (
                 <tr key={idx} className="border-b border-[#f2edeb]">
                   <td className="py-1 align-top">{det.cantidad}</td>
-                  <td className="py-1 leading-tight">{det.nombre_producto}</td>
+                  <td className="py-1 leading-tight break-words max-w-[120px] sm:max-w-none">{det.nombre_producto}</td>
                   <td className="py-1 text-right align-top">${Number(det.precio_unitario).toFixed(2)}</td>
                   <td className="py-1 text-right align-top font-semibold">${Number(det.subtotal).toFixed(2)}</td>
                 </tr>

@@ -134,25 +134,12 @@ export default function PublicStorefrontPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Link
-                href="/carrito"
-                className="relative inline-flex lg:hidden items-center gap-1.5 bg-[#fffaf7] hover:bg-[#f6efe8] text-[#201816] text-xs font-semibold px-3 py-2.5 rounded-xl shadow-lg border border-[#d7c7c0] transition-all"
-              >
-                <ShoppingCart className="w-4 h-4" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-[#9f5d55] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
-            </div>
           </div>
 
-          <div className="flex-grow max-w-2xl lg:mx-lg hidden md:block">
+          <div className="flex-grow max-w-2xl lg:mx-lg">
             <div className="flex items-center bg-[#fffaf7] border border-[#d7c7c0] rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-[#f2baa8]/25 transition-all">
               <select
-                className="bg-[#f6efe8] border-none text-xs font-semibold py-3 pl-4 pr-6 cursor-pointer focus:ring-0 text-[#7c6b64] border-r border-[#d7c7c0]"
+                className="bg-[#f6efe8] border-none text-xs font-semibold py-3 pl-4 pr-6 cursor-pointer focus:ring-0 text-[#7c6b64] border-r border-[#d7c7c0] hidden sm:block"
                 value={selectedCategoria}
                 onChange={(e) => setSelectedCategoria(e.target.value)}
               >
@@ -173,13 +160,13 @@ export default function PublicStorefrontPage() {
             </div>
           </div>
 
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/carrito"
               className="relative inline-flex items-center gap-2 bg-[#fffaf7] hover:bg-[#f6efe8] text-[#201816] text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg border border-[#d7c7c0] transition-all"
             >
               <ShoppingCart className="w-4 h-4" />
-              <span>Carrito</span>
+              <span className="hidden lg:inline">Carrito</span>
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-[#9f5d55] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
                   {cartCount}
@@ -188,9 +175,10 @@ export default function PublicStorefrontPage() {
             </Link>
             <Link
               href="/admin/login"
-              className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 transition-all"
+              className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-3 lg:px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 transition-all"
             >
-              Iniciar sesión
+              <LogIn className="w-4 h-4 lg:hidden" />
+              <span className="hidden lg:inline">Iniciar sesión</span>
             </Link>
           </div>
         </div>
@@ -198,7 +186,7 @@ export default function PublicStorefrontPage() {
 
       <section className="relative overflow-hidden py-12 px-4 lg:px-8 border-b border-[#d5c2bd] bg-gradient-to-b from-[#fff8f4] to-[#f6efe8]">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-8 items-start">
-          <aside className="glass-panel rounded-3xl p-6 border border-[#d7c7c0] sticky top-24">
+          <aside className="glass-panel rounded-3xl p-6 border border-[#d7c7c0] lg:sticky lg:top-24">
             <div className="flex items-center justify-between border-b border-[#e6d8d2] pb-3">
               <h2 className="font-headline text-2xl text-[#201816]">Filtros</h2>
               <button
@@ -417,7 +405,7 @@ export default function PublicStorefrontPage() {
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0] inline-block mb-1">
               {selectedProduct.categoria}
             </span>
-            <h3 className="text-xl font-headline text-[#201816]">{selectedProduct.nombre}</h3>
+            <h3 className="text-xl font-headline text-[#201816] break-words">{selectedProduct.nombre}</h3>
 
             <div className="grid grid-cols-2 gap-2 my-3 bg-[#fffaf7] p-3 rounded-xl border border-[#d7c7c0] text-[11px]">
               <div><span className="text-[#7c6b64] block">Marca</span><span className="font-semibold text-[#201816]">{selectedProduct.marca}</span></div>
