@@ -44,7 +44,7 @@ export default function TerminosServicioPage() {
               <section>
                 <h3 className="font-bold text-base text-[#36160c] mb-2">1. Aceptación de los términos</h3>
                 <p className="text-[#7c6b64]">
-                  Al utilizar el sitio web y el sistema de inventario de Papelería El Cuaderno Dorado, usted acepta
+                  Al utilizar el sitio web y el sistema de inventario de Papelería, usted acepta
                   los presentes términos y condiciones. Si no está de acuerdo con alguno de estos términos, le
                   solicitamos que no utilice nuestros servicios.
                 </p>
@@ -73,7 +73,7 @@ export default function TerminosServicioPage() {
                 <h3 className="font-bold text-base text-[#36160c] mb-2">4. Propiedad intelectual</h3>
                 <p className="text-[#7c6b64]">
                   Todo el contenido del sitio web, incluyendo imágenes, textos, logotipos y diseño, es propiedad
-                  de Papelería El Cuaderno Dorado, a menos que se indique lo contrario. Queda prohibida su
+                  de Papelería, a menos que se indique lo contrario. Queda prohibida su
                   reproducción total o parcial sin autorización expresa.
                 </p>
               </section>
@@ -81,7 +81,7 @@ export default function TerminosServicioPage() {
               <section>
                 <h3 className="font-bold text-base text-[#36160c] mb-2">5. Limitación de responsabilidad</h3>
                 <p className="text-[#7c6b64]">
-                  Papelería El Cuaderno Dorado no se hace responsable por daños directos o indirectos derivados del
+                  Papelería no se hace responsable por daños directos o indirectos derivados del
                   uso del sistema de inventario o del catálogo público. El usuario asume la responsabilidad total
                   por el uso que dé a la información proporcionada.
                 </p>
@@ -102,7 +102,7 @@ export default function TerminosServicioPage() {
 
       <footer className="bg-[#2f1e18] text-[#f5efed] py-6 px-4 lg:px-8">
         <div className="max-w-[900px] mx-auto text-center text-sm text-[#d9c8c0]">
-          <p>© 2026 Papelería El Cuaderno Dorado. Todos los derechos reservados.</p>
+          <p>© 2026 Papelería. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>

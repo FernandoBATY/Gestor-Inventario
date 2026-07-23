@@ -108,7 +108,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <BookOpen className="w-5 h-5 text-[#fff8f4]" />
               </div>
               <div className="min-w-0">
-                <h2 className="font-headline text-base sm:text-lg tracking-tight text-[#36160c] truncate">El Cuaderno Dorado</h2>
+                <h2 className="font-headline text-base sm:text-lg tracking-tight text-[#36160c] truncate">Papelería</h2>
                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#7c6b64] font-semibold">
                   <span>Panel Admin</span>
                   {bajoStockCount > 0 && <span className="text-[#8a6f5c]">Stock bajo: {bajoStockCount}</span>}

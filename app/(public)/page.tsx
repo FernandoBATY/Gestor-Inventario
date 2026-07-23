@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Producto } from '@/lib/types';
 import { 
@@ -29,17 +29,54 @@ const NoPhoto = ({ text = 'Sin fotografía' }: { text?: string }) => (
 );
 
 export default function PublicStorefrontPage() {
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const [paginatedProducts, setPaginatedProducts] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<string[]>([]);
   const [selectedCategoria, setSelectedCategoria] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null);
-  const [priceLimit, setPriceLimit] = useState(500);
+  const [priceMin, setPriceMin] = useState(0);
+  const [priceMax, setPriceMax] = useState(200);
+  const [appliedPriceMin, setAppliedPriceMin] = useState(0);
+  const [appliedPriceMax, setAppliedPriceMax] = useState(200);
   const [cartCount, setCartCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+
+  const fetchCatalog = useCallback(async (p: number) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: String(p),
+        size: '12',
+        search: searchTerm,
+        categoria: selectedCategoria,
+        precioMin: String(appliedPriceMin),
+        precioMax: String(appliedPriceMax),
+      });
+      const res = await fetch(`/api/productos/paginado?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setPaginatedProducts(data.content);
+        setTotalElements(data.totalElements);
+        setTotalPages(data.totalPages);
+        setPage(data.page);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, selectedCategoria, appliedPriceMin, appliedPriceMax]);
 
   useEffect(() => {
-    fetchCatalog();
+    setPage(0);
+    fetchCatalog(0);
+  }, [fetchCatalog]);
+
+  useEffect(() => {
     fetchCategories();
     updateCartCount();
 
@@ -82,21 +119,6 @@ export default function PublicStorefrontPage() {
     }
   };
 
-  const fetchCatalog = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/productos');
-      if (res.ok) {
-        const data = await res.json();
-        setProductos(data);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fetchCategories = async () => {
     try {
       const res = await fetch('/api/productos/categorias');
@@ -109,39 +131,61 @@ export default function PublicStorefrontPage() {
     }
   };
 
-  const filteredProducts = productos.filter((p) => {
-    const matchesSearch = 
-      p.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.marca.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.sku.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategoria === 'Todas' || p.categoria === selectedCategoria;
-    const price = Number(p.precio_venta) || 0;
-    return matchesSearch && matchesCategory && price >= 0 && price <= priceLimit;
-  });
+  const commitPrice = () => {
+    setAppliedPriceMin(priceMin);
+    setAppliedPriceMax(priceMax);
+  };
+
+  const goToPage = (p: number) => {
+    if (p < 0 || p >= totalPages) return;
+    setPage(p);
+    fetchCatalog(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-background text-[#201816] flex flex-col selection:bg-[#f2baa8]/40 selection:text-[#201816]">
       <header className="sticky top-0 z-40 glass-panel border-b border-[#d5c2bd] px-4 lg:px-8 py-3">
-        <div className="max-w-[1200px] mx-auto flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center justify-between gap-3 lg:justify-start">
+        <div className="max-w-[1200px] mx-auto flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-xl bg-[#2f1e18] flex items-center justify-center shadow-lg shadow-[#2f1e18]/15 shrink-0">
                 <BookOpen className="w-5 h-5 text-[#fff8f4]" />
               </div>
               <div className="min-w-0">
-                <h1 className="font-headline text-xl sm:text-2xl tracking-tight text-[#36160c] truncate">Papelería <span className="text-[#6f5249]">El Cuaderno Dorado</span></h1>
+                <h1 className="font-headline text-xl sm:text-2xl tracking-tight text-[#36160c] truncate">Papelería</h1>
                 <p className="text-xs text-[#7c6b64] font-medium hidden sm:block">Catálogo público de productos disponibles</p>
               </div>
             </div>
-
+            <div className="flex items-center gap-2">
+              <Link
+                href="/carrito"
+                className="relative inline-flex items-center gap-2 bg-[#fffaf7] hover:bg-[#f6efe8] text-[#201816] text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg border border-[#d7c7c0] transition-all"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span className="hidden lg:inline">Carrito</span>
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#9f5d55] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/admin/login"
+                className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-3 lg:px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 transition-all"
+              >
+                <LogIn className="w-4 h-4 lg:hidden" />
+                <span className="hidden lg:inline">Iniciar sesión</span>
+              </Link>
+            </div>
           </div>
 
-          <div className="flex-grow max-w-2xl lg:mx-lg">
+          <div className="w-full">
             <div className="flex items-center bg-[#fffaf7] border border-[#d7c7c0] rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-[#f2baa8]/25 transition-all">
               <select
                 className="bg-[#f6efe8] border-none text-xs font-semibold py-3 pl-4 pr-6 cursor-pointer focus:ring-0 text-[#7c6b64] border-r border-[#d7c7c0] hidden sm:block"
                 value={selectedCategoria}
-                onChange={(e) => setSelectedCategoria(e.target.value)}
+                onChange={(e) => { setSelectedCategoria(e.target.value); setPage(0); }}
               >
                 {categorias.map((cat) => (
                   <option key={cat}>{cat}</option>
@@ -154,32 +198,10 @@ export default function PublicStorefrontPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button className="bg-[#2f1e18] text-[#fff8f4] px-4 py-3 hover:bg-[#412820] transition-colors">
+              <button onClick={() => { setSearchTerm(searchQuery); setPage(0); }} className="bg-[#2f1e18] text-[#fff8f4] px-4 py-3 hover:bg-[#412820] transition-colors">
                 <Search className="w-5 h-5" />
               </button>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href="/carrito"
-              className="relative inline-flex items-center gap-2 bg-[#fffaf7] hover:bg-[#f6efe8] text-[#201816] text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg border border-[#d7c7c0] transition-all"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              <span className="hidden lg:inline">Carrito</span>
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#9f5d55] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              href="/admin/login"
-              className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-3 lg:px-4 py-2.5 rounded-xl shadow-lg shadow-[#2f1e18]/15 transition-all"
-            >
-              <LogIn className="w-4 h-4 lg:hidden" />
-              <span className="hidden lg:inline">Iniciar sesión</span>
-            </Link>
           </div>
         </div>
       </header>
@@ -193,7 +215,11 @@ export default function PublicStorefrontPage() {
                 onClick={() => {
                   setSelectedCategoria('Todas');
                   setSearchQuery('');
-                  setPriceLimit(500);
+                  setSearchTerm('');
+                  setPriceMin(0);
+                  setPriceMax(200);
+                  setAppliedPriceMin(0);
+                  setAppliedPriceMax(200);
                 }}
                 className="text-[#6f5249] text-xs font-semibold hover:underline"
               >
@@ -231,20 +257,42 @@ export default function PublicStorefrontPage() {
 
               <div className="space-y-2">
                 <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-[#83746f]">Rango de Precios</h3>
-                <div className="flex items-center gap-3">
+                <div className="flex justify-between text-xs text-[#7c6b64] mb-1">
+                  <span>${priceMin}</span>
+                  <span>${priceMax}</span>
+                </div>
+                <div className="relative h-6">
                   <input
                     type="range"
                     min="0"
-                    max="500"
-                    value={priceLimit}
-                    onChange={(e) => setPriceLimit(Number(e.target.value))}
-                    className="w-full accent-[#2f1e18] h-2"
+                    max="200"
+                    value={priceMin}
+                    onChange={(e) => setPriceMin(Math.min(Number(e.target.value), priceMax))}
+                    onMouseUp={commitPrice}
+                    onTouchEnd={commitPrice}
+                    className="absolute w-full h-2 top-2 accent-[#2f1e18] pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto appearance-none bg-transparent [&::-webkit-slider-runnable-track]:bg-transparent"
+                    style={{ zIndex: priceMin > 190 ? 5 : 3 }}
                   />
-                  <span className="text-sm font-semibold text-[#201816] min-w-[3rem] text-right">${priceLimit}</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    value={priceMax}
+                    onChange={(e) => setPriceMax(Math.max(Number(e.target.value), priceMin))}
+                    onMouseUp={commitPrice}
+                    onTouchEnd={commitPrice}
+                    className="absolute w-full h-2 top-2 accent-[#2f1e18] pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto appearance-none bg-transparent [&::-webkit-slider-runnable-track]:bg-transparent"
+                    style={{ zIndex: 4 }}
+                  />
+                  <div className="absolute top-2 left-0 right-0 h-2 rounded-full bg-[#e6d8d2]" />
+                  <div
+                    className="absolute top-2 h-2 rounded-full bg-[#2f1e18]"
+                    style={{ left: `${(priceMin / 200) * 100}%`, right: `${100 - (priceMax / 200) * 100}%` }}
+                  />
                 </div>
                 <div className="flex justify-between text-xs text-[#7c6b64]">
                   <span>$0</span>
-                  <span>$500</span>
+                  <span>$200</span>
                 </div>
               </div>
             </div>
@@ -257,7 +305,7 @@ export default function PublicStorefrontPage() {
                   <Sparkles className="w-3.5 h-3.5" /> Soluciones en Papelería
                 </span>
                 <h2 className="font-headline text-3xl sm:text-[36px] leading-tight text-[#201816]">Catálogo Premium</h2>
-                <p className="text-sm text-[#7c6b64] mt-1">Mostrando {filteredProducts.length} de {productos.length} artículos</p>
+                <p className="text-sm text-[#7c6b64] mt-1">Mostrando {paginatedProducts.length} de {totalElements} artículos</p>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs font-semibold text-[#83746f]">Ordenar por:</span>
@@ -281,7 +329,7 @@ export default function PublicStorefrontPage() {
                   </div>
                 ))}
               </div>
-            ) : filteredProducts.length === 0 ? (
+            ) : paginatedProducts.length === 0 ? (
               <div className="glass-panel rounded-3xl p-12 text-center max-w-md mx-auto border border-[#d7c7c0]">
                 <ShoppingBag className="w-12 h-12 text-[#83746f] mx-auto mb-4" />
                 <h3 className="font-headline text-2xl text-[#201816]">No se encontraron productos</h3>
@@ -289,7 +337,7 @@ export default function PublicStorefrontPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredProducts.map((prod) => (
+                {paginatedProducts.map((prod) => (
                   <div
                     key={prod.id}
                     onClick={() => setSelectedProduct(prod)}
@@ -361,15 +409,23 @@ export default function PublicStorefrontPage() {
             )}
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#d5c2bd] pt-5">
-              <p className="text-sm text-[#7c6b64]">Mostrando 1 a {Math.min(filteredProducts.length, 12)} de {filteredProducts.length} resultados</p>
+              <p className="text-sm text-[#7c6b64]">Página {page + 1} de {totalPages} ({totalElements} artículos)</p>
               <nav className="flex items-center gap-2">
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all"><ChevronLeft className="w-4 h-4 text-[#7c6b64]" /></button>
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#2f1e18] text-[#fff8f4] font-semibold">1</button>
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all">2</button>
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all">3</button>
-                <span className="text-[#83746f]">...</span>
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all">13</button>
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all"><ChevronRight className="w-4 h-4 text-[#7c6b64]" /></button>
+                <button onClick={() => goToPage(page - 1)} disabled={page === 0} className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all disabled:opacity-30 disabled:cursor-not-allowed"><ChevronLeft className="w-4 h-4 text-[#7c6b64]" /></button>
+                {Array.from({ length: totalPages }, (_, i) => {
+                  if (totalPages <= 7 || i === 0 || i === totalPages - 1 || (i >= page - 1 && i <= page + 1)) {
+                    return (
+                      <button key={i} onClick={() => goToPage(i)} className={`w-10 h-10 flex items-center justify-center rounded-lg font-semibold text-sm transition-all ${i === page ? 'bg-[#2f1e18] text-[#fff8f4]' : 'border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] text-[#7c6b64]'}`}>
+                        {i + 1}
+                      </button>
+                    );
+                  }
+                  if (i === page - 2 || i === page + 2) {
+                    return <span key={i} className="text-[#83746f] px-1">...</span>;
+                  }
+                  return null;
+                })}
+                <button onClick={() => goToPage(page + 1)} disabled={page >= totalPages - 1} className="w-10 h-10 flex items-center justify-center rounded-lg border border-[#d7c7c0] bg-white hover:bg-[#f6efe8] transition-all disabled:opacity-30 disabled:cursor-not-allowed"><ChevronRight className="w-4 h-4 text-[#7c6b64]" /></button>
               </nav>
             </div>
           </div>
@@ -436,7 +492,7 @@ export default function PublicStorefrontPage() {
               <div className="h-8 w-8 rounded-lg bg-[#fff8f4] flex items-center justify-center">
                 <BookOpen className="w-4 h-4 text-[#2f1e18]" />
               </div>
-              <span className="font-headline text-xl">El Cuaderno Dorado</span>
+              <span className="font-headline text-xl">Papelería</span>
             </div>
             <p className="text-sm text-[#d9c8c0]">Sistema de inventario.</p>
           </div>
@@ -463,7 +519,7 @@ export default function PublicStorefrontPage() {
           </div>
         </div>
         <div className="max-w-[1200px] mx-auto pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-[#d9c8c0]">
-          <p>© 2026 Papelería El Cuaderno Dorado. Todos los derechos reservados.</p>
+          <p>© 2026 Papelería. Todos los derechos reservados.</p>
           <div className="flex gap-6">
             <Link href="/aviso-de-privacidad" className="hover:text-[#f2baa8] transition-colors">Aviso de Privacidad</Link>
             <Link href="/terminos-del-servicio" className="hover:text-[#f2baa8] transition-colors">Términos del Servicio</Link>

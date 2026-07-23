@@ -10,6 +10,8 @@ export async function GET(request: Request) {
     const size = parseInt(searchParams.get('size') || '12', 10);
     const search = searchParams.get('search') || '';
     const categoria = searchParams.get('categoria') || '';
+    const precioMin = parseFloat(searchParams.get('precioMin') || '0');
+    const precioMax = parseFloat(searchParams.get('precioMax') || '999999');
 
     const supabase = getSupabaseServerClient();
     if (supabase) {
@@ -20,6 +22,12 @@ export async function GET(request: Request) {
       }
       if (categoria && categoria !== 'Todas') {
         query = query.eq('categoria', categoria);
+      }
+      if (precioMin > 0) {
+        query = query.gte('precio_venta', precioMin);
+      }
+      if (precioMax < 999999) {
+        query = query.lte('precio_venta', precioMax);
       }
 
       const from = page * size;
@@ -51,6 +59,10 @@ export async function GET(request: Request) {
     if (categoria && categoria !== 'Todas') {
       products = products.filter(p => p.categoria === categoria);
     }
+    products = products.filter(p => {
+      const price = Number(p.precio_venta) || 0;
+      return price >= precioMin && price <= precioMax;
+    });
 
     const totalElements = products.length;
     const start = page * size;

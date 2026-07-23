@@ -7,7 +7,7 @@ export interface NegocioConfig {
 }
 
 export const DEFAULT_NEGOCIO_CONFIG: NegocioConfig = {
-  nombre_negocio: 'Papelería El Cuaderno Dorado',
+  nombre_negocio: 'Papelería',
   rfc: 'PAP980721-H89',
   telefono: '555-0192-384',
   direccion: 'Av. Principal No. 402, Centro',

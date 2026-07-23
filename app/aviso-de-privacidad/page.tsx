@@ -44,7 +44,7 @@ export default function AvisoPrivacidadPage() {
               <section>
                 <h3 className="font-bold text-base text-[#36160c] mb-2">1. Identidad y domicilio del responsable</h3>
                 <p className="text-[#7c6b64]">
-                  Papelería El Cuaderno Dorado, con domicilio en Ciudad de México, México, es el responsable del
+                  Papelería, con domicilio en Ciudad de México, México, es el responsable del
                   tratamiento de sus datos personales. Para cualquier duda o aclaración, puede contactarnos a través del
                   correo electrónico: contacto@cuadernodorado.mx.
                 </p>
@@ -53,7 +53,7 @@ export default function AvisoPrivacidadPage() {
               <section>
                 <h3 className="font-bold text-base text-[#36160c] mb-2">2. Datos personales que recabamos</h3>
                 <p className="text-[#7c6b64]">
-                  En Papelería El Cuaderno Dorado no recabamos datos personales de los usuarios que navegan en nuestro
+                  En Papelería no recabamos datos personales de los usuarios que navegan en nuestro
                   catálogo público. La única información que se almacena localmente en su navegador es la selección
                   temporal de productos en el carrito de compras, la cual no es compartida con terceros ni almacenada
                   en nuestros servidores.
@@ -92,7 +92,7 @@ export default function AvisoPrivacidadPage() {
 
       <footer className="bg-[#2f1e18] text-[#f5efed] py-6 px-4 lg:px-8">
         <div className="max-w-[900px] mx-auto text-center text-sm text-[#d9c8c0]">
-          <p>© 2026 Papelería El Cuaderno Dorado. Todos los derechos reservados.</p>
+          <p>© 2026 Papelería. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>

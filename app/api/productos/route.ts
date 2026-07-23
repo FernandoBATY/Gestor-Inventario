@@ -5,7 +5,9 @@ import { ProductosService } from '@/services/productos.service';
 export async function GET() {
   try {
     const data = await ProductosService.getAll();
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: { 'Cache-Control': 'public, max-age=30, s-maxage=60' },
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Error al consultar productos' }, { status: 500 });
   }

@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
             <BookOpen className="w-7 h-7 text-[#fff8f4]" />
           </div>
           <h1 className="text-2xl font-headline font-extrabold tracking-tight text-[#201816]">Panel Administrativo</h1>
-          <p className="text-xs text-[#7c6b64] mt-1">Papelería El Cuaderno Dorado</p>
+          <p className="text-xs text-[#7c6b64] mt-1">Papelería</p>
         </div>
 
         <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-8 shadow-2xl">

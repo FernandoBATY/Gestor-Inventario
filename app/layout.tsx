@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Papelería El Cuaderno Dorado - Catálogo y Administración',
+  title: 'Papelería - Catálogo y Administración',
   description: 'Sistema integral de gestión de inventario, ventas y catálogo público para papelerías.',
 };
 
