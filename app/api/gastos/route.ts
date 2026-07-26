@@ -1,14 +1,24 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const fechaInicio = searchParams.get('fechaInicio');
+    const fechaFin = searchParams.get('fechaFin');
+
     const supabase = getSupabaseServerClient();
     if (supabase) {
-      const { data, error } = await supabase
-        .from('gastos')
-        .select('*')
-        .order('fecha', { ascending: false });
+      let query = supabase.from('gastos').select('*').order('fecha', { ascending: false });
+
+      if (fechaInicio) {
+        query = query.gte('fecha', fechaInicio);
+      }
+      if (fechaFin) {
+        query = query.lte('fecha', fechaFin);
+      }
+
+      const { data, error } = await query;
       if (!error && data) return NextResponse.json(data);
     }
     return NextResponse.json([]);

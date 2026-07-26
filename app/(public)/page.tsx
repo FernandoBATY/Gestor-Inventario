@@ -44,6 +44,8 @@ export default function PublicStorefrontPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  const [sort, setSort] = useState('nombre-asc');
+  const [incluirAgotados, setIncluirAgotados] = useState(false);
 
   const fetchCatalog = useCallback(async (p: number) => {
     setLoading(true);
@@ -55,6 +57,8 @@ export default function PublicStorefrontPage() {
         categoria: selectedCategoria,
         precioMin: String(appliedPriceMin),
         precioMax: String(appliedPriceMax),
+        sort,
+        incluirAgotados: String(incluirAgotados),
       });
       const res = await fetch(`/api/productos/paginado?${params}`);
       if (res.ok) {
@@ -69,7 +73,7 @@ export default function PublicStorefrontPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedCategoria, appliedPriceMin, appliedPriceMax]);
+  }, [searchTerm, selectedCategoria, appliedPriceMin, appliedPriceMax, sort, incluirAgotados]);
 
   useEffect(() => {
     setPage(0);
@@ -220,6 +224,9 @@ export default function PublicStorefrontPage() {
                   setPriceMax(200);
                   setAppliedPriceMin(0);
                   setAppliedPriceMax(200);
+                  setSort('nombre-asc');
+                  setIncluirAgotados(false);
+                  setPage(0);
                 }}
                 className="text-[#6f5249] text-xs font-semibold hover:underline"
               >
@@ -250,7 +257,12 @@ export default function PublicStorefrontPage() {
               <div className="space-y-2">
                 <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-[#83746f]">Disponibilidad</h3>
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input className="rounded border-[#d7c7c0] text-[#2f1e18] focus:ring-[#f2baa8]/30 w-4 h-4" type="checkbox" />
+                  <input
+                    className="rounded border-[#d7c7c0] text-[#2f1e18] focus:ring-[#f2baa8]/30 w-4 h-4"
+                    type="checkbox"
+                    checked={incluirAgotados}
+                    onChange={(e) => setIncluirAgotados(e.target.checked)}
+                  />
                   <span className="text-sm text-[#7c6b64]">Incluir agotados</span>
                 </label>
               </div>
@@ -309,11 +321,15 @@ export default function PublicStorefrontPage() {
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs font-semibold text-[#83746f]">Ordenar por:</span>
-                <select className="bg-[#fffaf7] border border-[#d7c7c0] rounded-xl py-2 px-4 text-xs font-semibold text-[#7c6b64] outline-none">
-                  <option>Relevancia</option>
-                  <option>Precio: Menor a Mayor</option>
-                  <option>Precio: Mayor a Menor</option>
-                  <option>Más recientes</option>
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="bg-[#fffaf7] border border-[#d7c7c0] rounded-xl py-2 px-4 text-xs font-semibold text-[#7c6b64] outline-none"
+                >
+                  <option value="nombre-asc">Nombre A-Z</option>
+                  <option value="precio-asc">Precio: Menor a Mayor</option>
+                  <option value="precio-desc">Precio: Mayor a Menor</option>
+                  <option value="reciente">Más recientes</option>
                 </select>
               </div>
             </div>

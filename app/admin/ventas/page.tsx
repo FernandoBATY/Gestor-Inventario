@@ -143,7 +143,7 @@ export default function VentasPOSPage() {
   );
 
   const handleRefund = async (ventaId: string) => {
-    if (!confirm('¿Revertir esta venta? El stock será restaurado y la venta se eliminará.')) return;
+    if (!confirm('¿Cancelar esta venta? El stock será restaurado y la venta se marcará como cancelada.')) return;
     setRefundingId(ventaId);
     try {
       const res = await fetch('/api/devoluciones', {
@@ -155,7 +155,8 @@ export default function VentasPOSPage() {
         fetchVentasHistorial();
         fetchProductos();
       } else {
-        alert('Error al procesar devolución');
+        const err = await res.json();
+        alert(err.error || 'Error al procesar devolución');
       }
     } catch (e) {
       console.error(e);
@@ -368,15 +369,22 @@ export default function VentasPOSPage() {
             <div className="divide-y divide-[#e6d8d2] max-h-96 overflow-y-auto">
               {ventasHistorial.map((v) => (
                 <div key={v.id} className="py-3.5 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-mono text-[#6f5249] font-bold block">{v.folio}</span>
+                  <div className="min-w-0">
+                    <span className="font-mono text-[#6f5249] font-bold block truncate">{v.folio}</span>
                     <span className="text-[10px] text-[#7c6b64]">
                       {new Date(v.fecha).toLocaleString('es-MX')}
                     </span>
+                    {v.estado === 'Cancelada' && (
+                      <span className="inline-block ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#f8ecea] text-[#b91c1c]">
+                        CANCELADA
+                      </span>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <span className="font-extrabold text-sm text-[#2f5f4d]">${Number(v.total).toFixed(2)}</span>
+                  <div className="flex items-center gap-4 shrink-0">
+                    <span className={`font-extrabold text-sm ${v.estado === 'Cancelada' ? 'text-[#b91c1c] line-through' : 'text-[#2f5f4d]'}`}>
+                      ${Number(v.total).toFixed(2)}
+                    </span>
                     <button
                       onClick={() => {
                         setShowHistorialModal(false);
@@ -386,13 +394,16 @@ export default function VentasPOSPage() {
                     >
                       <Printer className="w-3.5 h-3.5" />
                     </button>
-                    <button
-                      onClick={() => handleRefund(v.id)}
-                      disabled={refundingId === v.id}
-                      className="p-1.5 bg-[#f8ecea] hover:bg-[#f3d6d1] text-[#b91c1c] rounded-lg flex items-center gap-1 transition font-semibold disabled:opacity-50"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+                    {v.estado !== 'Cancelada' && (
+                      <button
+                        onClick={() => handleRefund(v.id)}
+                        disabled={refundingId === v.id}
+                        className="p-1.5 bg-[#f8ecea] hover:bg-[#f3d6d1] text-[#b91c1c] rounded-lg flex items-center gap-1 transition font-semibold disabled:opacity-50"
+                        title="Cancelar venta"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

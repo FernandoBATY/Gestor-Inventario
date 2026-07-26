@@ -48,6 +48,7 @@ export interface Venta {
   monto_recibido?: number;
   cambio?: number;
   fecha: string;
+  estado?: string;
   detalles?: DetalleVenta[];
 }
 

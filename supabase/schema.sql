@@ -193,6 +193,85 @@ CREATE TABLE IF NOT EXISTS cortes_caja (
     estado VARCHAR(20) NOT NULL DEFAULT 'Abierto' CHECK (estado IN ('Abierto', 'Cerrado'))
 );
 
+-- Función transaccional para registrar venta (todo o nada)
+CREATE OR REPLACE FUNCTION realizar_venta(
+  p_detalles JSONB,
+  p_folio VARCHAR,
+  p_monto_recibido DECIMAL,
+  p_total DECIMAL
+) RETURNS JSONB
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_venta_id UUID;
+  v_detalle JSONB;
+  v_producto_id UUID;
+  v_cantidad INT;
+  v_precio DECIMAL;
+  v_subtotal DECIMAL;
+  v_stock_actual INT;
+  v_result JSONB;
+BEGIN
+  INSERT INTO ventas (folio, total, monto_recibido, cambio, estado)
+  VALUES (p_folio, p_total, p_monto_recibido, GREATEST(0, p_monto_recibido - p_total), 'Completada')
+  RETURNING id INTO v_venta_id;
+
+  FOR v_detalle IN SELECT * FROM jsonb_array_elements(p_detalles)
+  LOOP
+    v_producto_id := (v_detalle->>'producto_id')::UUID;
+    v_cantidad := (v_detalle->>'cantidad')::INT;
+
+    SELECT precio_venta, unidades INTO v_precio, v_stock_actual
+    FROM productos WHERE id = v_producto_id FOR UPDATE;
+
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Producto % no encontrado', v_producto_id;
+    END IF;
+
+    IF v_stock_actual < v_cantidad THEN
+      RAISE EXCEPTION 'Stock insuficiente para producto %', v_producto_id;
+    END IF;
+
+    v_subtotal := v_precio * v_cantidad;
+
+    INSERT INTO detalle_ventas (venta_id, producto_id, nombre_producto, cantidad, precio_unitario, subtotal)
+    VALUES (v_venta_id, v_producto_id, (SELECT nombre FROM productos WHERE id = v_producto_id), v_cantidad, v_precio, v_subtotal);
+
+    UPDATE productos SET unidades = unidades - v_cantidad WHERE id = v_producto_id;
+
+    INSERT INTO movimientos_stock (producto_id, tipo, cantidad, motivo)
+    VALUES (v_producto_id, 'Salida', v_cantidad, 'Venta de producto');
+  END LOOP;
+
+  SELECT jsonb_build_object(
+    'id', v.id,
+    'folio', v.folio,
+    'total', v.total,
+    'monto_recibido', v.monto_recibido,
+    'cambio', v.cambio,
+    'fecha', v.fecha,
+    'estado', v.estado,
+    'detalles', COALESCE(
+      (SELECT jsonb_agg(jsonb_build_object(
+        'id', dv.id,
+        'producto_id', dv.producto_id,
+        'nombre_producto', dv.nombre_producto,
+        'cantidad', dv.cantidad,
+        'precio_unitario', dv.precio_unitario,
+        'subtotal', dv.subtotal
+      )) FROM detalle_ventas dv WHERE dv.venta_id = v_venta_id),
+      '[]'::jsonb
+    )
+  ) INTO v_result
+  FROM ventas v WHERE v.id = v_venta_id;
+
+  RETURN v_result;
+END;
+$$;
+
+-- Agregar columna estado a ventas para devoluciones soft-delete
+ALTER TABLE ventas ADD COLUMN IF NOT EXISTS estado VARCHAR(20) NOT NULL DEFAULT 'Completada' CHECK (estado IN ('Completada', 'Cancelada'));
+
 -- 8. ROW LEVEL SECURITY (RLS)
 ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE historial_precios ENABLE ROW LEVEL SECURITY;

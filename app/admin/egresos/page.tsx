@@ -7,7 +7,9 @@ import {
   AlertTriangle,
   Receipt,
   Search,
-  Calendar
+  Calendar,
+  Filter,
+  X
 } from 'lucide-react';
 import type { Gasto } from '@/lib/types';
 
@@ -19,20 +21,31 @@ export default function EgresosPage() {
   const [descripcion, setDescripcion] = useState('');
   const [monto, setMonto] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
 
   useEffect(() => {
     fetchGastos();
   }, []);
 
   const fetchGastos = async () => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/gastos');
+      const params = new URLSearchParams();
+      if (fechaInicio) params.set('fechaInicio', fechaInicio);
+      if (fechaFin) params.set('fechaFin', fechaFin);
+      const res = await fetch(`/api/gastos?${params.toString()}`);
       if (res.ok) setGastos(await res.json());
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearFechas = () => {
+    setFechaInicio('');
+    setFechaFin('');
   };
 
   const handleAdd = async () => {
@@ -129,15 +142,46 @@ export default function EgresosPage() {
         </div>
       )}
 
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7c6b64]" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar gasto..."
-          className="w-full pl-10 pr-4 py-2.5 bg-[#fffaf7] border border-[#d7c7c0] rounded-xl text-sm text-[#201816] outline-none focus:border-[#9d7b6f]"
-        />
+      <div className="flex flex-col sm:flex-row gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7c6b64]" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar gasto..."
+            className="w-full pl-10 pr-4 py-2.5 bg-[#fffaf7] border border-[#d7c7c0] rounded-xl text-sm text-[#201816] outline-none focus:border-[#9d7b6f]"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-[#7c6b64]" />
+          <input
+            type="date"
+            value={fechaInicio}
+            onChange={(e) => setFechaInicio(e.target.value)}
+            className="bg-[#fffaf7] border border-[#d7c7c0] rounded-xl px-3 py-2.5 text-xs text-[#201816] outline-none focus:border-[#9d7b6f]"
+            title="Fecha inicio"
+          />
+          <span className="text-[#7c6b64] text-xs">a</span>
+          <input
+            type="date"
+            value={fechaFin}
+            onChange={(e) => setFechaFin(e.target.value)}
+            className="bg-[#fffaf7] border border-[#d7c7c0] rounded-xl px-3 py-2.5 text-xs text-[#201816] outline-none focus:border-[#9d7b6f]"
+            title="Fecha fin"
+          />
+          {(fechaInicio || fechaFin) && (
+            <button onClick={clearFechas} className="p-2 text-[#7c6b64] hover:text-[#b91c1c] transition" title="Limpiar fechas">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+          <button
+            onClick={fetchGastos}
+            className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] text-xs font-semibold px-3 py-2.5 rounded-xl transition"
+          >
+            Filtrar
+          </button>
+        </div>
       </div>
 
       {loading ? (

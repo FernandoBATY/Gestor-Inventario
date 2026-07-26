@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 
-// POST /api/devoluciones - Revertir una venta
+// POST /api/devoluciones - Marcar venta como cancelada y restaurar stock
 export async function POST(request: Request) {
   const authErr = await requireAuth();
   if (authErr) return authErr;
@@ -18,6 +18,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No disponible' }, { status: 500 });
     }
 
+    // Verificar que la venta existe y no está ya cancelada
+    const { data: venta } = await supabase
+      .from('ventas')
+      .select('estado')
+      .eq('id', venta_id)
+      .maybeSingle();
+
+    if (!venta) {
+      return NextResponse.json({ error: 'Venta no encontrada' }, { status: 404 });
+    }
+    if (venta.estado === 'Cancelada') {
+      return NextResponse.json({ error: 'Esta venta ya fue cancelada' }, { status: 400 });
+    }
+
     const { data: detalles } = await supabase
       .from('detalle_ventas')
       .select('*')
@@ -28,16 +42,11 @@ export async function POST(request: Request) {
     }
 
     for (const det of detalles) {
-      const { data: prod, error: prodErr } = await supabase
+      const { data: prod } = await supabase
         .from('productos')
         .select('*')
         .eq('id', det.producto_id)
         .maybeSingle();
-
-      if (prodErr) {
-        console.error('Error al buscar producto:', prodErr);
-        continue;
-      }
 
       if (prod) {
         const nuevosStock = (Number(prod.unidades) || 0) + det.cantidad;
@@ -52,10 +61,10 @@ export async function POST(request: Request) {
       }
     }
 
-    await supabase.from('detalle_ventas').delete().eq('venta_id', venta_id);
-    await supabase.from('ventas').delete().eq('id', venta_id);
+    // Marcar como cancelada en lugar de eliminar
+    await supabase.from('ventas').update({ estado: 'Cancelada' }).eq('id', venta_id);
 
-    return NextResponse.json({ success: true, message: 'Venta revertida exitosamente' });
+    return NextResponse.json({ success: true, message: 'Venta cancelada y stock restaurado exitosamente' });
   } catch (error) {
     return NextResponse.json({ error: 'Error al procesar devolución' }, { status: 500 });
   }

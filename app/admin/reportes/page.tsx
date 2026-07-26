@@ -8,7 +8,9 @@ import {
   Package,
   ShoppingBag,
   FileSpreadsheet,
-  FileText
+  FileText,
+  Filter,
+  X
 } from 'lucide-react';
 
 type ReportType = 'inventario' | 'bajoStock' | 'ventas';
@@ -69,22 +71,34 @@ export default function ReportesPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState<ReportType | null>(null);
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
 
   useEffect(() => {
     fetchReportData();
-  }, [reportType]);
+  }, [reportType, fechaInicio, fechaFin]);
+
+  const buildUrl = (base: string) => {
+    const params = new URLSearchParams();
+    if (base.includes('/api/ventas') && (fechaInicio || fechaFin)) {
+      if (fechaInicio) params.set('fechaInicio', fechaInicio);
+      if (fechaFin) params.set('fechaFin', fechaFin);
+    }
+    const qs = params.toString();
+    return qs ? `${base}?${qs}` : base;
+  };
 
   const fetchReportData = async () => {
     setLoading(true);
     try {
       if (reportType === 'inventario') {
-        const res = await fetch('/api/productos');
+        const res = await fetch(buildUrl('/api/productos'));
         if (res.ok) setData(await res.json());
       } else if (reportType === 'bajoStock') {
-        const res = await fetch('/api/productos/bajo-stock');
+        const res = await fetch(buildUrl('/api/productos/bajo-stock'));
         if (res.ok) setData(await res.json());
       } else if (reportType === 'ventas') {
-        const res = await fetch('/api/ventas');
+        const res = await fetch(buildUrl('/api/ventas'));
         if (res.ok) setData(await res.json());
       }
     } catch (e) {
@@ -99,13 +113,13 @@ export default function ReportesPage() {
     try {
       let exportData: any[];
       if (type === 'inventario') {
-        const res = await fetch('/api/productos');
+        const res = await fetch(buildUrl('/api/productos'));
         exportData = res.ok ? await res.json() : [];
       } else if (type === 'bajoStock') {
-        const res = await fetch('/api/productos/bajo-stock');
+        const res = await fetch(buildUrl('/api/productos/bajo-stock'));
         exportData = res.ok ? await res.json() : [];
       } else {
-        const res = await fetch('/api/ventas');
+        const res = await fetch(buildUrl('/api/ventas'));
         exportData = res.ok ? await res.json() : [];
       }
 
@@ -126,20 +140,20 @@ export default function ReportesPage() {
     } finally {
       setExporting(null);
     }
-  }, []);
+  }, [fechaInicio, fechaFin]);
 
   const exportPDF = useCallback(async (type: ReportType) => {
     setExporting(type);
     try {
       let exportData: any[];
       if (type === 'inventario') {
-        const res = await fetch('/api/productos');
+        const res = await fetch(buildUrl('/api/productos'));
         exportData = res.ok ? await res.json() : [];
       } else if (type === 'bajoStock') {
-        const res = await fetch('/api/productos/bajo-stock');
+        const res = await fetch(buildUrl('/api/productos/bajo-stock'));
         exportData = res.ok ? await res.json() : [];
       } else {
-        const res = await fetch('/api/ventas');
+        const res = await fetch(buildUrl('/api/ventas'));
         exportData = res.ok ? await res.json() : [];
       }
 
@@ -179,7 +193,12 @@ export default function ReportesPage() {
     } finally {
       setExporting(null);
     }
-  }, []);
+  }, [fechaInicio, fechaFin]);
+
+  const clearFechas = () => {
+    setFechaInicio('');
+    setFechaFin('');
+  };
 
   const config = REPORT_CONFIG[reportType];
 
@@ -213,6 +232,32 @@ export default function ReportesPage() {
           })}
         </div>
       </div>
+
+      {reportType === 'ventas' && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <Filter className="w-4 h-4 text-[#7c6b64]" />
+          <input
+            type="date"
+            value={fechaInicio}
+            onChange={(e) => setFechaInicio(e.target.value)}
+            className="bg-[#fffaf7] border border-[#d7c7c0] rounded-xl px-3 py-2 text-xs text-[#201816] outline-none focus:border-[#9d7b6f]"
+            title="Fecha inicio"
+          />
+          <span className="text-[#7c6b64] text-xs">a</span>
+          <input
+            type="date"
+            value={fechaFin}
+            onChange={(e) => setFechaFin(e.target.value)}
+            className="bg-[#fffaf7] border border-[#d7c7c0] rounded-xl px-3 py-2 text-xs text-[#201816] outline-none focus:border-[#9d7b6f]"
+            title="Fecha fin"
+          />
+          {(fechaInicio || fechaFin) && (
+            <button onClick={clearFechas} className="p-2 text-[#7c6b64] hover:text-[#b91c1c] transition" title="Limpiar fechas">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {(Object.entries(REPORT_CONFIG) as [ReportType, typeof REPORT_CONFIG[ReportType]][]).map(([id, cfg]) => {
