@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Producto } from '@/lib/types';
 import {
   Package,
@@ -175,14 +176,14 @@ export default function ProductosPage() {
       reader.readAsDataURL(compressed);
     } catch (error) {
       console.error(error);
-      alert('No se pudo procesar la imagen seleccionada');
+      toast.error('No se pudo procesar la imagen seleccionada');
     }
   };
 
   const handleSaveCategory = async () => {
     const categoria = formData.categoria.trim();
     if (!categoria) {
-      alert('Escribe una categoría antes de guardarla');
+      toast.error('Escribe una categoría antes de guardarla');
       return;
     }
 
@@ -200,13 +201,17 @@ export default function ProductosPage() {
       });
 
       if (res.ok) {
+        toast.success('Categoría guardada');
         const updatedCategories = (await res.json()) as string[];
         setCategorias(Array.from(new Set(updatedCategories)).filter(Boolean).sort((a, b) => a.localeCompare(b, 'es')));
         setCategoriaOriginal(categoria);
         await fetchProductos();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || 'Error al guardar categoría');
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
+      toast.error('Error al guardar categoría');
     } finally {
       setCategorySaving(false);
     }
@@ -216,7 +221,7 @@ export default function ProductosPage() {
     e.preventDefault();
 
     if (!formData.categoria.trim()) {
-      alert('Agrega una categoría antes de guardar el producto');
+      toast.error('Agrega una categoría antes de guardar el producto');
       return;
     }
 
@@ -247,11 +252,15 @@ export default function ProductosPage() {
       });
 
       if (res.ok) {
+        toast.success(editingProduct ? 'Producto actualizado' : 'Producto creado');
         setIsModalOpen(false);
         await Promise.all([fetchProductos(), fetchCategorias()]);
+      } else {
+        const err = await res.json();
+        toast.error(err.error || 'Error al guardar producto');
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
+      toast.error('Error al guardar producto');
     }
   };
 
@@ -260,10 +269,14 @@ export default function ProductosPage() {
     try {
       const res = await fetch(`/api/productos?id=${id}`, { method: 'DELETE' });
       if (res.ok) {
+        toast.success('Producto eliminado');
         fetchProductos();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || 'Error al eliminar producto');
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
+      toast.error('Error al eliminar producto');
     }
   };
 

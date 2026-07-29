@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Producto, MovimientoStock } from '@/lib/types';
 import { 
   Boxes, 
@@ -53,7 +54,7 @@ export default function InventarioPage() {
 
   const handleRegisterMovement = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProdId) return alert('Selecciona un producto');
+    if (!selectedProdId) return toast.error('Selecciona un producto');
 
     try {
       const res = await fetch('/api/movimientos', {

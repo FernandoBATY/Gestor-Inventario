@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Producto, Venta } from '@/lib/types';
 import ThermalTicket from '@/components/pos/ThermalTicket';
 import { 
@@ -56,7 +57,10 @@ export default function VentasPOSPage() {
   };
 
   const addToCart = (prod: Producto) => {
-    if (prod.unidades <= 0) return alert('Producto agotado en inventario');
+    if (prod.unidades <= 0) {
+      toast.error('Producto agotado en inventario');
+      return;
+    }
 
     setCart((prev) => {
       const existingIdx = prev.findIndex((item) => item.producto.id === prod.id);
@@ -65,7 +69,7 @@ export default function VentasPOSPage() {
         if (updated[existingIdx].cantidad < prod.unidades) {
           updated[existingIdx].cantidad += 1;
         } else {
-          alert('No puedes agregar más del stock disponible');
+          toast.error('No puedes agregar más del stock disponible');
         }
         return updated;
       }
@@ -80,7 +84,7 @@ export default function VentasPOSPage() {
           if (item.producto.id === id) {
             const newQty = item.cantidad + delta;
             if (newQty > item.producto.unidades) {
-              alert('Stock insuficiente');
+              toast.error('Stock insuficiente');
               return item;
             }
             return { ...item, cantidad: newQty };
@@ -100,7 +104,7 @@ export default function VentasPOSPage() {
   const handleCheckout = async () => {
     if (cart.length === 0) return;
     if (Number(montoRecibido) < totalCart) {
-      alert(`El efectivo recibido ($${Number(montoRecibido).toFixed(2)}) es menor al total ($${totalCart.toFixed(2)}).`);
+      toast.error(`El efectivo recibido ($${Number(montoRecibido).toFixed(2)}) es menor al total ($${totalCart.toFixed(2)}).`);
       setLoading(false);
       return;
     }
@@ -125,8 +129,12 @@ export default function VentasPOSPage() {
         setCompletedVenta(venta);
         setCart([]);
         setMontoRecibido('');
+        toast.success(`Venta ${venta.folio} completada`);
         fetchProductos();
         fetchVentasHistorial();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || 'Error al completar venta');
       }
     } catch (e) {
       console.error(e);
@@ -152,14 +160,15 @@ export default function VentasPOSPage() {
         body: JSON.stringify({ venta_id: ventaId }),
       });
       if (res.ok) {
+        toast.success('Venta cancelada y stock restaurado');
         fetchVentasHistorial();
         fetchProductos();
       } else {
         const err = await res.json();
-        alert(err.error || 'Error al procesar devolución');
+        toast.error(err.error || 'Error al procesar devolución');
       }
     } catch (e) {
-      console.error(e);
+      toast.error('Error al procesar devolución');
     } finally {
       setRefundingId(null);
     }

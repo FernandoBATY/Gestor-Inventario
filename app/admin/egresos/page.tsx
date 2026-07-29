@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import {
   Plus,
   Trash2,
@@ -58,13 +59,17 @@ export default function EgresosPage() {
         body: JSON.stringify({ descripcion, monto: parseFloat(monto) }),
       });
       if (res.ok) {
+        toast.success('Gasto registrado');
         setDescripcion('');
         setMonto('');
         setShowForm(false);
         await fetchGastos();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || 'Error al registrar gasto');
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
+      toast.error('Error al registrar gasto');
     } finally {
       setSubmitting(false);
     }
@@ -74,9 +79,12 @@ export default function EgresosPage() {
     if (!id || !confirm('¿Eliminar este gasto?')) return;
     try {
       const res = await fetch(`/api/gastos?id=${id}`, { method: 'DELETE' });
-      if (res.ok) await fetchGastos();
-    } catch (e) {
-      console.error(e);
+      if (res.ok) {
+        toast.success('Gasto eliminado');
+        await fetchGastos();
+      }
+    } catch {
+      toast.error('Error al eliminar gasto');
     }
   };
 
