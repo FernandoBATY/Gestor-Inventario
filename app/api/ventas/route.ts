@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { mockStore } from '@/lib/mockStore';
+import { ventaSchema } from '@/lib/schemas';
 
 // GET /api/ventas -> Historial de ventas (con filtros opcionales de fecha)
 export async function GET(request: Request) {
@@ -56,11 +57,13 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { detalles, monto_recibido } = body;
 
-    if (!detalles || !Array.isArray(detalles) || detalles.length === 0) {
-      return NextResponse.json({ error: 'Debe incluir al menos un producto en la venta' }, { status: 400 });
+    const parsed = ventaSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
     }
+
+    const { detalles, monto_recibido } = parsed.data;
 
     const supabase = getSupabaseServerClient();
     if (!supabase) {
@@ -114,6 +117,7 @@ export async function POST(request: Request) {
     let ventaCreated: any = null;
 
     try {
+      // Try insert with all columns (newest schema)
       const { data: v1, error: e1 } = await supabase
         .from('ventas')
         .insert([{ folio, total: totalVenta, monto_recibido: recibido, cambio: Math.max(0, recibido - totalVenta), estado: 'Completada' }])
@@ -123,19 +127,30 @@ export async function POST(request: Request) {
       if (!e1 && v1) {
         ventaCreated = v1;
       } else {
+        // Try without estado column
         const { data: v2, error: e2 } = await supabase
           .from('ventas')
-          .insert([{ folio, total: totalVenta, estado: 'Completada' }])
+          .insert([{ folio, total: totalVenta, monto_recibido: recibido, cambio: Math.max(0, recibido - totalVenta) }])
           .select()
           .single();
-        if (!e2 && v2) ventaCreated = v2;
+
+        if (!e2 && v2) {
+          ventaCreated = v2;
+        } else {
+          // Try without monto_recibido/cambio (oldest schema)
+          const { data: v3, error: e3 } = await supabase
+            .from('ventas')
+            .insert([{ folio, total: totalVenta }])
+            .select()
+            .single();
+          if (!e3 && v3) ventaCreated = v3;
+        }
       }
 
       if (!ventaCreated) {
         return NextResponse.json({ error: 'Error al crear la venta' }, { status: 500 });
       }
 
-      // Insert details, update stock, create movements
       for (const det of detallesParaInsertar) {
         const { error: detErr } = await supabase
           .from('detalle_ventas')
@@ -143,7 +158,6 @@ export async function POST(request: Request) {
 
         if (detErr) throw new Error(detErr.message);
 
-        // Get current stock and deduct
         const { data: prod } = await supabase
           .from('productos')
           .select('unidades')

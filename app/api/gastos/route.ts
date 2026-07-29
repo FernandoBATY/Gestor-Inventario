@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { gastoSchema } from '@/lib/schemas';
 
 export async function GET(request: Request) {
   try {
@@ -30,15 +31,20 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const parsed = gastoSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
+    }
     const supabase = getSupabaseServerClient();
+    const dataInsert = parsed.data;
     if (supabase) {
       const { data, error } = await supabase
         .from('gastos')
         .insert([{
-          descripcion: body.descripcion,
-          monto: Number(body.monto) || 0,
-          categoria: body.categoria || 'General',
-          fecha: body.fecha || new Date().toISOString().slice(0, 10),
+          descripcion: dataInsert.descripcion,
+          monto: dataInsert.monto,
+          categoria: dataInsert.categoria || 'General',
+          fecha: dataInsert.fecha || new Date().toISOString().slice(0, 10),
         }])
         .select()
         .single();

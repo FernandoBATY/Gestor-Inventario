@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { negocioSchema } from '@/lib/schemas';
 import { DEFAULT_NEGOCIO_CONFIG, negocioStore } from '@/lib/negocioStore';
 
 export async function GET() {
@@ -27,6 +28,10 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
+    const parsed = negocioSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
+    }
     const payload = {
       nombre_negocio: String(body.nombre_negocio ?? '').trim() || DEFAULT_NEGOCIO_CONFIG.nombre_negocio,
       rfc: String(body.rfc ?? '').trim(),

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
+import { devolucionSchema } from '@/lib/schemas';
 
 // POST /api/devoluciones - Marcar venta como cancelada y restaurar stock
 export async function POST(request: Request) {
@@ -8,10 +9,12 @@ export async function POST(request: Request) {
   if (authErr) return authErr;
 
   try {
-    const { venta_id } = await request.json();
-    if (!venta_id) {
-      return NextResponse.json({ error: 'ID de venta requerido' }, { status: 400 });
+    const body = await request.json();
+    const parsed = devolucionSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
     }
+    const { venta_id } = parsed.data;
 
     const supabase = getSupabaseServerClient();
     if (!supabase) {
