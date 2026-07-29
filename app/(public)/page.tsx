@@ -313,10 +313,7 @@ export default function PublicStorefrontPage() {
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#d5c2bd] pb-4 mb-6">
               <div>
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0] mb-3">
-                  <Sparkles className="w-3.5 h-3.5" /> Soluciones en Papelería
-                </span>
-                <h2 className="font-headline text-3xl sm:text-[36px] leading-tight text-[#201816]">Catálogo Premium</h2>
+                <h2 className="font-headline text-3xl sm:text-[36px] leading-tight text-[#201816]">Catálogo</h2>
                 <p className="text-sm text-[#7c6b64] mt-1">Mostrando {paginatedProducts.length} de {totalElements} artículos</p>
               </div>
               <div className="flex items-center gap-3">

@@ -84,7 +84,6 @@ export default function CarritoPage() {
             </div>
             <div className="min-w-0">
               <h1 className="font-headline text-xl sm:text-2xl tracking-tight text-[#36160c] truncate">Carrito de compras</h1>
-              <p className="text-xs text-[#7c6b64] font-medium hidden sm:block">Resumen temporal de los productos seleccionados</p>
             </div>
           </div>
 

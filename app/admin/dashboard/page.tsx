@@ -5,16 +5,12 @@ import Link from 'next/link';
 import {
   DollarSign,
   TrendingUp,
-  ShoppingBag,
   AlertTriangle,
   PackageCheck,
-  Sparkles,
   Calendar,
   ChevronRight,
-  Ticket,
   Package,
   TrendingDown,
-  Percent,
 } from 'lucide-react';
 import ChartsWrapper from '@/components/dashboard/ChartsWrapper';
 
@@ -77,9 +73,6 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#e8ddd7] text-[#6f5249] border border-[#d3c1b8] mb-2">
-            <Sparkles className="w-3.5 h-3.5" /> Visión General del Negocio
-          </span>
           <h1 className="text-3xl font-extrabold tracking-tight text-[#201816]">Dashboard Principal</h1>
           <p className="text-xs text-[#7c6b64] mt-1">Estadísticas clave, ingresos y control de inventario en tiempo real.</p>
         </div>
@@ -146,21 +139,6 @@ export default function DashboardPage() {
 
           <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#7c6b64]">Total Vendido</span>
-              <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
-                <ShoppingBag className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="mt-3">
-              <span className="text-3xl font-black text-[#201816]">{moneyFormatter.format(Number(stats?.totalVendido || 0))}</span>
-            </div>
-            <div className="mt-2 text-[11px] text-[#7c6b64]">
-              Histórico general de transacciones
-            </div>
-          </div>
-
-          <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
-            <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-[#7c6b64]">Productos Bajo Stock</span>
               <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
                 <AlertTriangle className="w-5 h-5" />
@@ -171,21 +149,6 @@ export default function DashboardPage() {
             </div>
             <div className="mt-2 text-[11px] text-[#b91c1c] font-semibold">
               Requieren reabastecimiento urgente
-            </div>
-          </div>
-
-          <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#7c6b64]">Ticket Promedio</span>
-              <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
-                <Ticket className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="mt-3">
-              <span className="text-3xl font-black text-[#201816]">{moneyFormatter.format(Number(stats?.ticketPromedio || 0))}</span>
-            </div>
-            <div className="mt-2 text-[11px] text-[#7c6b64]">
-              Promedio por cada venta registrada
             </div>
           </div>
 
@@ -234,20 +197,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="glass-panel border border-[#d7c7c0] rounded-2xl p-5 relative overflow-hidden group">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#7c6b64]">Margen Promedio</span>
-              <div className="w-9 h-9 rounded-xl bg-[#efe3db] text-[#6f5249] flex items-center justify-center border border-[#d7c7c0]">
-                <Percent className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="mt-3">
-              <span className="text-3xl font-black text-[#201816]">{Number(stats?.margenPromedio || 0).toFixed(1)}%</span>
-            </div>
-            <div className="mt-2 text-[11px] text-[#7c6b64]">
-              Ganancia promedio sobre precio de compra
-            </div>
-          </div>
         </div>
       )}
 
