@@ -127,13 +127,14 @@ CREATE TABLE IF NOT EXISTS movimientos_stock (
 CREATE INDEX IF NOT EXISTS idx_movimientos_producto ON movimientos_stock(producto_id);
 CREATE INDEX IF NOT EXISTS idx_movimientos_fecha ON movimientos_stock(fecha);
 
--- 5. TABLA VENTAS
+-- 5. TABLA VENTAS (con estado para devoluciones soft-delete)
 CREATE TABLE IF NOT EXISTS ventas (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     folio VARCHAR(50) UNIQUE NOT NULL,
     total DECIMAL(10, 2) NOT NULL,
     monto_recibido DECIMAL(10, 2) DEFAULT 0,
     cambio DECIMAL(10, 2) DEFAULT 0,
+    estado VARCHAR(20) NOT NULL DEFAULT 'Completada' CHECK (estado IN ('Completada', 'Cancelada')),
     fecha TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -268,9 +269,6 @@ BEGIN
   RETURN v_result;
 END;
 $$;
-
--- Agregar columna estado a ventas para devoluciones soft-delete
-ALTER TABLE ventas ADD COLUMN IF NOT EXISTS estado VARCHAR(20) NOT NULL DEFAULT 'Completada' CHECK (estado IN ('Completada', 'Cancelada'));
 
 -- 8. ROW LEVEL SECURITY (RLS)
 ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
