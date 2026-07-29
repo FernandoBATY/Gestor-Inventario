@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Toaster } from 'sonner';
 import {
   LayoutDashboard,
   Package,
@@ -17,8 +19,26 @@ import {
   UserCheck,
   Receipt,
   Wallet,
+  RefreshCw,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+
+function ErrorFallback({ error, resetErrorBoundary }: { error: unknown; resetErrorBoundary: () => void }) {
+  const message = error instanceof Error ? error.message : 'Error inesperado en la página';
+  return (
+    <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-8">
+      <AlertTriangle className="w-12 h-12 text-[#b91c1c] mb-4" />
+      <h2 className="text-xl font-bold text-[#201816] mb-2">Algo salió mal</h2>
+      <p className="text-sm text-[#7c6b64] mb-4 max-w-md">{message}</p>
+      <button
+        onClick={resetErrorBoundary}
+        className="bg-[#2f1e18] hover:bg-[#412820] text-[#fff8f4] font-semibold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 transition"
+      >
+        <RefreshCw className="w-4 h-4" /> Reintentar
+      </button>
+    </div>
+  );
+}
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -182,8 +202,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </header>
 
       <main className="flex-1 min-w-0 p-4 lg:p-8 overflow-y-auto max-w-[1200px] w-full mx-auto">
-        {children}
+        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
+          {children}
+        </ErrorBoundary>
       </main>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: { background: '#2f1e18', color: '#fff8f4', border: '1px solid #6f5249', fontSize: '13px' },
+          duration: 3000,
+        }}
+      />
     </div>
   );
 }
