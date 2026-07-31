@@ -15,7 +15,6 @@ import {
   LogOut,
   AlertTriangle,
   BookOpen,
-  ChevronRight,
   UserCheck,
   Receipt,
   Wallet,
