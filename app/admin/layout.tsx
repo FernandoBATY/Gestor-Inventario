@@ -57,6 +57,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     checkUserSession();
     fetchBajoStock();
+    const interval = setInterval(fetchBajoStock, 60000);
+    return () => clearInterval(interval);
   }, [isLoginPage]);
 
   const checkUserSession = async () => {
@@ -172,7 +174,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl text-sm font-semibold transition whitespace-nowrap ${
+                  className={`relative flex items-center gap-2 px-3.5 py-2 rounded-2xl text-sm font-semibold transition whitespace-nowrap ${
                     isActive
                       ? 'bg-[#2f1e18] text-[#fff8f4] shadow-lg shadow-[#2f1e18]/15'
                       : 'text-[#7c6b64] hover:text-[#201816] hover:bg-[#f6efe8] border border-transparent hover:border-[#d7c7c0]'
@@ -180,23 +182,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 >
                   <Icon className="w-4 h-4" />
                   <span className="hidden sm:inline">{item.name}</span>
+                  {item.href === '/admin/productos' && bajoStockCount > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#b91c1c] text-[#fff] text-[10px] font-extrabold leading-none animate-pulse">
+                      {bajoStockCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}
           </nav>
-
-          {bajoStockCount > 0 && (
-            <Link
-              href="/admin/productos"
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#fee2e2] border border-[#fecaca] text-[#b91c1c] hover:bg-[#fecaca] transition group"
-            >
-              <div className="flex items-center gap-2 text-xs font-semibold">
-                <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse text-[#b91c1c]" />
-                <span>Bajo stock en {bajoStockCount} producto(s)</span>
-              </div>
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          )}
 
         </div>
       </header>
