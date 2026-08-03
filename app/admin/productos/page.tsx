@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import Loader from '@/components/Loader';
 import { Producto } from '@/lib/types';
 import {
   Package,
@@ -330,7 +331,9 @@ export default function ProductosPage() {
       </div>
 
       {loading ? (
-        <div className="glass-panel rounded-3xl p-8 text-center text-[#7c6b64] border border-[#d7c7c0]">Cargando inventario...</div>
+        <div className="glass-panel rounded-3xl border border-[#d7c7c0]">
+          <Loader label="Cargando inventario..." />
+        </div>
       ) : (
         <div className="glass-panel border border-[#d7c7c0] rounded-3xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">

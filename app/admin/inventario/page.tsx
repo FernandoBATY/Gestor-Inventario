@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import Loader from '@/components/Loader';
 import { Producto, MovimientoStock } from '@/lib/types';
 import { 
   Boxes, 
@@ -214,7 +215,7 @@ export default function InventarioPage() {
             </div>
 
             {loading ? (
-              <div className="p-8 text-center text-[#7c6b64] text-xs">Cargando movimientos...</div>
+              <Loader label="Cargando movimientos..." />
             ) : paginatedMovimientos.length === 0 ? (
               <div className="p-8 text-center text-[#7c6b64] text-xs">No se encontraron movimientos.</div>
             ) : (
