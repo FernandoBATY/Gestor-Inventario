@@ -140,6 +140,14 @@ export default function PublicStorefrontPage() {
     setAppliedPriceMax(priceMax);
   };
 
+  const getAvailability = (prod: Producto) => {
+    const stock = Number(prod.unidades) || 0;
+    const min = Number(prod.stock_minimo) || 0;
+    if (stock <= 0) return { label: 'Agotado', cls: 'bg-[#fee2e2] text-[#b91c1c] border-[#fecaca]', dot: 'bg-[#b91c1c]' };
+    if (stock <= min) return { label: 'Bajo stock', cls: 'bg-[#fff4e0] text-[#b45309] border-[#fcd9a8]', dot: 'bg-[#b45309]' };
+    return { label: 'Disponible', cls: 'bg-[#edf6f1] text-[#16a34a] border-[#c9e6d8]', dot: 'bg-[#16a34a]' };
+  };
+
   const goToPage = (p: number) => {
     if (p < 0 || p >= totalPages) return;
     setPage(p);
@@ -331,6 +339,22 @@ export default function PublicStorefrontPage() {
               </div>
             </div>
 
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 -mx-1 px-1 scrollbar-thin">
+              {categorias.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategoria(cat)}
+                  className={`shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+                    selectedCategoria === cat
+                      ? 'bg-[#2f1e18] text-[#fff8f4] shadow-lg shadow-[#2f1e18]/10'
+                      : 'bg-white text-[#7c6b64] border border-[#d7c7c0] hover:bg-[#f6efe8]'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
@@ -376,6 +400,11 @@ export default function PublicStorefrontPage() {
                           {prod.categoria}
                         </span>
                       </div>
+                      <div className="absolute top-3 right-3">
+                        <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide backdrop-blur-md border ${getAvailability(prod).cls}`}>
+                          {getAvailability(prod).label}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="p-4 flex flex-col flex-grow">
@@ -387,9 +416,9 @@ export default function PublicStorefrontPage() {
                       <div className="mt-auto space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="font-headline text-2xl text-[#36160c]">${Number(prod.precio_venta).toFixed(2)}</span>
-                          <span className={`text-[10px] font-bold flex items-center gap-1 ${prod.unidades > 0 ? 'text-[#16a34a]' : 'text-[#b91c1c]'}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${prod.unidades > 0 ? 'bg-[#16a34a]' : 'bg-[#b91c1c]'}`} />
-                            {prod.unidades > 0 ? 'DISPONIBLE' : 'STOCK BAJO'}
+                          <span className={`text-[10px] font-bold flex items-center gap-1 ${getAvailability(prod).label === 'Disponible' ? 'text-[#16a34a]' : getAvailability(prod).label === 'Bajo stock' ? 'text-[#b45309]' : 'text-[#b91c1c]'}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${getAvailability(prod).dot}`} />
+                            {getAvailability(prod).label.toUpperCase()}
                           </span>
                         </div>
                         <div className="flex gap-2">
