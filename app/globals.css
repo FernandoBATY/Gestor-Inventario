@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Francois+One&family=Permanent+Marker&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Francois+One&family=Sekuya&display=swap');
 
 :root {
   --background: #fef8f6;
   --foreground: #1d1b1a;
-  --font-heading: 'Permanent Marker', cursive;
+  --font-heading: 'Sekuya', serif;
   --font-body: 'Francois One', sans-serif;
 }
 
@@ -49,6 +49,16 @@ h1, h2, h3, h4, h5, h6 {
   border-color: rgba(124, 165, 158, 0.4);
   transform: translateY(-2px);
   box-shadow: 0 12px 30px -10px rgba(49, 19, 8, 0.12);
+}
+
+/* Infinite Ticker */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
 }
 
 /* Custom Scrollbars */
