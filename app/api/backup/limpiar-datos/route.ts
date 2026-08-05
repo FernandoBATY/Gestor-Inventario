@@ -20,6 +20,7 @@ export async function DELETE() {
       await supabase.from('historial_precios').delete().neq('id', '00000000-0000-0000-0000-000000000000');
       await supabase.from('gastos').delete().neq('id', '00000000-0000-0000-0000-000000000000');
       await supabase.from('cortes_caja').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      await supabase.from('mermas').delete().neq('id', '00000000-0000-0000-0000-000000000000');
       await supabase.from('productos').delete().neq('id', '00000000-0000-0000-0000-000000000000');
       return NextResponse.json({ success: true, message: 'Todos los datos han sido limpiados' });
     }
