@@ -35,6 +35,7 @@ export async function POST(request: Request) {
         unidades: Number(formData.get('unidades')),
         sku: formData.get('sku'),
         presentacion: formData.get('presentacion'),
+        descripcion: formData.get('descripcion') || '',
         stock_minimo: Number(formData.get('stock_minimo')),
         fotografia: formData.get('fotografia') || '',
       };
@@ -73,6 +74,7 @@ export async function PUT(request: Request) {
         unidades: Number(formData.get('unidades')),
         sku: formData.get('sku'),
         presentacion: formData.get('presentacion'),
+        descripcion: formData.get('descripcion') || '',
         stock_minimo: Number(formData.get('stock_minimo')),
         fotografia: formData.get('fotografia') || '',
       };
