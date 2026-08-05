@@ -194,6 +194,18 @@ CREATE TABLE IF NOT EXISTS gastos (
 
 CREATE INDEX IF NOT EXISTS idx_gastos_fecha ON gastos(fecha);
 
+-- 7d. TABLA CARRITOS COMPARTIDOS
+CREATE TABLE IF NOT EXISTS carritos_compartidos (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    codigo VARCHAR(12) UNIQUE NOT NULL,
+    contenido JSONB NOT NULL,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    expira_en TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_carritos_codigo ON carritos_compartidos(codigo);
+CREATE INDEX IF NOT EXISTS idx_carritos_expiracion ON carritos_compartidos(expira_en);
+
 -- 7c. TABLA CORTES CAJA
 CREATE TABLE IF NOT EXISTS cortes_caja (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -321,3 +333,8 @@ CREATE POLICY "Permitir todo a gastos" ON gastos FOR ALL USING (true);
 ALTER TABLE cortes_caja ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Permitir todo a cortes_caja" ON cortes_caja;
 CREATE POLICY "Permitir todo a cortes_caja" ON cortes_caja FOR ALL USING (true);
+
+-- Carritos compartidos: solo lectura/escritura controlada (los códigos expiran solos)
+ALTER TABLE carritos_compartidos ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Permitir todo a carritos_compartidos" ON carritos_compartidos;
+CREATE POLICY "Permitir todo a carritos_compartidos" ON carritos_compartidos FOR ALL USING (true);
