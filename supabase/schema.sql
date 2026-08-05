@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS productos (
     unidades INT NOT NULL DEFAULT 0,
     sku VARCHAR(50) UNIQUE NOT NULL,
     presentacion VARCHAR(100),
+    descripcion TEXT,
     fotografia TEXT,
     stock_minimo INT NOT NULL DEFAULT 5,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -126,6 +127,19 @@ CREATE TABLE IF NOT EXISTS movimientos_stock (
 
 CREATE INDEX IF NOT EXISTS idx_movimientos_producto ON movimientos_stock(producto_id);
 CREATE INDEX IF NOT EXISTS idx_movimientos_fecha ON movimientos_stock(fecha);
+
+-- 4b. TABLA MERMAS
+CREATE TABLE IF NOT EXISTS mermas (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    producto_id UUID NOT NULL REFERENCES productos(id) ON DELETE CASCADE,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    motivo VARCHAR(50) NOT NULL CHECK (motivo IN ('Dañado', 'Vencido', 'Extraviado', 'Otro')),
+    observacion TEXT,
+    fecha TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_mermas_producto ON mermas(producto_id);
+CREATE INDEX IF NOT EXISTS idx_mermas_fecha ON mermas(fecha);
 
 -- 5. TABLA VENTAS (con estado para devoluciones soft-delete)
 CREATE TABLE IF NOT EXISTS ventas (
@@ -274,6 +288,7 @@ $$;
 ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE historial_precios ENABLE ROW LEVEL SECURITY;
 ALTER TABLE movimientos_stock ENABLE ROW LEVEL SECURITY;
+ALTER TABLE mermas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ventas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE detalle_ventas ENABLE ROW LEVEL SECURITY;
 
@@ -289,6 +304,9 @@ CREATE POLICY "Permitir todo a historial_precios" ON historial_precios FOR ALL U
 
 DROP POLICY IF EXISTS "Permitir todo a movimientos_stock" ON movimientos_stock;
 CREATE POLICY "Permitir todo a movimientos_stock" ON movimientos_stock FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Permitir todo a mermas" ON mermas;
+CREATE POLICY "Permitir todo a mermas" ON mermas FOR ALL USING (true);
 
 DROP POLICY IF EXISTS "Permitir todo a ventas" ON ventas;
 CREATE POLICY "Permitir todo a ventas" ON ventas FOR ALL USING (true);
