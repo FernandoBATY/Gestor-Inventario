@@ -504,6 +504,10 @@ export default function PublicStorefrontPage() {
             </span>
             <h3 className="text-xl font-headline text-[#201816] break-words">{selectedProduct.nombre}</h3>
 
+            {selectedProduct.descripcion ? (
+              <p className="text-sm text-[#7c6b64] mt-2 leading-relaxed">{selectedProduct.descripcion}</p>
+            ) : null}
+
             <div className="grid grid-cols-2 gap-2 my-3 bg-[#fffaf7] p-3 rounded-xl border border-[#d7c7c0] text-[11px]">
               <div><span className="text-[#7c6b64] block">Marca</span><span className="font-semibold text-[#201816]">{selectedProduct.marca}</span></div>
               <div><span className="text-[#7c6b64] block">Presentación</span><span className="font-semibold text-[#201816]">{selectedProduct.presentacion}</span></div>
