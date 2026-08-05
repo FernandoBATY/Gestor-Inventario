@@ -14,7 +14,6 @@ import {
   Database,
   LogOut,
   AlertTriangle,
-  BookOpen,
   UserCheck,
   Receipt,
   Wallet,
@@ -131,9 +130,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="px-4 lg:px-8 py-4 space-y-3 max-w-[1200px] mx-auto w-full">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-11 h-11 rounded-2xl bg-[#2f1e18] flex items-center justify-center shadow-lg shadow-[#2f1e18]/15 shrink-0">
-                <BookOpen className="w-5 h-5 text-[#fff8f4]" />
-              </div>
+              <img src="/icon.png" alt="Logo Papelería" className="w-11 h-11 object-contain shrink-0" />
               <div className="min-w-0">
                 <h2 className="font-headline text-base sm:text-lg tracking-tight text-[#36160c] truncate">Papelería</h2>
                   <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#7c6b64] font-semibold">
