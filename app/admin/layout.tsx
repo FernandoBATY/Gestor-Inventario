@@ -164,7 +164,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
 
-          <nav className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+          <nav className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin lg:flex-wrap lg:overflow-visible lg:gap-2.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
