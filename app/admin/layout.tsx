@@ -19,6 +19,7 @@ import {
   Receipt,
   Wallet,
   RefreshCw,
+  PackageX,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -116,6 +117,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Productos', href: '/admin/productos', icon: Package },
     { name: 'Inventario', href: '/admin/inventario', icon: Boxes },
+    { name: 'Mermas', href: '/admin/mermas', icon: PackageX },
     { name: 'Punto de Venta', href: '/admin/ventas', icon: ShoppingCart },
     { name: 'Egresos', href: '/admin/egresos', icon: Receipt },
     { name: 'Cortes', href: '/admin/cortes', icon: Wallet },
