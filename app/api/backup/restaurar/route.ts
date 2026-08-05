@@ -37,6 +37,9 @@ export async function POST(request: Request) {
       if (backupJson.negocio_config) {
         await supabase.from('negocio_config').upsert(backupJson.negocio_config, { onConflict: 'id' });
       }
+      if (backupJson.mermas?.length > 0) {
+        await supabase.from('mermas').upsert(backupJson.mermas, { onConflict: 'id' });
+      }
       return NextResponse.json({ success: true, message: 'Respaldo restaurado exitosamente en Supabase' });
     }
 
