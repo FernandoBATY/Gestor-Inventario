@@ -527,7 +527,22 @@ export default function PublicStorefrontPage() {
         </div>
       )}
 
-      <footer className="bg-[#2f1e18] text-[#f5efed] mt-20 pt-16 pb-10 px-4 lg:px-8">
+      <div className="mt-10 sm:mt-16 overflow-hidden bg-[#f2baa8] border-y border-[#e5c7ae] py-2.5">
+        <div className="flex w-max animate-marquee">
+          {[0, 1].map((half) => (
+            <div key={half} className="flex shrink-0 items-center">
+              {[0, 1, 2, 3].map((n) => (
+                <span key={n} className="flex items-center whitespace-nowrap text-xs sm:text-sm text-[#36160c] font-semibold">
+                  <span className="px-6">Los productos están sujetos a cambiar de stock día con día</span>
+                  <span className="text-[#6f5249]/70">✦</span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <footer className="bg-[#2f1e18] text-[#f5efed] pt-16 pb-10 px-4 lg:px-8">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
