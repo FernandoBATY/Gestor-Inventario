@@ -21,6 +21,7 @@ export class ProductosService {
     if ('categoria' in payload) payload.categoria = this.normalizeText(payload.categoria);
     if ('sku' in payload) payload.sku = this.normalizeText(payload.sku);
     if ('presentacion' in payload) payload.presentacion = this.normalizeText(payload.presentacion);
+    if ('descripcion' in payload) payload.descripcion = this.normalizeText(payload.descripcion);
     if ('fotografia' in payload) payload.fotografia = this.normalizeText(payload.fotografia);
     if ('precio_compra' in payload) payload.precio_compra = this.normalizeNumber(payload.precio_compra);
     if ('precio_venta' in payload) payload.precio_venta = this.normalizeNumber(payload.precio_venta);
