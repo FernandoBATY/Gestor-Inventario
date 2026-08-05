@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
 import Loader from '@/components/Loader';
 import { Producto } from '@/lib/types';
@@ -33,6 +33,7 @@ const defaultProductForm = {
   unidades: '',
   sku: '',
   presentacion: 'Pieza',
+  descripcion: '',
   stock_minimo: '0',
   fotografia: '',
 };
@@ -89,7 +90,7 @@ export default function ProductosPage() {
   const [categorias, setCategorias] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
   const [categorySaving, setCategorySaving] = useState(false);
   const [categoriaOriginal, setCategoriaOriginal] = useState('');
@@ -97,6 +98,7 @@ export default function ProductosPage() {
   const [imagePreview, setImagePreview] = useState('');
 
   const [formData, setFormData] = useState({ ...defaultProductForm });
+  const formRef = useRef<HTMLDivElement>(null);
 
   const [historialModalProdId, setHistorialModalProdId] = useState<string | null>(null);
   const [historialPrecios, setHistorialPrecios] = useState<any[]>([]);
@@ -146,6 +148,7 @@ export default function ProductosPage() {
         unidades: String(prod.unidades),
         sku: prod.sku,
         presentacion: prod.presentacion,
+        descripcion: prod.descripcion || '',
         stock_minimo: String(prod.stock_minimo),
         fotografia: prod.fotografia,
       });
@@ -161,7 +164,8 @@ export default function ProductosPage() {
     }
 
     setImageFile(null);
-    setIsModalOpen(true);
+    setShowForm(true);
+    requestAnimationFrame(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -236,6 +240,7 @@ export default function ProductosPage() {
       payload.append('unidades', String(Math.max(0, Math.trunc(Number(formData.unidades) || 0))));
       payload.append('sku', formData.sku.trim());
       payload.append('presentacion', formData.presentacion.trim());
+      payload.append('descripcion', formData.descripcion.trim());
       payload.append('stock_minimo', String(Math.max(0, Math.trunc(Number(formData.stock_minimo) || 0))));
       payload.append('fotografia', imageFile ? '' : formData.fotografia || '');
 
@@ -254,7 +259,7 @@ export default function ProductosPage() {
 
       if (res.ok) {
         toast.success(editingProduct ? 'Producto actualizado' : 'Producto creado');
-        setIsModalOpen(false);
+        setShowForm(false);
         await Promise.all([fetchProductos(), fetchCategorias()]);
       } else {
         const err = await res.json();
@@ -330,111 +335,28 @@ export default function ProductosPage() {
         />
       </div>
 
-      {loading ? (
-        <div className="glass-panel rounded-3xl border border-[#d7c7c0]">
-          <Loader label="Cargando inventario..." />
-        </div>
-      ) : (
-        <div className="glass-panel border border-[#d7c7c0] rounded-3xl overflow-hidden shadow-2xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#f6efe8] text-[#7c6b64] font-semibold border-b border-[#d7c7c0]">
-                <tr>
-                  <th className="p-4">Fotografía</th>
-                  <th className="p-4">Producto</th>
-                  <th className="p-4">Categoría</th>
-                  <th className="p-4">P. Compra</th>
-                  <th className="p-4">P. Venta</th>
-                  <th className="p-4">Unidades</th>
-                  <th className="p-4">SKU</th>
-                  <th className="p-4 text-center">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#e6d8d2] text-[#201816]">
-                {filtered.map((prod) => (
-                  <tr key={prod.id} className="hover:bg-[#f7f1ec] transition">
-                    <td className="p-4">
-                      {prod.fotografia ? (
-                        <img
-                          src={prod.fotografia}
-                          alt={prod.nombre}
-                          className="w-12 h-12 rounded-xl object-cover bg-slate-900 border border-slate-800"
-                          onError={(event) => {
-                            const target = event.currentTarget as HTMLImageElement;
-                            target.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-xl bg-[#f2edeb] border border-[#d5c2bd] flex items-center justify-center text-[10px] font-semibold text-[#6f5249] text-center px-1">
-                          Sin foto
-                        </div>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <div className="font-bold text-slate-100 text-sm">{prod.nombre}</div>
-                      <div className="text-[11px] text-slate-400">{prod.marca} • {prod.presentacion}</div>
-                    </td>
-                    <td className="p-4">
-                      <span className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0]">
-                        {prod.categoria}
-                      </span>
-                    </td>
-                    <td className="p-4 font-semibold text-[#5d4c46]">{moneyFormatter.format(Number(prod.precio_compra) || 0)}</td>
-                    <td className="p-4 font-bold text-[#2f5f4d]">{moneyFormatter.format(Number(prod.precio_venta) || 0)}</td>
-                    <td className="p-4">
-                      {prod.unidades <= prod.stock_minimo ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#6f5249] bg-[#efe3db] px-2 py-0.5 rounded border border-[#d7c7c0]">
-                          <AlertTriangle className="w-3 h-3" /> {prod.unidades} (Bajo)
-                        </span>
-                      ) : (
-                        <span className="font-semibold text-[#201816]">{prod.unidades} uds</span>
-                      )}
-                    </td>
-                    <td className="p-4 font-mono text-[11px] text-[#6f5249]">{prod.sku}</td>
-                    <td className="p-4 text-center space-x-2">
-                      <button
-                        onClick={() => handleOpenHistorial(prod.id)}
-                        title="Ver historial de precios"
-                        className="p-1.5 text-[#7c6b64] hover:text-[#6f5249] bg-[#f6efe8] rounded-lg transition"
-                      >
-                        <History className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleOpenModal(prod)}
-                        title="Editar producto"
-                        className="p-1.5 text-[#7c6b64] hover:text-[#8a6f5c] bg-[#f6efe8] rounded-lg transition"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(prod.id)}
-                        title="Eliminar producto"
-                        className="p-1.5 text-[#7c6b64] hover:text-[#9f5d55] bg-[#f6efe8] rounded-lg transition"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="glass-panel border border-[#d7c7c0] rounded-3xl max-w-3xl w-full p-6 relative shadow-2xl overflow-y-auto max-h-[90vh]">
+      {showForm && (
+        <div
+          ref={formRef}
+          className="glass-panel border border-[#d7c7c0] rounded-3xl p-6 shadow-2xl scroll-mt-28"
+        >
+          <div className="flex items-center justify-between mb-4 border-b border-[#e6d8d2] pb-3">
+            <h3 className="text-xl font-bold text-[#201816] flex items-center gap-2">
+              {editingProduct ? (
+                <><Edit3 className="w-5 h-5 text-[#6f5249]" /> Editar Producto</>
+              ) : (
+                <><Plus className="w-5 h-5 text-[#6f5249]" /> Nuevo Producto</>
+              )}
+            </h3>
             <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 p-2 text-[#7c6b64] hover:text-[#201816] bg-[#f6efe8] rounded-full transition"
+              onClick={() => setShowForm(false)}
+              className="p-2 text-[#7c6b64] hover:text-[#201816] bg-[#f6efe8] rounded-full transition"
+              title="Cerrar formulario"
             >
               <X className="w-4 h-4" />
             </button>
-
-            <h3 className="text-xl font-bold text-[#201816] mb-4">
-              {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
-            </h3>
+          </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -586,6 +508,17 @@ export default function ProductosPage() {
                 </div>
 
                 <div className="md:col-span-2">
+                  <label className="block text-[#7c6b64] font-semibold mb-1">Descripción</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Descripción breve del producto para mostrarla a los clientes (opcional)"
+                    value={formData.descripcion}
+                    onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                    className="w-full bg-[#fffaf7] border border-[#d7c7c0] rounded-xl p-2.5 text-[#201816] outline-none focus:border-[#9d7b6f] resize-none"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
                   <label className="block text-[#7c6b64] font-semibold mb-1">Imagen del Producto</label>
                   <label className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-[#d7c7c0] bg-[#fffaf7]/70 px-4 py-4 cursor-pointer hover:border-[#9d7b6f]/60 hover:bg-[#fffaf7] transition">
                     <ImageIcon className="w-4 h-4 text-[#6f5249]" />
@@ -616,7 +549,7 @@ export default function ProductosPage() {
               <div className="mt-6 flex justify-end gap-3 pt-3 border-t border-[#d7c7c0]">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => setShowForm(false)}
                   className="bg-[#fffaf7] hover:bg-[#f6efe8] text-[#7c6b64] font-semibold px-4 py-2 rounded-xl border border-[#d7c7c0] transition"
                 >
                   Cancelar
@@ -629,9 +562,101 @@ export default function ProductosPage() {
                 </button>
               </div>
             </form>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="glass-panel rounded-3xl border border-[#d7c7c0]">
+          <Loader label="Cargando inventario..." />
+        </div>
+      ) : (
+        <div className="glass-panel border border-[#d7c7c0] rounded-3xl overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-[#f6efe8] text-[#7c6b64] font-semibold border-b border-[#d7c7c0]">
+                <tr>
+                  <th className="p-4">Fotografía</th>
+                  <th className="p-4">Producto</th>
+                  <th className="p-4">Categoría</th>
+                  <th className="p-4">P. Compra</th>
+                  <th className="p-4">P. Venta</th>
+                  <th className="p-4">Unidades</th>
+                  <th className="p-4">SKU</th>
+                  <th className="p-4 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#e6d8d2] text-[#201816]">
+                {filtered.map((prod) => (
+                  <tr key={prod.id} className="hover:bg-[#f7f1ec] transition">
+                    <td className="p-4">
+                      {prod.fotografia ? (
+                        <img
+                          src={prod.fotografia}
+                          alt={prod.nombre}
+                          className="w-12 h-12 rounded-xl object-cover bg-slate-900 border border-slate-800"
+                          onError={(event) => {
+                            const target = event.currentTarget as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-xl bg-[#f2edeb] border border-[#d5c2bd] flex items-center justify-center text-[10px] font-semibold text-[#6f5249] text-center px-1">
+                          Sin foto
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      <div className="font-bold text-slate-100 text-sm">{prod.nombre}</div>
+                      <div className="text-[11px] text-slate-400">{prod.marca} • {prod.presentacion}</div>
+                    </td>
+                    <td className="p-4">
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0]">
+                        {prod.categoria}
+                      </span>
+                    </td>
+                    <td className="p-4 font-semibold text-[#5d4c46]">{moneyFormatter.format(Number(prod.precio_compra) || 0)}</td>
+                    <td className="p-4 font-bold text-[#2f5f4d]">{moneyFormatter.format(Number(prod.precio_venta) || 0)}</td>
+                    <td className="p-4">
+                      {prod.unidades <= prod.stock_minimo ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#6f5249] bg-[#efe3db] px-2 py-0.5 rounded border border-[#d7c7c0]">
+                          <AlertTriangle className="w-3 h-3" /> {prod.unidades} (Bajo)
+                        </span>
+                      ) : (
+                        <span className="font-semibold text-[#201816]">{prod.unidades} uds</span>
+                      )}
+                    </td>
+                    <td className="p-4 font-mono text-[11px] text-[#6f5249]">{prod.sku}</td>
+                    <td className="p-4 text-center space-x-2">
+                      <button
+                        onClick={() => handleOpenHistorial(prod.id)}
+                        title="Ver historial de precios"
+                        className="p-1.5 text-[#7c6b64] hover:text-[#6f5249] bg-[#f6efe8] rounded-lg transition"
+                      >
+                        <History className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleOpenModal(prod)}
+                        title="Editar producto"
+                        className="p-1.5 text-[#7c6b64] hover:text-[#8a6f5c] bg-[#f6efe8] rounded-lg transition"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(prod.id)}
+                        title="Eliminar producto"
+                        className="p-1.5 text-[#7c6b64] hover:text-[#9f5d55] bg-[#f6efe8] rounded-lg transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
+
 
       {historialModalProdId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
