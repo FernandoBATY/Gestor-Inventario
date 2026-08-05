@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500;600;700;800&family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Francois+One&family=Permanent+Marker&display=swap');
 
 :root {
   --background: #fef8f6;
   --foreground: #1d1b1a;
-  --font-heading: 'Source Serif 4', serif;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Permanent Marker', cursive;
+  --font-body: 'Francois One', sans-serif;
 }
 
 html {
