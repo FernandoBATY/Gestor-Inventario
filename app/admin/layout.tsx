@@ -164,7 +164,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
 
-          <nav className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin lg:flex-wrap lg:overflow-visible lg:gap-2.5">
+          <nav className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-thin lg:flex-nowrap lg:overflow-visible lg:gap-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -172,7 +172,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative flex items-center gap-2 px-3.5 py-2 rounded-2xl text-sm font-semibold transition whitespace-nowrap ${
+                  className={`relative flex items-center gap-1.5 xl:gap-2 px-2 xl:px-3 py-2 rounded-2xl text-[13px] xl:text-sm font-semibold transition whitespace-nowrap ${
                     isActive
                       ? 'bg-[#2f1e18] text-[#fff8f4] shadow-lg shadow-[#2f1e18]/15'
                       : 'text-[#7c6b64] hover:text-[#201816] hover:bg-[#f6efe8] border border-transparent hover:border-[#d7c7c0]'
