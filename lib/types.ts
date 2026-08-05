@@ -8,10 +8,21 @@ export interface Producto {
   unidades: number;
   sku: string;
   presentacion: string;
+  descripcion?: string;
   fotografia: string;
   stock_minimo: number;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface Merma {
+  id: string;
+  producto_id: string;
+  cantidad: number;
+  motivo: 'Dañado' | 'Vencido' | 'Extraviado' | 'Otro';
+  observacion?: string;
+  fecha: string;
+  producto?: Producto;
 }
 
 export interface CategoriaProducto {
