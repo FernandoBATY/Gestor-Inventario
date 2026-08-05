@@ -19,6 +19,7 @@ export async function GET() {
       const { data: gastos } = await supabase.from('gastos').select('*');
       const { data: cortes } = await supabase.from('cortes_caja').select('*');
       const { data: negocio } = await supabase.from('negocio_config').select('*');
+      const { data: mermas } = await supabase.from('mermas').select('*');
 
       backupData = {
         timestamp: new Date().toISOString(),
@@ -30,6 +31,7 @@ export async function GET() {
         gastos: gastos || [],
         cortes_caja: cortes || [],
         negocio_config: negocio || [],
+        mermas: mermas || [],
       };
     } else {
       backupData = {
