@@ -4,7 +4,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Papelería - Catálogo y Administración',
   description: 'Sistema integral de gestión de inventario, ventas y catálogo público para papelerías.',
-  icons: { icon: '/favicon.svg' },
+  icons: { icon: '/icon.png' },
 };
 
 export default function RootLayout({
