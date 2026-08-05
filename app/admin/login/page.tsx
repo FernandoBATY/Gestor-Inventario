@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function AdminLoginPage() {
@@ -58,9 +58,7 @@ export default function AdminLoginPage() {
 
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-[#2f1e18] flex items-center justify-center mx-auto mb-4 shadow-xl shadow-[#2f1e18]/15">
-            <BookOpen className="w-7 h-7 text-[#fff8f4]" />
-          </div>
+          <img src="/icon.png" alt="Logo Papelería" className="w-14 h-14 object-contain mx-auto mb-4" />
           <h1 className="text-2xl font-headline font-extrabold tracking-tight text-[#201816]">Panel Administrativo</h1>
           <p className="text-xs text-[#7c6b64] mt-1">Papelería</p>
         </div>
