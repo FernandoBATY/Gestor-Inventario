@@ -335,6 +335,46 @@ export default function CarritoPage() {
           ))}
         </div>
       </div>
+
+      <footer className="bg-[#2f1e18] text-[#f5efed] pt-16 pb-10 px-4 lg:px-8">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <img src="/icon.png" alt="Logo Papelería" className="h-8 w-8 object-contain" />
+              <span className="font-headline text-xl">Papelería</span>
+            </div>
+            <p className="text-sm text-[#d9c8c0]">Sistema de inventario.</p>
+          </div>
+          <div>
+            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Enlaces</h5>
+            <ul className="space-y-2 text-sm text-[#d9c8c0]">
+              <li><Link href="/aviso-de-privacidad" className="hover:text-[#f2baa8] transition-colors">Aviso de Privacidad</Link></li>
+              <li><Link href="/terminos-del-servicio" className="hover:text-[#f2baa8] transition-colors">Términos del Servicio</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Contacto</h5>
+            <ul className="space-y-2 text-sm text-[#d9c8c0]">
+              <li>contacto@cuadernodorado.mx</li>
+              <li>+52 (555) 123-4567</li>
+            </ul>
+          </div>
+          <div>
+            <h5 className="text-xs uppercase tracking-[0.25em] text-[#f2baa8] font-semibold mb-4">Horario</h5>
+            <ul className="space-y-2 text-sm text-[#d9c8c0]">
+              <li>Lun - Vie: 9:00 - 18:00</li>
+              <li>Sáb: 9:00 - 14:00</li>
+            </ul>
+          </div>
+        </div>
+        <div className="max-w-[1200px] mx-auto pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-[#d9c8c0]">
+          <p>© 2026 Papelería. Todos los derechos reservados.</p>
+          <div className="flex gap-6">
+            <Link href="/aviso-de-privacidad" className="hover:text-[#f2baa8] transition-colors">Aviso de Privacidad</Link>
+            <Link href="/terminos-del-servicio" className="hover:text-[#f2baa8] transition-colors">Términos del Servicio</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
