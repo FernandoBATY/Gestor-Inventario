@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
 import Loader from '@/components/Loader';
 import { Producto } from '@/lib/types';
+import { compressImage } from '@/lib/imageCompress';
 import {
   Package,
   Plus,
@@ -249,7 +250,7 @@ export default function ProductosPage() {
       }
 
       if (imageFile) {
-        payload.append('fotografia_file', imageFile);
+        payload.append('fotografia_file', await compressImage(imageFile));
       }
 
       const res = await fetch('/api/productos', {
