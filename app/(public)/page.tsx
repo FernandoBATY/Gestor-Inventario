@@ -527,7 +527,7 @@ export default function PublicStorefrontPage() {
         </div>
       )}
 
-      <div className="mt-10 sm:mt-16 overflow-hidden bg-[#f2baa8] border-y border-[#e5c7ae] py-2.5">
+      <div className="overflow-hidden bg-[#f2baa8] border-y border-[#e5c7ae] py-2.5">
         <div className="flex w-max animate-marquee">
           {[0, 1].map((half) => (
             <div key={half} className="flex shrink-0 items-center">
