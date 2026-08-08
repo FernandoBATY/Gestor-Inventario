@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { BookOpen, ArrowLeft, Shield } from 'lucide-react';
+import { Shield, ArrowLeft } from 'lucide-react';
 
 export default function AvisoPrivacidadPage() {
   return (
@@ -10,9 +10,7 @@ export default function AvisoPrivacidadPage() {
       <header className="sticky top-0 z-40 glass-panel border-b border-[#d5c2bd] px-4 lg:px-8 py-3">
         <div className="max-w-[900px] mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-[#2f1e18] flex items-center justify-center shadow-lg shadow-[#2f1e18]/15 shrink-0">
-              <BookOpen className="w-5 h-5 text-[#fff8f4]" />
-            </div>
+            <img src="/icon.png" alt="Logo Papelería" className="w-10 h-10 object-contain shrink-0" />
             <div className="min-w-0">
               <h1 className="font-headline text-xl sm:text-2xl tracking-tight text-[#36160c] truncate">Aviso de Privacidad</h1>
             </div>
@@ -36,7 +34,7 @@ export default function AvisoPrivacidadPage() {
               </div>
               <div>
                 <h2 className="font-headline text-2xl text-[#201816]">Aviso de Privacidad</h2>
-                <p className="text-sm text-[#7c6b64]">Última actualización: Julio 2026</p>
+                <p className="text-sm text-[#7c6b64]">Última actualización: Agosto 2026</p>
               </div>
             </div>
 
@@ -45,44 +43,82 @@ export default function AvisoPrivacidadPage() {
                 <h3 className="font-bold text-base text-[#36160c] mb-2">1. Identidad y domicilio del responsable</h3>
                 <p className="text-[#7c6b64]">
                   Papelería, con domicilio en Ciudad de México, México, es el responsable del
-                  tratamiento de sus datos personales. Para cualquier duda o aclaración, puede contactarnos a través del
-                  correo electrónico: contacto@cuadernodorado.mx.
+                  tratamiento de sus datos personales. Para cualquier duda o aclaración, puede contactarnos a través
+                  del correo electrónico: contacto@cuadernodorado.mx, o al teléfono +52 (555) 123-4567, en horario
+                  de lunes a viernes de 9:00 a 18:00 y sábados de 9:00 a 14:00.
                 </p>
               </section>
 
               <section>
                 <h3 className="font-bold text-base text-[#36160c] mb-2">2. Datos personales que recabamos</h3>
                 <p className="text-[#7c6b64]">
-                  En Papelería no recabamos datos personales de los usuarios que navegan en nuestro
-                  catálogo público. La única información que se almacena localmente en su navegador es la selección
-                  temporal de productos en el carrito de compras, la cual no es compartida con terceros ni almacenada
-                  en nuestros servidores.
+                  Nuestro catálogo público no requiere de registro ni de datos personales para ser consultado. En función
+                  de cómo utilice nuestro sitio, recabamos lo siguiente:
                 </p>
+                <ul className="list-disc list-inside mt-2 text-[#7c6b64] space-y-1.5">
+                  <li>
+                    <span className="font-semibold text-[#201816]">Carrito de compras (local):</span> la selección
+                    temporal de productos y cantidades se almacena únicamente en su navegador (localStorage) y no se
+                    envía a nuestros servidores salvo que usted lo comparta.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-[#201816]">Carrito compartido (servidor):</span> si utiliza la
+                    función "Compartir carrito", los identificadores de los productos y sus cantidades se guardan de
+                    forma temporal en nuestros servidores con un enlace de validez de 7 días, transcurridos los cuales
+                    se eliminan automáticamente.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-[#201816]">Panel de administración:</span> el correo
+                    electrónico de los usuarios autorizados, utilizado exclusivamente para la autenticación y control
+                    de acceso al sistema interno.
+                  </li>
+                </ul>
               </section>
 
               <section>
                 <h3 className="font-bold text-base text-[#36160c] mb-2">3. Finalidad del tratamiento</h3>
                 <p className="text-[#7c6b64]">
-                  Los datos que pudieran recabarse en el panel de administración son utilizados exclusivamente para la
-                  gestión interna del inventario, control de ventas y generación de reportes. No se compartirán con
-                  terceros sin su consentimiento explícito.
+                  Los datos recabados se utilizan exclusivamente para: (a) permitirle compartir su selección de
+                  productos mediante un enlace temporal; (b) autenticar y controlar el acceso al panel de
+                  administración; y (c) gestionar internamente el inventario, las ventas, las devoluciones y la
+                  generación de reportes. Sus datos no se utilizarán para fines distintos a los aquí señalados.
                 </p>
               </section>
 
               <section>
-                <h3 className="font-bold text-base text-[#36160c] mb-2">4. Derechos ARCO</h3>
+                <h3 className="font-bold text-base text-[#36160c] mb-2">4. Transferencias de datos</h3>
+                <p className="text-[#7c6b64]">
+                  No transferimos sus datos personales a terceros, salvo que exista obligación legal o mandamiento de
+                  autoridad competente. Los datos del carrito compartido son accesibles únicamente por quien reciba el
+                  enlace correspondiente.
+                </p>
+              </section>
+
+              <section>
+                <h3 className="font-bold text-base text-[#36160c] mb-2">5. Derechos ARCO</h3>
                 <p className="text-[#7c6b64]">
                   Usted tiene derecho a Acceder, Rectificar, Cancelar u Oponerse al tratamiento de sus datos personales
-                  (derechos ARCO). Para ejercer estos derechos, puede enviar una solicitud a
-                  contacto@cuadernodorado.mx.
+                  (derechos ARCO). Para ejercer estos derechos, envíe su solicitud a contacto@cuadernodorado.mx
+                  indicando su nombre, el derecho que desea ejercer y una descripción de los datos. Le responderemos en
+                  un plazo máximo de 15 días hábiles.
                 </p>
               </section>
 
               <section>
-                <h3 className="font-bold text-base text-[#36160c] mb-2">5. Cambios al aviso de privacidad</h3>
+                <h3 className="font-bold text-base text-[#36160c] mb-2">6. Seguridad de la información</h3>
+                <p className="text-[#7c6b64]">
+                  Adoptamos medidas administrativas, técnicas y físicas razonables para proteger sus datos contra daño,
+                  pérdida, alteración, destrucción o uso no autorizado. El acceso al panel de administración se
+                  encuentra protegido mediante autenticación segura.
+                </p>
+              </section>
+
+              <section>
+                <h3 className="font-bold text-base text-[#36160c] mb-2">7. Cambios al aviso de privacidad</h3>
                 <p className="text-[#7c6b64]">
                   Nos reservamos el derecho de modificar el presente aviso de privacidad en cualquier momento. Las
-                  modificaciones entrarán en vigor inmediatamente después de su publicación en esta página.
+                  modificaciones entrarán en vigor inmediatamente después de su publicación en esta página, indicándose
+                  la fecha de última actualización.
                 </p>
               </section>
             </div>
