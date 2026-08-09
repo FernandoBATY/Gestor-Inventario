@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
   BarChart3,
-  Download,
   AlertTriangle,
   Package,
   ShoppingBag,
@@ -45,25 +47,24 @@ const moneyFormatter = new Intl.NumberFormat('es-MX', {
   minimumFractionDigits: 2,
 });
 
-function generateCSV(data: any[], fields: string[], headers: string[]): string {
-  const headerRow = headers.map((h) => `"${h}"`).join(',');
-  const rows = data.map((row) => {
-    return fields
-      .map((field) => {
-        let val = row[field];
-        if (typeof val === 'number') {
-          if (field.includes('precio') || field === 'total') {
-            val = val.toFixed(2);
-          }
-        }
-        if (field === 'fecha' && val) {
-          val = new Date(val).toLocaleString('es-MX');
-        }
-        return `"${String(val ?? '').replace(/"/g, '""')}"`;
-      })
-      .join(',');
-  });
-  return [headerRow, ...rows].join('\r\n');
+function formatCell(field: string, value: unknown): string {
+  if ((field.includes('precio') || field === 'total') && typeof value === 'number') {
+    return moneyFormatter.format(value);
+  }
+  if (field === 'fecha' && value) {
+    return new Date(value as string).toLocaleString('es-MX');
+  }
+  return String(value ?? '');
+}
+
+function getDataField(field: string, value: unknown): string | number {
+  if ((field.includes('precio') || field === 'total') && typeof value === 'number') {
+    return Number(value.toFixed(2));
+  }
+  if (field === 'fecha' && value) {
+    return new Date(value as string).toLocaleString('es-MX');
+  }
+  return String(value ?? '');
 }
 
 export default function ReportesPage() {
@@ -108,7 +109,7 @@ export default function ReportesPage() {
     }
   };
 
-  const exportCSV = useCallback(async (type: ReportType) => {
+  const exportExcel = useCallback(async (type: ReportType) => {
     setExporting(type);
     try {
       let exportData: any[];
@@ -126,15 +127,19 @@ export default function ReportesPage() {
       if (!exportData.length) return;
 
       const config = REPORT_CONFIG[type];
-      const csvContent = generateCSV(exportData, config.fields, config.headers);
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `${config.filename}-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
+      const rows = exportData.map((row) => {
+        const obj: Record<string, string | number> = {};
+        config.fields.forEach((field, i) => {
+          obj[config.headers[i]] = getDataField(field, row[field]);
+        });
+        return obj;
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      worksheet['!cols'] = config.fields.map((f) => ({ wch: f === 'fecha' ? 22 : 16 }));
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, config.label.slice(0, 31));
+      XLSX.writeFile(workbook, `${config.filename}-${new Date().toISOString().slice(0, 10)}.xlsx`);
     } catch (e) {
       console.error(e);
     } finally {
@@ -159,35 +164,31 @@ export default function ReportesPage() {
 
       if (!exportData.length) return;
 
-      const cfg = REPORT_CONFIG[type];
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) return;
-      printWindow.document.write(`
-        <html><head><title>${cfg.label}</title>
-        <style>
-          @page { size: letter; margin: 15mm; }
-          body { font-family: Arial, sans-serif; font-size: 11px; color: #000; padding: 20px; }
-          h1 { font-size: 16px; margin-bottom: 5px; }
-          p { font-size: 10px; color: #555; margin-bottom: 15px; }
-          table { width: 100%; border-collapse: collapse; font-size: 10px; }
-          th { background: #f0ebe7; padding: 6px 4px; text-align: left; border: 1px solid #ccc; }
-          td { padding: 4px; border: 1px solid #ddd; }
-          .footer { margin-top: 20px; font-size: 9px; color: #999; text-align: center; }
-        </style></head><body>
-        <h1>${cfg.label}</h1>
-        <p>Generado el ${new Date().toLocaleString('es-MX')}</p>
-        <table><thead><tr>${cfg.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
-        <tbody>${exportData.map(row => `<tr>${cfg.fields.map(f => {
-          let val = row[f];
-          if ((f.includes('precio') || f === 'total') && typeof val === 'number') val = `$${val.toFixed(2)}`;
-          if (f === 'fecha' && val) val = new Date(val).toLocaleString('es-MX');
-          return `<td>${val ?? ''}</td>`;
-        }).join('')}</tr>`).join('')}</tbody></table>
-        <div class="footer">Papelería - Sistema de Inventario</div>
-        <script>window.onload=function(){window.print();window.close()};</script>
-        </body></html>
-      `);
-      printWindow.document.close();
+      const config = REPORT_CONFIG[type];
+      const body = exportData.map((row) => config.fields.map((f) => formatCell(f, row[f])));
+
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
+      doc.setFontSize(15);
+      doc.setFont('helvetica', 'bold');
+      doc.text(config.label, 14, 16);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Generado el ${new Date().toLocaleString('es-MX')}`, 14, 22);
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text('Papelería - Sistema de Inventario', 14, 27);
+
+      autoTable(doc, {
+        startY: 31,
+        head: [config.headers],
+        body,
+        theme: 'grid',
+        styles: { fontSize: 7.5, cellPadding: 2, textColor: [32, 24, 22] },
+        headStyles: { fillColor: [47, 30, 24], textColor: [255, 248, 244], fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [246, 239, 232] },
+      });
+
+      doc.save(`${config.filename}-${new Date().toISOString().slice(0, 10)}.pdf`);
     } catch (e) {
       console.error(e);
     } finally {
@@ -208,7 +209,7 @@ export default function ReportesPage() {
         <h1 className="text-3xl font-extrabold tracking-tight text-[#201816] flex items-center gap-2">
           <BarChart3 className="w-7 h-7 text-[#6f5249]" /> Reportes del Sistema
         </h1>
-        <p className="text-xs text-[#7c6b64] mt-1">Generación y exportación de datos clave en formato CSV.</p>
+        <p className="text-xs text-[#7c6b64] mt-1">Generación y exportación de datos clave en Excel y PDF.</p>
       </div>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -282,12 +283,12 @@ export default function ReportesPage() {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => exportCSV(id)}
+                  onClick={() => exportExcel(id)}
                   disabled={exporting !== null}
                   className="flex-1 bg-[#2f1e18] hover:bg-[#412820] disabled:bg-[#c4b5ae] text-[#fff8f4] font-semibold text-xs py-2.5 rounded-xl flex items-center justify-center gap-2 transition"
                 >
                   <FileSpreadsheet className="w-4 h-4" />
-                  {exporting === id ? 'Exportando...' : 'CSV'}
+                  {exporting === id ? 'Exportando...' : 'Excel'}
                 </button>
                 <button
                   onClick={() => exportPDF(id)}
