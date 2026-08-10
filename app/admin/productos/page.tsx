@@ -572,7 +572,88 @@ export default function ProductosPage() {
         </div>
       ) : (
         <div className="glass-panel border border-[#d7c7c0] rounded-3xl overflow-hidden shadow-2xl">
-          <div className="overflow-x-auto">
+          {/* Vista móvil: cards */}
+          <div className="md:hidden divide-y divide-[#e6d8d2]">
+            {filtered.map((prod) => (
+              <div key={prod.id} className="p-4 hover:bg-[#f7f1ec] transition">
+                <div className="flex gap-3">
+                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f2edeb] border border-[#d5c2bd] shrink-0">
+                    {prod.fotografia ? (
+                      <img
+                        src={prod.fotografia}
+                        alt={prod.nombre}
+                        className="w-full h-full object-cover"
+                        onError={(event) => {
+                          const target = event.currentTarget as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[9px] font-semibold text-[#6f5249] text-center px-1">
+                        Sin foto
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-sm text-[#201816] truncate">{prod.nombre}</h4>
+                        <p className="text-[11px] text-[#7c6b64] truncate">{prod.marca} • {prod.presentacion}</p>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-md text-[9px] font-semibold bg-[#efe3db] text-[#6f5249] border border-[#d7c7c0] whitespace-nowrap shrink-0">
+                        {prod.categoria}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-2 text-xs">
+                      <div className="space-y-0.5">
+                        <p className="text-[#5d4c46]">Compra: <span className="font-semibold">{moneyFormatter.format(Number(prod.precio_compra) || 0)}</span></p>
+                        <p className="text-[#2f5f4d]">Venta: <span className="font-bold">{moneyFormatter.format(Number(prod.precio_venta) || 0)}</span></p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        {prod.unidades <= prod.stock_minimo ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#6f5249] bg-[#efe3db] px-2 py-0.5 rounded border border-[#d7c7c0]">
+                            <AlertTriangle className="w-3 h-3" /> {prod.unidades} (Bajo)
+                          </span>
+                        ) : (
+                          <span className="font-semibold text-[#201816]">{prod.unidades} uds</span>
+                        )}
+                        <p className="font-mono text-[10px] text-[#6f5249] mt-0.5">{prod.sku}</p>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2">
+                      <button
+                        onClick={() => handleOpenHistorial(prod.id)}
+                        title="Ver historial de precios"
+                        className="p-2 text-[#7c6b64] hover:text-[#6f5249] bg-[#f6efe8] rounded-lg transition"
+                      >
+                        <History className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleOpenModal(prod)}
+                        title="Editar producto"
+                        className="p-2 text-[#7c6b64] hover:text-[#8a6f5c] bg-[#f6efe8] rounded-lg transition"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(prod.id)}
+                        title="Eliminar producto"
+                        className="p-2 text-[#7c6b64] hover:text-[#9f5d55] bg-[#f6efe8] rounded-lg transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div className="p-8 text-center text-[#7c6b64] text-xs">No se encontraron productos.</div>
+            )}
+          </div>
+
+          {/* Vista escritorio: tabla */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-[#f6efe8] text-[#7c6b64] font-semibold border-b border-[#d7c7c0]">
                 <tr>

@@ -3,15 +3,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Producto } from '@/lib/types';
-import { 
-  Search, 
-  LogIn, 
+import {
+  Search,
+  LogIn,
   ShoppingBag,
   Sparkles,
   ShoppingCart,
   Plus,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  SlidersHorizontal
 } from 'lucide-react';
 
 type CartItem = {
@@ -45,6 +46,7 @@ export default function PublicStorefrontPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [sort, setSort] = useState('nombre-asc');
   const [incluirAgotados, setIncluirAgotados] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const fetchCatalog = useCallback(async (p: number) => {
     setLoading(true);
@@ -217,7 +219,22 @@ export default function PublicStorefrontPage() {
 
       <section className="relative overflow-hidden py-12 px-4 lg:px-8 border-b border-[#d5c2bd] bg-gradient-to-b from-[#fff8f4] to-[#f6efe8]">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-8 items-start">
-          <aside className="glass-panel rounded-3xl p-6 border border-[#d7c7c0] lg:sticky lg:top-24">
+          <button
+            onClick={() => setFiltersOpen((v) => !v)}
+            className={`lg:hidden w-full flex items-center justify-between gap-2 px-4 py-3 rounded-2xl text-xs font-bold transition border ${
+              filtersOpen
+                ? 'bg-[#2f1e18] text-[#fff8f4] border-[#2f1e18]'
+                : 'bg-[#fffaf7] text-[#201816] border-[#d7c7c0]'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4" />
+              Filtros y ordenamiento
+            </span>
+            <span className="text-[10px]">{filtersOpen ? 'Ocultar ▲' : 'Mostrar ▼'}</span>
+          </button>
+
+          <aside className={`glass-panel rounded-3xl p-6 border border-[#d7c7c0] lg:sticky lg:top-24 ${filtersOpen ? 'block' : 'hidden'} lg:block`}>
             <div className="flex items-center justify-between border-b border-[#e6d8d2] pb-3">
               <h2 className="font-headline text-2xl text-[#201816]">Filtros</h2>
               <button

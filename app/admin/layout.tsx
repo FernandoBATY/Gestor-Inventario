@@ -133,7 +133,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <img src="/icon.png" alt="Logo Papelería" className="w-11 h-11 object-contain shrink-0" />
               <div className="min-w-0">
                 <h2 className="font-headline text-base sm:text-lg tracking-tight text-[#36160c] truncate">Papelería</h2>
-                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#7c6b64] font-semibold">
+                  <div className="hidden sm:flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#7c6b64] font-semibold">
                     <span>Panel Admin</span>
                   </div>
               </div>
@@ -178,8 +178,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       : 'text-[#7c6b64] hover:text-[#201816] hover:bg-[#f6efe8] border border-transparent hover:border-[#d7c7c0]'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="hidden sm:inline">{item.name}</span>
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{item.name}</span>
                   {item.href === '/admin/productos' && bajoStockCount > 0 && (
                     <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#b91c1c] text-[#fff] text-[10px] font-extrabold leading-none animate-pulse">
                       {bajoStockCount}

@@ -251,7 +251,7 @@ export default function VentasPOSPage() {
         </div>
 
         {/* RIGHT COLUMN: SHOPPING CART & CHECKOUT */}
-        <div className="glass-panel border border-[#d7c7c0] rounded-3xl p-6 flex flex-col shadow-2xl">
+        <div id="pos-carrito" className="glass-panel border border-[#d7c7c0] rounded-3xl p-6 flex flex-col shadow-2xl">
           <div>
             <h3 className="font-extrabold text-base text-[#201816] pb-3 border-b border-[#e6d8d2] flex items-center justify-between">
               <span>Carrito de Venta</span>
@@ -359,6 +359,28 @@ export default function VentasPOSPage() {
         venta={completedVenta}
         onClose={() => setCompletedVenta(null)}
       />
+
+      {/* BARRA FLOTANTE MÓVIL: total y acceso rápido al carrito */}
+      {cart.length > 0 && (
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 glass-panel border-t border-[#d7c7c0] p-3 backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-3 max-w-[1200px] mx-auto">
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold text-[#7c6b64]">{cart.reduce((a, b) => a + b.cantidad, 0)} artículos</p>
+              <p className="font-black text-lg text-[#2f5f4d] truncate">${totalCart.toFixed(2)} MXN</p>
+            </div>
+            <button
+              onClick={() => {
+                const el = document.getElementById('pos-carrito');
+                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="bg-[#2f5f4d] hover:bg-[#254c3f] text-[#fff8f4] font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition shrink-0"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              Ver carrito
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* SALES HISTORY MODAL */}
       {showHistorialModal && (

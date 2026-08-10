@@ -60,7 +60,7 @@ export default function DashboardCharts({ barChartData, topProductsData, stats }
           {topProductsData.length === 0 ? (
             <p className="text-xs text-[#7c6b64] text-center py-8">Sin datos para graficar.</p>
           ) : (
-            <div className="h-56">
+            <div className="h-64 sm:h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topProductsData} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <CartesianGrid stroke="#e6d8d2" strokeDasharray="3 3" />
