@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { Producto } from '@/lib/types';
 import {
@@ -12,7 +12,8 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Check
 } from 'lucide-react';
 
 type CartItem = {
@@ -47,6 +48,8 @@ export default function PublicStorefrontPage() {
   const [sort, setSort] = useState('nombre-asc');
   const [incluirAgotados, setIncluirAgotados] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [addedId, setAddedId] = useState<string | null>(null);
+  const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchCatalog = useCallback(async (p: number) => {
     setLoading(true);
@@ -122,6 +125,10 @@ export default function PublicStorefrontPage() {
     } catch (error) {
       console.error(error);
     }
+
+    if (addedTimer.current) clearTimeout(addedTimer.current);
+    setAddedId(product.id);
+    addedTimer.current = setTimeout(() => setAddedId(null), 800);
   };
 
   const fetchCategories = async () => {
@@ -392,7 +399,9 @@ export default function PublicStorefrontPage() {
                   <div
                     key={prod.id}
                     onClick={() => setSelectedProduct(prod)}
-                    className="bg-white rounded-xl overflow-hidden border border-[#d7c7c0] hover:shadow-xl transition-all group flex flex-col h-full cursor-pointer"
+                    className={`bg-white rounded-xl overflow-hidden border border-[#d7c7c0] hover:shadow-xl transition-all group flex flex-col h-full cursor-pointer ${
+                      addedId === prod.id ? 'animate-pop shadow-xl border-[#2f5f4d]/40' : ''
+                    }`}
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-[#f2edeb]">
                       {prod.fotografia ? (
@@ -442,9 +451,21 @@ export default function PublicStorefrontPage() {
                               addToTemporaryCart(prod);
                             }}
                             disabled={prod.unidades <= 0}
-                            className="flex-1 bg-[#2f1e18] hover:bg-[#412820] disabled:bg-[#c4b5ae] text-[#fff8f4] py-2.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2"
+                            className={`flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
+                              addedId === prod.id
+                                ? 'bg-[#2f5f4d] text-[#fff8f4]'
+                                : 'bg-[#2f1e18] hover:bg-[#412820] disabled:bg-[#c4b5ae] text-[#fff8f4]'
+                            }`}
                           >
-                            <Plus className="w-4 h-4" /> Agregar
+                            {addedId === prod.id ? (
+                              <>
+                                <Check className="w-4 h-4" /> Agregado
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="w-4 h-4" /> Agregar
+                              </>
+                            )}
                           </button>
                           <button
                             onClick={(e) => {

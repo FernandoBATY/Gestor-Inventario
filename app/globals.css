@@ -73,6 +73,17 @@ h1, h2, h3, h4, h5, h6 {
   animation: marquee 35s linear infinite;
 }
 
+/* Pop animation for cart add */
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); box-shadow: 0 0 0 3px rgba(47, 95, 77, 0.15); }
+  100% { transform: scale(1); }
+}
+
+.animate-pop {
+  animation: pop 0.4s ease-in-out;
+}
+
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
