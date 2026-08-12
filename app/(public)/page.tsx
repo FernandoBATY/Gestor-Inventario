@@ -169,7 +169,7 @@ export default function PublicStorefrontPage() {
         <div className="max-w-[1200px] mx-auto flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <img src="/icon.png" alt="Logo Papelería" className="w-11 h-11 object-contain shrink-0" />
+              <img src="/icon.webp" alt="Logo Papelería" className="w-11 h-11 object-contain shrink-0" />
               <div className="min-w-0">
                 <h1 className="font-headline text-xl sm:text-2xl tracking-tight text-[#36160c] truncate">Papelería</h1>
                 <p className="text-xs text-[#7c6b64] font-medium hidden sm:block">Catálogo público de productos disponibles</p>
@@ -584,7 +584,7 @@ export default function PublicStorefrontPage() {
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img src="/icon.png" alt="Logo Papelería" className="h-8 w-8 object-contain" />
+              <img src="/icon.webp" alt="Logo Papelería" className="h-8 w-8 object-contain" />
               <span className="font-headline text-xl">Papelería</span>
             </div>
             <p className="text-sm text-[#d9c8c0]">Sistema de inventario.</p>

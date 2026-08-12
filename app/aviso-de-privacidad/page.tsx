@@ -10,7 +10,7 @@ export default function AvisoPrivacidadPage() {
       <header className="sticky top-0 z-40 glass-panel border-b border-[#d5c2bd] px-4 lg:px-8 py-3">
         <div className="max-w-[900px] mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <img src="/icon.png" alt="Logo Papelería" className="w-10 h-10 object-contain shrink-0" />
+            <img src="/icon.webp" alt="Logo Papelería" className="w-10 h-10 object-contain shrink-0" />
             <div className="min-w-0">
               <h1 className="font-headline text-xl sm:text-2xl tracking-tight text-[#36160c] truncate">Aviso de Privacidad</h1>
             </div>

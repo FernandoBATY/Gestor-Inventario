@@ -1,9 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import {
   BarChart3,
   AlertTriangle,
@@ -135,6 +132,7 @@ export default function ReportesPage() {
         return obj;
       });
 
+      const XLSX = (await import('xlsx')).default;
       const worksheet = XLSX.utils.json_to_sheet(rows);
       worksheet['!cols'] = config.fields.map((f) => ({ wch: f === 'fecha' ? 22 : 16 }));
       const workbook = XLSX.utils.book_new();
@@ -166,6 +164,9 @@ export default function ReportesPage() {
 
       const config = REPORT_CONFIG[type];
       const body = exportData.map((row) => config.fields.map((f) => formatCell(f, row[f])));
+
+      const jsPDF = (await import('jspdf')).default;
+      const { default: autoTable } = await import('jspdf-autotable');
 
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
       doc.setFontSize(15);

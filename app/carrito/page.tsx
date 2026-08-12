@@ -141,7 +141,7 @@ export default function CarritoPage() {
       <header className="sticky top-0 z-40 glass-panel border-b border-[#d5c2bd] px-4 lg:px-8 py-3">
         <div className="max-w-[1200px] mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <img src="/icon.png" alt="Logo Papelería" className="w-10 h-10 object-contain shrink-0" />
+            <img src="/icon.webp" alt="Logo Papelería" className="w-10 h-10 object-contain shrink-0" />
             <div className="min-w-0">
               <h1 className="font-headline text-xl sm:text-2xl tracking-tight text-[#36160c] truncate">Carrito de compras</h1>
             </div>
@@ -340,7 +340,7 @@ export default function CarritoPage() {
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img src="/icon.png" alt="Logo Papelería" className="h-8 w-8 object-contain" />
+              <img src="/icon.webp" alt="Logo Papelería" className="h-8 w-8 object-contain" />
               <span className="font-headline text-xl">Papelería</span>
             </div>
             <p className="text-sm text-[#d9c8c0]">Sistema de inventario.</p>

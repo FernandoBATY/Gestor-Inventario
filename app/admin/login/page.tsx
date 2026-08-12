@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
 
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <img src="/icon.png" alt="Logo Papelería" className="w-14 h-14 object-contain mx-auto mb-4" />
+          <img src="/icon.webp" alt="Logo Papelería" className="w-14 h-14 object-contain mx-auto mb-4" />
           <h1 className="text-2xl font-headline font-extrabold tracking-tight text-[#201816]">Panel Administrativo</h1>
           <p className="text-xs text-[#7c6b64] mt-1">Papelería</p>
         </div>

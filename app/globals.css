@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Francois+One&family=Sekuya&display=swap');
-
 :root {
   --background: #fef8f6;
   --foreground: #1d1b1a;
