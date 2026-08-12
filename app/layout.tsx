@@ -19,7 +19,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Francois+One&family=Sekuya&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap"
         />
       </head>
       <body className="min-h-screen bg-background text-on-background antialiased">
